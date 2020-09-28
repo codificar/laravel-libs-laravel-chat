@@ -1,5 +1,5 @@
 {
-    "name": "codificar/laravel-chat",
+    "name": "codificar/chat",
     "description": "A chat library for laravel.",
     "authors": [
         {
@@ -7,10 +7,12 @@
             "email": "libs@codificar.com.br"
         }
     ],
-    "require": {},
+    "require": {
+        
+    },
     "autoload": {
         "psr-4": {
-            "Codificar\\LaravelChat\\": "src/"
+            "Codificar\\Chat\\": "src/"
         }
     }
 }
