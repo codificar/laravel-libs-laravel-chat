@@ -3,6 +3,8 @@
 namespace Codificar\Chat\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\Institution;
+use App\Models\RequestPoint;
 use Codificar\Chat\Models\ConversationRequest;
 use Codificar\Chat\Http\Requests\SendMessageRequest;
 use Codificar\Chat\Http\Requests\ConversationFormRequest;
@@ -13,12 +15,61 @@ use Codificar\Chat\Http\Resources\ChatMessagesResource;
 use Codificar\Chat\Events\EventConversation;
 use Codificar\Chat\Events\EventNewConversation;
 use Codificar\Chat\Events\EventReadMessage;
-use Requests, Admin, Auth;
+use Requests, Admin, Auth, User;
 use Log;
 use Nahid\Talk\Messages\Message;
+use Settings;
 
 class RideChatController extends Controller
 {
+	/**
+	 * Render admin chat page
+	 * @return View
+	 */
+	public function adminRequestChat($request_id){
+		
+		$admin = Admin::find(Auth::guard('web')->user()->id);
+		if (!$admin) {
+			return \Redirect::to("/admin/home");
+		}
+
+		$request = Requests::find($request_id);
+
+		//Esses dois campos estavam dando problema no json_encode e não são necessários no chat
+		unset($request->origin);
+		unset($request->destination);
+		if (!$request){
+			abort(404);
+		}
+
+		$requestPoints = RequestPoint::whereRequestId($request->id)->get();
+
+		$user = User::getUserForChat($request->user_id);
+		Log::debug($user);
+		if(in_array($request->user_id, Institution::getDefaultUsersIds())){
+			$institution = Institution::getByDefaultUserId($request->user_id);
+		} else {
+			$institution = null;
+		}
+		
+		$mapsApiKey = Settings::getGoogleMapsApiKey();
+		
+		$viewData = [
+			"environment" => "admin",
+			"request" => $request,
+			"requestPoints" => $requestPoints,
+			"user" => $user,
+			"userAdmin" => [
+				'name' => $admin->profile->name,
+				'image' => \Theme::getLogoUrl()
+			],
+			"institution" => $institution,
+			"maps_api_key" => $mapsApiKey,
+		];
+
+		return view('chat::chat', $viewData);
+	}
+	
     /**
      * Send a new message on ride conversation
      * @api {POST} /api/libs/user/chat/send

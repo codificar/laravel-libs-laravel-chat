@@ -1,6 +1,11 @@
 <?php
 
-Route::group(array('namespace' => 'Codificar\Chat\Http\Controllers'), function () {  
+Route::group(array('namespace' => 'Codificar\Chat\Http\Controllers'), function () {
+
+    Route::get('/admin/libs/chat/{request_id}', [
+        'as' => 'adminRequestChat', 
+        'uses' => 'RideChatController@adminRequestChat'
+    ])->middleware(['talk:web', 'auth.admin']);
 
     Route::group(['prefix' => 'api/libs/'], function () {
 
@@ -20,7 +25,7 @@ Route::group(array('namespace' => 'Codificar\Chat\Http\Controllers'), function (
             Route::post('seen', "RideChatController@setMessagesSeen");
         });
 
-        Route::group(['middleware' => 'auth.admin_api', 'prefix' => 'admin/chat'], function () {
+        Route::group([ 'prefix' => 'admin/chat'], function () {
 
             Route::post('send', 'RideChatController@sendMessage');
             Route::get('conversation', "RideChatController@getConversation");

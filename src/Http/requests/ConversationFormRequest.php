@@ -8,6 +8,16 @@ use Requests, User;
 class ConversationFormRequest extends FormRequest
 {
 	/**
+     * Determine if the user is authorized to make this request.
+     *
+     * @return bool
+     */
+    public function authorize()
+    {
+        return true;
+	}
+	
+	/**
 	 * Get the validation rules that apply to the request.
 	 *
 	 * @return array
@@ -26,11 +36,13 @@ class ConversationFormRequest extends FormRequest
      */
 	protected function prepareForValidation() {
 		$sender_type = request()->segments()[2];
+		// dd($sender_type);
 		if($sender_type == "provider") {
 			$ledger_id = $this->provider->ledger->id;
 		} else {
 			if($sender_type == "admin") {
 				$request = Requests::find($this->request_id);
+				
 				if($request) {
 					$this->user = User::find($request->user_id);
 				}

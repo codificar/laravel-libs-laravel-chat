@@ -10,6 +10,14 @@ class LaravelChatServiceProvider extends ServiceProvider
     {
         // Load routes
         $this->loadRoutesFrom(__DIR__.'/routes/web.php');
+
+        // Load blade templates
+        $this->loadViewsFrom(__DIR__.'/resources/views', 'chat');
+
+        $this->publishes([
+            __DIR__.'/../public/js' => public_path('vendor/codificar/chat'),
+        ], 'public_vuejs_libs');
+
     }
 
     public function register()

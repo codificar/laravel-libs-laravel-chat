@@ -2,6 +2,8 @@
 
 namespace Codificar\Chat\Models;
 
+use Requests;
+
 class ConversationRequest extends \Eloquent
 {
     protected $guarded = ['id'];
