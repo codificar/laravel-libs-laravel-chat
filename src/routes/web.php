@@ -46,6 +46,22 @@ Route::group(array('namespace' => 'Codificar\Chat\Http\Controllers'), function (
             Route::post('seen', "RideChatController@setMessagesSeen");
         });
     });
+
+    Route::get('/admin/libs/help_report', [
+        'uses' => 'RequestHelpController@renderReportPage'
+    ])->middleware(['auth.admin']);
+
+    Route::group(array('middleware' => 'auth.admin'), function () {
+
+        Route::get('/admin/libs/help_report', 'RequestHelpController@renderReportPage');
+        Route::get('/api/libs/help_list', 'RequestHelpController@fetch');
+        Route::get('/admin/libs/help/{help_id}', 'RequestHelpController@adminHelpChat');
+    });
+
+    Route::group(array('middleware' => 'checkUserSystem'), function () {
+        Route::post('/api/libs/set_help_message', 'RequestHelpController@setHelpChatMessage');
+        Route::get('/api/libs/get_help_message', 'RequestHelpController@getHelpChatMessage');
+    });
 });
 
 /**

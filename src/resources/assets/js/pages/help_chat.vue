@@ -18,10 +18,6 @@ export default {
 		'ConversationId'
 	],
 	data() {
-		/**
-		 * @author Hugo Couto
-		 * 
-		 */
 		return {
 			conversation_active: {
 				id: 0,
@@ -42,7 +38,7 @@ export default {
 	},
 	methods: {
         sendMessage(data) {
-            axios.post(`/api/v3/set_help_message`, {
+            axios.post(`/api/libs/set_help_message`, {
 				token: this.userAdmin.token,
 				id: this.userAdmin.user_id,
                 request_id: this.channel,
@@ -51,7 +47,7 @@ export default {
 			})
         },
         getMessages() {
-            axios.get(`/api/v3/get_help_message`, {
+            axios.get(`/api/libs/get_help_message`, {
                 params: {
                     token: this.userAdmin.token,
                     id: this.userAdmin.user_id,

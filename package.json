@@ -23,6 +23,7 @@
     },
     "dependencies": {
         "laravel-echo": "^1.6.1",
-        "laravel-vue-pagination": "^2.0.1"
+        "laravel-vue-pagination": "^2.0.1",
+        "vuejs-auto-complete": "^0.9.0"
     }
 }

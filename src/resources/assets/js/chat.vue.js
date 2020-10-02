@@ -47,12 +47,20 @@ Vue.prototype.number_format = (number, decimals, dec_point, thousands_point) => 
     return number;
 }
 
+import axios from "axios";
+Vue.prototype.$axios = axios;
+
+import pagination from 'laravel-vue-pagination';
+Vue.component('pagination', pagination);
+
 import chat from './pages/request_chat.vue';
+import reporthelp from './pages/reporthelp.vue';
 
 new Vue({
     el: '#chat',
 
     components: {
-        chat
+        chat,
+        reporthelp
     }
 })

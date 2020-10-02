@@ -16,10 +16,6 @@ export default {
 		"admin"
 	],
 	data() {
-		/**
-		 * @author Hugo Couto
-		 * 
-		 */
 		return {
 			conversation_active: {
 				id: 0,
@@ -164,11 +160,6 @@ export default {
 </script>
 <template>
 	<div class="full-panel">
-		<!-- .chat-left-panel 
-		<UserList @errorImage="errorImage" @userSelected="userSelected" :conversations="conversationArray" v-if="environment != 'provider'" ref="userList">
-		</UserList>-->
-		<!-- .chat-left-panel -->
-		<!-- .chat-right-panel -->
 		<div class="chat-right-aside">
 			<ChatHeader @errorImage="errorImage" :user="conversation_active.user" :info="conversation_active.request.product"/>
 			<MessageList
@@ -182,7 +173,6 @@ export default {
 			/>
 			<UserInput @userInputMessage="sendMessage" :chat-disabled="conversation_active.user == undefined"/>
 		</div>
-		<!-- .chat-right-panel -->
 	</div>
 </template>
 
