@@ -14,6 +14,9 @@ class LaravelChatServiceProvider extends ServiceProvider
         // Load blade templates
         $this->loadViewsFrom(__DIR__.'/resources/views', 'chat');
 
+        // Load trans files
+        $this->loadTranslationsFrom(__DIR__.'/resources/lang', 'laravelchat');
+
         $this->publishes([
             __DIR__.'/../public/js' => public_path('vendor/codificar/chat'),
         ], 'public_vuejs_libs');

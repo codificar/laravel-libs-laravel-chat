@@ -15,7 +15,7 @@ use Codificar\Chat\Http\Resources\ChatMessagesResource;
 use Codificar\Chat\Events\EventConversation;
 use Codificar\Chat\Events\EventNewConversation;
 use Codificar\Chat\Events\EventReadMessage;
-use Requests, Admin, Auth, User;
+use Requests, Admin, Auth, User, Provider;
 use Log;
 use Nahid\Talk\Messages\Message;
 use Settings;
@@ -27,7 +27,6 @@ class RideChatController extends Controller
 	 * @return View
 	 */
 	public function adminRequestChat($request_id){
-		
 		$admin = Admin::find(Auth::guard('web')->user()->id);
 		if (!$admin) {
 			return \Redirect::to("/admin/home");
@@ -63,6 +62,126 @@ class RideChatController extends Controller
 				'name' => $admin->profile->name,
 				'image' => \Theme::getLogoUrl()
 			],
+			"institution" => $institution,
+			"maps_api_key" => $mapsApiKey,
+		];
+
+		return view('chat::chat', $viewData);
+	}
+
+	/**
+	 * Render user chat page
+	 * @return View
+	 */
+	public function userRequestChat($request_id){
+		
+		$user_id = Auth::guard("clients")->user()->id;
+
+		$request = Requests::find($request_id);
+
+		if (!$request || ($request->user_id != $user_id)) {
+			abort(404);
+		}
+
+		$user = User::getUserForChat($request->user_id);
+		if (in_array($request->user_id, Institution::getDefaultUsersIds())) {
+			$institution = Institution::getByDefaultUserId($request->user_id);
+		} else {
+			$institution = "";
+		}
+
+		$requestPoints = RequestPoint::whereRequestId($request->id)->get();
+
+		$mapsApiKey = Settings::getGoogleMapsApiKey();
+
+		$viewData = [
+			"environment" => "user",
+			"request" => $request,
+			"requestPoints" => $requestPoints,
+			"user" => $user,
+			"institution" => $institution,
+			"maps_api_key" => $mapsApiKey,
+		];
+
+		return view('chat::chat', $viewData);
+	}
+
+	/**
+	 * Render provider chat page
+	 * @return view
+	 */
+	public function providerRequestChat($request_id) {
+		$provider = Provider::getProviderForChat([Auth::guard('providers')->user()->id]);
+
+		$ride = Requests::find($request_id);
+
+		//Esses dois campos estavam dando problema no json_encode e não são necessários no chat
+		unset($ride->origin);
+		unset($ride->destination);
+		if (!$ride){
+			abort(404);
+		}
+
+		$requestPoints = RequestPoint::whereRequestId($ride->id)->get();
+
+		if(in_array($ride->user_id, Institution::getDefaultUsersIds())){
+			$institution = Institution::getByDefaultUserId($ride->user_id);
+		} else {
+			$institution = "";
+		}
+
+		$mapsApiKey = Settings::getGoogleMapsApiKey();
+		
+		$viewData = [
+			"environment" => "provider",
+			"request" => $ride,
+			"requestPoints" => $requestPoints,
+			"user" => $provider,
+			"institution" => $institution,
+			"maps_api_key" => $mapsApiKey,
+		];
+
+		return view('chat::chat', $viewData);
+	}
+
+	/**
+	 * Render corp chat page
+	 * @return view
+	 */
+	public function corpRequestChat($request_id){
+		
+		$admin = Admin::find(Auth::guard('web')->user()->id);
+
+		if (!$admin) {
+			return \Redirect::to("/corp/report");
+		}
+		
+		$request = Requests::find($request_id);
+
+		//Esses dois campos estavam dando problema no json_encode e não são necessários no chat
+		unset($request->origin);
+		unset($request->destination);
+		if (!$request){
+			abort(404);
+		}
+
+		$requestPoints = RequestPoint::whereRequestId($request->id)->get();
+
+		$user = User::getUserForChat($request->user_id);
+		\Log::debug($user);
+		if(in_array($request->user_id, Institution::getDefaultUsersIds())){
+			$institution = Institution::getByDefaultUserId($request->user_id);
+		} else {
+			$institution = null;
+		}
+		
+		$mapsApiKey = Settings::getGoogleMapsApiKey();
+
+		$viewData = [
+			"environment" => "corp",
+			"request" => $request,
+			"requestPoints" => $requestPoints,
+			"user" => $user,
 			"institution" => $institution,
 			"maps_api_key" => $mapsApiKey,
 		];
@@ -105,12 +224,12 @@ class RideChatController extends Controller
 			if ($request->sender_type == 'provider') {
 				Log::notice("notifica user_id:" . $request->ledger_receiver->user_id);
 				// notifica user
-				$this->sendNotificationMessageReceived(trans('requests.new_message'), $message->conversation_id, $message->message, $request->ledger_receiver->user_id, 'user');
+				$this->sendNotificationMessageReceived(trans('laravelchat::laravelchat.new_message'), $message->conversation_id, $message->message, $request->ledger_receiver->user_id, 'user');
 			}
 			else {
 				Log::notice("notifica provider_id:". $request->ledger_receiver->provider_id);
 				// notifica provider
-				$this->sendNotificationMessageReceived(trans('requests.new_message'), $message->conversation_id, $message->message, $request->ledger_receiver->provider_id, 'provider');
+				$this->sendNotificationMessageReceived(trans('laravelchat::laravelchat.new_message'), $message->conversation_id, $message->message, $request->ledger_receiver->provider_id, 'provider');
 			}
 
 		} catch(\Exception $ex) {

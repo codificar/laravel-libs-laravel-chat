@@ -42,7 +42,7 @@
 					v-bind:disabled="chatDisabled"
 					v-if="input_type == 'text'"
 					v-model="user_input"
-					:placeholder="trans('requests.type_message')"
+					:placeholder="trans('laravelchat.type_message')"
 					class="form-control b-0"
 					v-on:keyup.enter="userInput"
 				>

@@ -40,5 +40,6 @@
 @endsection
 
 @section('javascripts')
+	<script src="/chat/lang.trans/laravelchat"> </script> 
 	<script src="{{ elixir('vendor/codificar/chat/chat.vue.js') }}"> </script> 
 @endsection
