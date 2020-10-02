@@ -9,5 +9,13 @@ return [
     'estimate_price' => 'Estimated price',
     'no_offer' => 'No offer',
     'no_conversation' => 'No conversation',
-    'new_message' => 'New message'
+    'new_message' => 'New message',
+    'report_help_title' => 'Dashboard help notes',
+    'filters' => 'Filters',
+    'filter' => 'Filter',
+    'request_id' => 'Request id',
+    'provider' => 'Driver',
+    'author' => 'Author',
+    'actions' => 'Actions',
+    'open_chat' => 'Open chat'
 ];

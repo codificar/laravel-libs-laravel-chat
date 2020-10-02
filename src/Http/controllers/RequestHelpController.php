@@ -132,7 +132,7 @@ class RequestHelpController extends Controller
             $receiver->getTypeAttribute() == 'user'
         ) {
             $this->sendNotificationMessageReceived(
-                trans('requests.new_message'), 
+                trans('laravelchat::laravelchat.new_message'), 
                 $message->conversation_id, 
                 $message->message, 
                 $receiver->user_id, 
@@ -145,7 +145,7 @@ class RequestHelpController extends Controller
             $receiver->getTypeAttribute() == 'provider'
         ) {
             $this->sendNotificationMessageReceived(
-                trans('requests.new_message'), 
+                trans('laravelchat::laravelchat.new_message'), 
                 $message->conversation_id, 
                 $message->message, 
                 $receiver->provider_id, 

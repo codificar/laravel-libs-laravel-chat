@@ -4,7 +4,7 @@
             <div class="col-lg-12">
                 <div class="card card-outline-info">
                     <div class="card-header">
-                        <h4 class="m-b-0 text-white">{{ trans('costcentre.filters') }}</h4>
+                        <h4 class="m-b-0 text-white">{{ trans('laravelchat.filters') }}</h4>
                     </div>
 
                     <div class="card-block">
@@ -12,13 +12,13 @@
                             <div class="col-md-4 col-sm-12">
                                 <!--Request-->
                                 <div class="form-group">
-                                    <label for="request_id" class="control-label">{{ trans('requests.id') }}</label>                                  
+                                    <label for="request_id" class="control-label">{{ trans('laravelchat.request_id') }}</label>                                  
                                     <input 
                                         class="form-control" 
                                         maxlenght="255" 
                                         auto-focus 
                                         type="number"
-                                        :placeholder="trans('requests.id')"
+                                        :placeholder="trans('laravelchat.request_id')"
                                         v-model="filter.request_id" />
                                 </div>
                             </div>
@@ -27,13 +27,13 @@
                                 <!--User-->
                                 <div class="form-group">
                                     <label for="user_id" class="control-label">
-                                        {{ trans('requests.user') }}
+                                        {{ trans('laravelchat.user') }}
                                     </label>                                  
                                     <autocomplete
                                         source="/admin/searchreferral?type=0&name="
                                         method="get"
                                         input-class="form-control"
-                                        :placeholder="trans('requests.user')"
+                                        :placeholder="trans('laravelchat.user')"
                                         results-property="referrals"
                                         :results-display="renderAutocompleteResults"
                                         @selected="selectUser"
@@ -46,14 +46,14 @@
                                 <!--Provider-->
                                 <div class="form-group">
                                     <label for="provider_id" class="control-label">
-                                        {{ trans('requests.provider') }}
+                                        {{ trans('laravelchat.provider') }}
                                     </label>                                  
                                     <autocomplete
                                         source="/admin/searchreferral?type=1&name="
                                         method="get"
                                         input-class="form-control"
                                         name="institution_id"
-                                        :placeholder="trans('requests.provider')"
+                                        :placeholder="trans('laravelchat.provider')"
                                         results-property="referrals"
                                         :results-display="renderAutocompleteResults"
                                         @selected="selectProvider"
@@ -69,7 +69,7 @@
                                 <div class="col-md-6 col-md-offset-4">
                                     <button @click="fetch" type="button" class="btn btn-success">
                                         <i class="fa fa-search"></i> 
-                                        {{ trans('costcentre.filter') }}
+                                        {{ trans('laravelchat.filter') }}
                                     </button>               
                                 </div>
                             </div>
@@ -91,11 +91,11 @@
 
                         <table class="table">
                             <tr>
-                                <th>{{ trans('requests.id') }}</th>
-                                <th>{{ trans('requests.user') }}</th>
-                                <th>{{ trans('requests.provider') }}</th>
-                                <th>Autor</th>
-                                <th>Ações</th>
+                                <th>{{ trans('laravelchat.request_id') }}</th>
+                                <th>{{ trans('laravelchat.user') }}</th>
+                                <th>{{ trans('laravelchat.provider') }}</th>
+                                <th>{{ trans('laravelchat.author') }}</th>
+                                <th>{{ trans('laravelchat.actions') }}</th>
                             </tr>
                             <tr 
                                 v-for="(item, index) in request_help.data"
@@ -104,7 +104,7 @@
                                 <td>{{ item.request_id }}</td>
                                 <td>{{ item.user_name }}</td>
                                 <td>{{ item.provider_name }}</td>
-                                <td>{{ trans(`requests.${item.author}`) }}</td>
+                                <td>{{ trans(`laravelchat.${item.author}`) }}</td>
                                 <td>
                                     <div class="dropdown">
                                         <button 
@@ -113,7 +113,7 @@
                                             id="dropdownMenu1" 
                                             data-toggle="dropdown"
                                         >
-                                            {{ trans('costcentre.action_grid') }}
+                                            {{ trans('laravelchat.actions') }}
                                             <span class="caret"></span>
                                         </button>
 
@@ -129,7 +129,7 @@
                                                 target="_blank"
                                                 :href="'/admin/libs/help/' + item.id"
                                             >
-                                                {{ trans('provider.open_chat_provider') }}
+                                                {{ trans('laravelchat.open_chat') }}
                                             </a>
 
                                         </div>

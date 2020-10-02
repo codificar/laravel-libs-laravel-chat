@@ -9,5 +9,13 @@ return [
     'estimate_price' => 'Preço estimado',
     'no_offer' => 'Sem oferta',
     'no_conversation' => 'Nenhuma conversa',
-    'new_message' => 'Nova mensagem'
+    'new_message' => 'Nova mensagem',
+    'report_help_title' => 'Dashboard pedidos de ajuda',
+    'filters' => 'Filtros',
+    'filter' => 'Filtrar',
+    'request_id' => 'Id da requisição',
+    'provider' => 'Motorista',
+    'author' => 'Autor',
+    'actions' => 'Ações',
+    'open_chat' => 'Abrir chat',
 ];
