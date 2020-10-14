@@ -61,6 +61,10 @@ Route::group(array('namespace' => 'Codificar\Chat\Http\Controllers'), function (
     Route::group(array('middleware' => 'checkUserSystem'), function () {
         Route::post('/api/libs/set_help_message', 'RequestHelpController@setHelpChatMessage');
         Route::get('/api/libs/get_help_message', 'RequestHelpController@getHelpChatMessage');
+
+        Route::post('/api/libs/set_direct_message', 'DirectChatController@sendDirectMessage');
+        Route::get('/api/libs/get_direct_message', 'DirectChatController@getDirectMessages');
+        Route::get('/api/libs/list_direct_conversation', 'DirectChatController@listDirectConversations');
     });
 });
 
