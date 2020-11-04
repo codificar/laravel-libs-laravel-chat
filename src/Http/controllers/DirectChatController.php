@@ -2,6 +2,7 @@
 
 namespace Codificar\Chat\Http\Controllers;
 
+use Grimzy\LaravelMysqlSpatial\Types\Point;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ChatMessagesResource;
 use Codificar\Chat\Events\EventConversation;
@@ -10,9 +11,12 @@ use Codificar\Chat\Http\Requests\ListDirectConversationRequest;
 use Codificar\Chat\Http\Requests\SendDirectRequest;
 use Codificar\Chat\Http\Resources\ListDirectConversationCollection;
 use Codificar\Chat\Http\Resources\ListDirectConversationResource;
+use Codificar\Chat\Http\Resources\ListProvidersForConversation;
+use DB;
 use Ledger;
 use Nahid\Talk\Conversations\Conversation;
 use Provider;
+use Settings;
 
 class DirectChatController extends Controller
 {
@@ -68,8 +72,8 @@ class DirectChatController extends Controller
             $conversations = Conversation::whereUserOne($request->sender_id)->whereRequestId(0)->pluck('user_two');
             $receivers = Ledger::whereIn('id', $conversations)->with('provider')->get();
         } else {
-            $receivers = Ledger::whereIn('id', $conversations)->with('user')->get();
             $conversations = Conversation::whereUserTwo($request->sender_id)->whereRequestId(0)->pluck('user_one');
+            $receivers = Ledger::whereIn('id', $conversations)->with('user')->get();
         }
 
         return new ListDirectConversationResource([
@@ -123,5 +127,36 @@ class DirectChatController extends Controller
             ->whereRequestId(0)
             ->first();
         
+    }
+
+    /**
+     * @api {GET} /api/libs/get_providers_chat
+     * List providers to chat
+     * @param ListDirectConversationRequest $request
+     * @return json
+     */
+    public function getProvidersForConversation(ListDirectConversationRequest $request)
+    {
+        $user = $request->userSystem;
+
+        $distanceSearchRadius = Settings::getDefaultSearchRadius();
+        $unitMultiply         = Settings::getDefaultMultiplyUnit();
+        $referencePoint = new Point($user->latitude, $user->longitude);
+
+        $providersQuery = Provider::getProvidersWithinDistance('position', $referencePoint, $distanceSearchRadius * $unitMultiply);
+
+        if ($request->name) {
+            $providersQuery->where(
+                DB::raw('CONCAT_WS(" ", first_name, last_name)'), 
+                'like', 
+                '%' . $request->name . '%'
+            );
+        }
+
+        $providers = $providersQuery->limit(10)->get();
+
+        return response()->json([
+            'providers' => ListProvidersForConversation::collection($providers)
+        ]);
     }
 }

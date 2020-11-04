@@ -65,6 +65,7 @@ Route::group(array('namespace' => 'Codificar\Chat\Http\Controllers'), function (
         Route::post('/api/libs/set_direct_message', 'DirectChatController@sendDirectMessage');
         Route::get('/api/libs/get_direct_message', 'DirectChatController@getDirectMessages');
         Route::get('/api/libs/list_direct_conversation', 'DirectChatController@listDirectConversations');
+        Route::get('/api/libs/get_providers_chat', 'DirectChatController@getProvidersForConversation');
     });
 });
 

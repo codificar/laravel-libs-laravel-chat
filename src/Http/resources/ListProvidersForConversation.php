@@ -4,7 +4,7 @@ namespace Codificar\Chat\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class ListDirectConversationCollection extends JsonResource
+class ListProvidersForConversation extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -14,13 +14,12 @@ class ListDirectConversationCollection extends JsonResource
      */
     public function toArray($request)
     {
-        $type = $this['user_id'] ? 'user' : 'provider';
 
         return [
-            'id' => $this[$type]['id'],
-            'first_name' => $this[$type]['first_name'],
-            'last_name' => $this[$type]['last_name'],
-            'picture' => $this[$type]['picture']
+            'id' => $this['id'],
+            'first_name' => $this['first_name'],
+            'last_name' => $this['last_name'],
+            'picture' => $this['picture']
         ];
     }
 }
