@@ -44,12 +44,17 @@ class MessageListFormRequest extends BaseRequest {
      */
 	protected function prepareForValidation() {
 		$sender_type = request()->segments()[2];
+
+		if($this->userType) {
+			$sender_type = $this->userType;
+		}
+
 		if($sender_type == "provider") {
-			$provider = Provider::find($this->provider_id);
+			$provider = $this->provider;
 			//$ledger = Ledger::findByProviderId($this->provider_id);
 			$ledger = $provider->getLedger();
 		} else {
-			$user = User::find($this->user_id);
+			$user = User::find($this->user);
 			//$ledger = Ledger::findByUserId($this->user_id);
 			$ledger = $user->getLedger();
         }

@@ -36,7 +36,11 @@ class ConversationFormRequest extends FormRequest
      */
 	protected function prepareForValidation() {
 		$sender_type = request()->segments()[2];
-		// dd($sender_type);
+		
+		if($this->userType) {
+			$sender_type = $this->userType;
+		}
+
 		if($sender_type == "provider") {
 			$ledger_id = $this->provider->ledger->id;
 		} else {

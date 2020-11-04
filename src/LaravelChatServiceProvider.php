@@ -3,6 +3,8 @@
 namespace Codificar\Chat;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Routing\Router;
+use Codificar\Chat\Middleware\CheckUserSystem;
 
 class LaravelChatServiceProvider extends ServiceProvider 
 {
@@ -23,6 +25,9 @@ class LaravelChatServiceProvider extends ServiceProvider
         $this->publishes([
             __DIR__.'/../public/js' => public_path('vendor/codificar/chat'),
         ], 'public_vuejs_libs');
+
+        $router = $this->app->make(Router::class);
+        $router->aliasMiddleware('chatapp', CheckUserSystem::class);
 
     }
 

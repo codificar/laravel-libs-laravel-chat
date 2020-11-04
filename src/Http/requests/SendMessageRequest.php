@@ -40,6 +40,10 @@ class SendMessageRequest extends BaseRequest
      */
     protected function prepareForValidation() {
 		$sender_type = request()->segments()[2];
+
+		if($this->userType) {
+			$sender_type = $this->userType;
+		}
 		
 		$this->is_admin = 0;
 		if($sender_type == "provider") {

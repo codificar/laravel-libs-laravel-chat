@@ -58,7 +58,12 @@ Route::group(array('namespace' => 'Codificar\Chat\Http\Controllers'), function (
         Route::get('/admin/libs/help/{help_id}', 'RequestHelpController@adminHelpChat');
     });
 
-    Route::group(array('middleware' => 'checkUserSystem'), function () {
+    Route::group(array('middleware' => 'chatapp'), function () {
+        Route::post('/api/libs/chat/send', 'RideChatController@sendMessage');
+        Route::get('/api/libs/chat/conversation', "RideChatController@getConversation");
+        Route::get('/api/libs/chat/messages', "RideChatController@getMessages");
+        Route::post('/api/libs/chat/seen', "RideChatController@setMessagesSeen");
+
         Route::post('/api/libs/set_help_message', 'RequestHelpController@setHelpChatMessage');
         Route::get('/api/libs/get_help_message', 'RequestHelpController@getHelpChatMessage');
 
