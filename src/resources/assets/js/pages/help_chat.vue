@@ -38,7 +38,7 @@ export default {
 	},
 	methods: {
         sendMessage(data) {
-            axios.post(`/api/libs/set_help_message`, {
+            axios.post(`/api/v3/set_help_message`, {
 				token: this.userAdmin.token,
 				id: this.userAdmin.user_id,
                 request_id: this.channel,
@@ -120,13 +120,10 @@ export default {
 	top: 0px;
 }
 
-.chat-left-aside{
-	height: 100%;
+.chat-right-aside{
+	height: 99%;
 }
 
-.chat-right-aside{
-	height: 95%;
-}
 .chat-bottom{
 	border-top: 1px solid grey;
 	background-color: white;
@@ -145,7 +142,6 @@ export default {
 }
 .chat-main-header{
 	border-bottom: 1px solid grey;
-	//background-color: white;
 }
 
 </style>

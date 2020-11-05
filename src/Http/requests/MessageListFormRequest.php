@@ -50,12 +50,15 @@ class MessageListFormRequest extends BaseRequest {
 		}
 
 		if($sender_type == "provider") {
-			$provider = $this->provider;
-			//$ledger = Ledger::findByProviderId($this->provider_id);
+			$provider = $this->provider ? 
+				$this->provider :
+				Provider::find($this->provider_id);
 			$ledger = $provider->getLedger();
 		} else {
-			$user = User::find($this->user);
-			//$ledger = Ledger::findByUserId($this->user_id);
+			$user = $this->user ? 
+				$this->user : 
+				User::find($this->user_id);
+
 			$ledger = $user->getLedger();
         }
         

@@ -33,9 +33,7 @@ class HelpChatMessageRequest extends FormRequest
     }
 
     protected function prepareForValidation() {
-        $senderType = strtolower(
-            get_class($this->userSystem)
-        );
+        $senderType = $this->userType;
 
         $senderLedger = $this->userSystem->getLedger();
         

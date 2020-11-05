@@ -4,17 +4,10 @@
 			"chatDisabled"
 		],
 		data() {
-			/**
-			 * @author Hugo Couto
-			 * 
-			 * 
-			 */
 			return {
 				user_input: "",
 				input_type: "text"
 			};
-		},
-		components: {
 		},
 		methods: {
 			userInput(){
@@ -26,10 +19,6 @@
 				if (this.input_type == 'number') this.input_type = 'text';
 				else this.input_type = 'number';
 			}
-		},
-		mounted() {
-		},
-		created() {
 		}
 	};
 </script>
@@ -38,17 +27,24 @@
 		<div class="row">
 			<div class="col-9">
 				<input
+					class="form-control b-0"
 					type="text"
-					v-bind:disabled="chatDisabled"
+					:disabled="chatDisabled"
 					v-if="input_type == 'text'"
 					v-model="user_input"
 					:placeholder="trans('laravelchat.type_message')"
-					class="form-control b-0"
-					v-on:keyup.enter="userInput"
+					@keyup.enter="userInput"
 				>
 			</div>
 			<div class="col-2 text-right">
-				<button @click="userInput" type="button" class="btn btn-info btn-circle btn-lg" v-bind:disabled="chatDisabled"><i class="fa fa-paper-plane"></i> </button>
+				<button 
+					class="btn btn-info btn-circle btn-md" 
+					type="button"
+					@click="userInput" 
+					:disabled="chatDisabled"
+				>
+					<i class="fa fa-paper-plane"></i>
+				</button>
 			</div>
 		</div>
 	</div>
@@ -56,8 +52,8 @@
 
 <style lang="scss">
 .chat-bottom{
-	border-top: 1px solid grey;
+	border-top: 1px solid #eee;
 	background-color: white;
-	padding-top: 3px;
+	padding: 10px;
 }
 </style>

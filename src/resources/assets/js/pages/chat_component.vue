@@ -161,7 +161,11 @@ export default {
 <template>
 	<div class="full-panel">
 		<div class="chat-right-aside">
-			<ChatHeader @errorImage="errorImage" :user="conversation_active.user" :info="conversation_active.request.product"/>
+			<ChatHeader 
+				@errorImage="errorImage" 
+				:user="conversation_active.user" 
+				:info="conversation_active.request.product"
+			/>
 			<MessageList
 				@errorImage="errorImage"
 				:conversation="messages"
@@ -171,13 +175,15 @@ export default {
 				ref="messageList"
 				:logo="logo"
 			/>
-			<UserInput @userInputMessage="sendMessage" :chat-disabled="conversation_active.user == undefined"/>
+			<UserInput 
+				@userInputMessage="sendMessage" 
+				:chat-disabled="conversation_active.user == undefined"
+			/>
 		</div>
 	</div>
 </template>
 
 <style lang="scss">
-
 .full-panel {
 	height: 100%;
 	width: 100%;
@@ -188,13 +194,10 @@ export default {
 	top: 0px;
 }
 
-.chat-left-aside{
-	height: 100%;
+.chat-right-aside{
+	height: 99%;
 }
 
-.chat-right-aside{
-	height: 95%;
-}
 .chat-bottom{
 	border-top: 1px solid grey;
 	background-color: white;
@@ -213,7 +216,6 @@ export default {
 }
 .chat-main-header{
 	border-bottom: 1px solid grey;
-	//background-color: white;
 }
 
 </style>

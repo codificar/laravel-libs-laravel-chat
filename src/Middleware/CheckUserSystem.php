@@ -57,8 +57,8 @@ class CheckUserSystem
 
             if($isAdmin)
             {
-                $request->route()->setParameter('admin', $isAdmin);
-                $request->route()->setParameter('userSystem', 'admin');
+                $request->route()->setParameter('userSystem', $isAdmin);
+                $request->route()->setParameter('userType', 'admin');
                 return $next($request);
             }
         }
