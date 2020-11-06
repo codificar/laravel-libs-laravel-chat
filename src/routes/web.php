@@ -1,6 +1,6 @@
 <?php
 
-Route::group(array('namespace' => 'Codificar\Chat\Http\controllers'), function () {
+Route::group(array('namespace' => 'Codificar\Chat\Http\Controllers'), function () {
 
     Route::get('/admin/libs/chat/{request_id}', [
         'as' => 'adminRequestChat', 
