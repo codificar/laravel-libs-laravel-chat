@@ -2,6 +2,7 @@
 
 namespace Codificar\Chat\Http\Requests;
 
+use Codificar\Chat\Http\Utils\Helper;
 use Illuminate\Foundation\Http\FormRequest;
 
 class ListDirectConversationRequest  extends FormRequest
@@ -39,7 +40,7 @@ class ListDirectConversationRequest  extends FormRequest
             get_class($this->userSystem)
         );
 
-        $senderLedger = $this->userSystem->getLedger();
+        $senderLedger = Helper::getLedger($senderType, $this->userSystem->id);
         
 		$this->merge([
             "sender_type" => $senderType,
