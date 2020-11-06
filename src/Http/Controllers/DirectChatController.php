@@ -4,11 +4,11 @@ namespace Codificar\Chat\Http\Controllers;
 
 use Grimzy\LaravelMysqlSpatial\Types\Point;
 use App\Http\Controllers\Controller;
-use App\Http\Resources\ChatMessagesResource;
 use Codificar\Chat\Events\EventConversation;
 use Codificar\Chat\Http\Requests\GetDirectRequest;
 use Codificar\Chat\Http\Requests\ListDirectConversationRequest;
 use Codificar\Chat\Http\Requests\SendDirectRequest;
+use Codificar\Chat\Http\Resources\ChatMessagesResource;
 use Codificar\Chat\Http\Resources\ListDirectConversationCollection;
 use Codificar\Chat\Http\Resources\ListDirectConversationResource;
 use Codificar\Chat\Http\Resources\ListProvidersForConversation;

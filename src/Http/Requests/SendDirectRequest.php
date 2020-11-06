@@ -2,6 +2,7 @@
 
 namespace Codificar\Chat\Http\Requests;
 
+use Codificar\Chat\Http\Utils\Helper;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
@@ -44,18 +45,20 @@ class SendDirectRequest extends FormRequest
             get_class($this->userSystem)
         );
 
-        $senderLedger = $this->userSystem->getLedger();
+        $senderLedger = Helper::getLedger($senderType, $this->userSystem->id);
         $receiver = null;
         $receiverLedger = null;
-
+        $receiverType = 'user';
+        
         if ($senderType == 'user') {
             $receiver = Provider::find($this->receiver);
+            $receiverType = 'provider';
         } else {
             $receiver = User::find($this->receiver);
         }
-
+        
         if ($receiver)
-            $receiverLedger = $receiver->getLedger();
+            $receiverLedger = Helper::getLedger($receiverType, $receiver->id);
         
 		$this->merge([
 			"sender_type" => $senderType,

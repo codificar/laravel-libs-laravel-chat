@@ -3,6 +3,7 @@
 namespace Codificar\Chat\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Codificar\Chat\Http\Utils\Helper;
 use Provider;
 use User;
 
@@ -41,18 +42,20 @@ class GetDirectRequest extends FormRequest
             get_class($this->userSystem)
         );
 
-        $senderLedger = $this->userSystem->getLedger();
+        $senderLedger = Helper::getLedger($senderType, $this->userSystem->id);
         $receiver = null;
         $receiverLedger = null;
+        $receiverType = 'user';
 
         if ($senderType == 'user') {
             $receiver = Provider::find($this->receiver);
+            $receiverType = 'provider';
         } else {
             $receiver = User::find($this->receiver);
         }
 
         if ($receiver)
-            $receiverLedger = $receiver->getLedger();
+            $receiverLedger = Helper::getLedger($receiverType, $receiver->id);
         
 		$this->merge([
 			"sender_type" => $senderType,
