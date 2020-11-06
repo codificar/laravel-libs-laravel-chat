@@ -26,7 +26,7 @@ class CreateRequestHelpTable extends Migration
                 $table->integer('provider_id')->unsigned()->nullable();
                 $table->foreign('provider_id')->references('id')->on('provider')->onDelete('cascade');
     
-                $table->enum('author', ['user', 'provider'])->nullable()->after('user_id');
+                $table->enum('author', ['user', 'provider'])->nullable();
     
                 $table->timestamps();
             });
