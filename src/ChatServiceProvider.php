@@ -6,7 +6,7 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Routing\Router;
 use Codificar\Chat\Middleware\CheckUserSystem;
 
-class LaravelChatServiceProvider extends ServiceProvider 
+class ChatServiceProvider extends ServiceProvider 
 {
     public function boot()
     {
@@ -28,7 +28,7 @@ class LaravelChatServiceProvider extends ServiceProvider
 
         $router = $this->app->make(Router::class);
         $router->aliasMiddleware('chatapp', CheckUserSystem::class);
-
+        $router->aliasMiddleware('talk',  \Nahid\Talk\Middleware\TalkMiddleware::class);
     }
 
     public function register()

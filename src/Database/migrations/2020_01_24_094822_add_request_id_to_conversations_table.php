@@ -1,38 +1,37 @@
 <?php
 
 use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+Use Illuminate\Database\Schema\Blueprint;
 
-class AddHelpIdOnConversationsTable extends Migration
+class AddRequestIdToConversationsTable extends Migration
 {
     /**
      * Run the migrations.
-     *
+     * 
      * @return void
      */
     public function up()
     {
-        if (!Schema::hasColumn('conversations', 'help_id')) {
+        if (!Schema::hasColumn('conversations', 'request_id')) {
 
             Schema::table('conversations', function (Blueprint $table) {
-                $table->integer('help_id')->unsigned()->nullable();
-                $table->foreign('help_id')->references('id')->on('request_help')->onDelete('cascade');
+                $table->integer('request_id')->unsigned();
             });
         }
     }
 
     /**
      * Reverse the migrations.
-     *
+     * 
      * @return void
      */
     public function down()
     {
-        if (Schema::hasColumn('conversations', 'help_id')) {
+        if (Schema::hasColumn('conversations', 'request_id')) {
 
             Schema::table('conversations', function (Blueprint $table) {
-                $table->dropColumn('help_id');
+                $table->dropColumn('request_id');
             });
         }
     }

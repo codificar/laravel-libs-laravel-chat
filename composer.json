@@ -8,7 +8,7 @@
         }
     ],
     "require": {
-        
+        "codificar/talk": "dev-development@dev"
     },
     "autoload": {
         "psr-4": {
