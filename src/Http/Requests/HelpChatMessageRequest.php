@@ -2,6 +2,7 @@
 
 namespace Codificar\Chat\Http\Requests;
 
+use Codificar\Chat\Http\Utils\Helper;
 use Illuminate\Foundation\Http\FormRequest;
 use Requests;
 
@@ -35,11 +36,11 @@ class HelpChatMessageRequest extends FormRequest
     protected function prepareForValidation() {
         $senderType = $this->userType;
 
-        $senderLedger = $this->userSystem->getLedger();
+        $senderLedger = Helper::getLedger($senderType, $this->userSystem->id);
         
 		$this->merge([
 			"sender_type" => $senderType,
-            "sender_id" => $senderLedger->id,
+            "sender_id" => $senderLedger ? $senderLedger->id : null,
             'ride' => Requests::find($this->request_id)
 		]);
 	}

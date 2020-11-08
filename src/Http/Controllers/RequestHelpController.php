@@ -12,6 +12,7 @@ use Ledger, Admin, Auth, Redirect, Settings, Requests;
 use App\Models\RequestPoint;
 use Codificar\Chat\Http\Requests\GetHelpChatMessageRequest;
 use Codificar\Chat\Http\Resources\ChatMessagesResource;
+use Codificar\Chat\Http\Utils\Helper;
 use Nahid\Talk\Conversations\Conversation;
 
 class RequestHelpController extends Controller
@@ -43,27 +44,28 @@ class RequestHelpController extends Controller
         if (!$conversation) {
             return Redirect::to("/admin/report_help");
         }
-
-        $conversation->user_two = $admin->getLedger()->id;
+        
+        $adminLedger = Helper::getLedger('admin', $admin->id);
+        $conversation->user_two = $adminLedger->id;
         $conversation->save();
 
-        $userHelped = Ledger::getById($conversation->user_one)->getUserTypeInstance();
-
+        $userHelped = Helper::getUserTypeInstance($conversation->user_one);
+        
         return view('chat::help_chat', [
             "environment" => "admin",
-            'requestPoints' => RequestPoint::whereRequestId($conversation->request_id)->get(),
+            'requestPoints' => [],
             'user' => [
-                'id' => $userHelped->getLedger()->id,
+                'id' => $userHelped->ledger_id,
                 'user_id' => $userHelped->id,
                 'token' => $userHelped->token,
-                'name' => $userHelped->getFullName(),
+                'name' => $userHelped->full_name,
                 'image' => $userHelped->picture
             ],
             "maps_api_key" => Settings::getGoogleMapsApiKey(),
             'request' => Requests::find($conversation->request_id),
             'messages' => $conversation->messages->toArray(),
             'admin' => [
-                'id' => $admin->getLedger()->id,
+                'id' => $adminLedger->id,
                 'user_id' => $admin->id,
                 'token' => $admin->remember_token,
                 'name' => $admin->profile->name,

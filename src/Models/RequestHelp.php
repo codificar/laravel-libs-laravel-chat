@@ -28,7 +28,6 @@ class RequestHelp extends Model
             $note = new RequestHelp();
 
             $note->request_id = $request->request_id;
-            $note->note = $request->note;
             $note->user_id = $request->ride->user_id;
             $note->provider_id = $request->ride->confirmed_provider;
             $note->save();
@@ -70,7 +69,6 @@ class RequestHelp extends Model
         return $query->select(
             'request_help.id',
             'request_id',
-            'note',
             'author',
             DB::raw("CONCAT(u.first_name,' ',u.last_name) AS user_name"),
             DB::raw("CONCAT(p.first_name,' ',p.last_name) AS provider_name")

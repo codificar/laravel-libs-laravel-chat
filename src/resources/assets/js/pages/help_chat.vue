@@ -38,7 +38,7 @@ export default {
 	},
 	methods: {
         sendMessage(data) {
-            axios.post(`/api/v3/set_help_message`, {
+            axios.post(`/api/libs/set_help_message`, {
 				token: this.userAdmin.token,
 				id: this.userAdmin.user_id,
                 request_id: this.channel,

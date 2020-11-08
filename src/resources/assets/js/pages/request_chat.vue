@@ -18,11 +18,6 @@ export default {
 		'ConversationId'
 	],
 	data() {
-		/**
-		 * @author Hugo Couto
-		 * 
-		 * 
-		 */
 		return {
 			request: JSON.parse(this.Request),
 			request_points: JSON.parse(this.RequestPoints),
@@ -44,10 +39,6 @@ export default {
 				cancelButtonText: this.trans('no')
 				}).then((result) => {});
 		}
-	},
-	mounted() {
-	},
-	created() {
 	}
 };
 </script>
