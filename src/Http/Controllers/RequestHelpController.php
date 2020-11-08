@@ -131,7 +131,7 @@ class RequestHelpController extends Controller
         if (
             $request->sender_type == 'admin' && 
             $receiver && 
-            $receiver->getTypeAttribute() == 'user'
+            $receiver->user_id == 'user'
         ) {
             $this->sendNotificationMessageReceived(
                 trans('laravelchat::laravelchat.new_message'), 
@@ -144,7 +144,7 @@ class RequestHelpController extends Controller
         } else if (
             $request->sender_type == 'admin' && 
             $receiver && 
-            $receiver->getTypeAttribute() == 'provider'
+            $receiver->provider_id == 'provider'
         ) {
             $this->sendNotificationMessageReceived(
                 trans('laravelchat::laravelchat.new_message'), 

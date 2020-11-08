@@ -13,7 +13,7 @@
 @stop
 
 @section('content')
-	<div id="chat">
+	<div id="chat" style="width: 99%;">
 		<reporthelp />
 	</div>
 @stop
