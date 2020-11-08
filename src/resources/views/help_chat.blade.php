@@ -11,7 +11,7 @@
 			user = "{{ json_encode($user) }}"
 			maps-api-key="{{$maps_api_key}}"
 			laravel_echo_port = "{{ env('LARAVEL_ECHO_PORT', 6001) }}"
-			currency-symbol="{{ \Settings::getFormattedCurrency() }}"
+			currency-symbol=""
 			logo = "{{Theme::getLogoUrl()}}"
 			help="true"
 			message="{{ json_encode($messages) }}"

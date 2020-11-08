@@ -77,10 +77,6 @@ export default {
 									<td>{{ trans('laravelchat.estimate_time') }} </td>
 									<td> {{ number_format(request.estimate_time, 2, ',','') }} min </td>
 								</tr>
-								<tr>
-									<td>{{ trans('laravelchat.estimate_price') }} </td>
-									<td> {{ currency_format(request.estimate_price, currencySymbol) }} </td>
-								</tr>
 							</tbody>
 						</table>
 					</div>

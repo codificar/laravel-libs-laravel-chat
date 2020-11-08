@@ -25,38 +25,36 @@ class CheckUserSystem
             $userSystemId = $request->input('id');
             $token = $request->input('token');
 
-            $isUser     =   User::isUserToken($userSystemId, $token);
+            $isUser = User::where('id', $userSystemId)
+                ->where('token', $token)
+                ->first();
 
-            if($isUser)
-            {
-                $userData = User::getUserData($userSystemId, $token);
-                if (is_token_active($userData->token_expiry))
-                {
-                    $request->route()->setParameter('user', $userData);
-                    $request->route()->setParameter('userSystem', $userData);
-                    $request->route()->setParameter('userType', 'user');
-                    return $next($request);
-                }
+            if($isUser) {
+                
+                $request->route()->setParameter('user', $isUser);
+                $request->route()->setParameter('userSystem', $isUser);
+                $request->route()->setParameter('userType', 'user');
+                return $next($request);
             }
 
-            $isProvider =   Provider::isProviderToken($userSystemId, $token);
+            $isProvider = Provider::where('id', $userSystemId)
+                ->where('token', $token)
+                ->first();
 
-            if($isProvider)
-            {
-                $providerData = Provider::getProviderData($userSystemId, $token);
-                if(is_token_active($providerData->token_expiry))
-                {
-                    $request->route()->setParameter('provider', $providerData);
-                    $request->route()->setParameter('userSystem', $providerData);
-                    $request->route()->setParameter('userType', 'provider');
-                    return $next($request);
-                }
+            if($isProvider) {
+                
+                $request->route()->setParameter('provider', $isProvider);
+                $request->route()->setParameter('userSystem', $isProvider);
+                $request->route()->setParameter('userType', 'provider');
+                return $next($request);
             }
 
-            $isAdmin    =   Admin::isAdminToken($userSystemId, $token);
+            $isAdmin = Admin::where('remember_token', $token)
+                ->where('id', $userSystemId)
+                ->first();
 
-            if($isAdmin)
-            {
+            if($isAdmin) {
+                
                 $request->route()->setParameter('userSystem', $isAdmin);
                 $request->route()->setParameter('userType', 'admin');
                 return $next($request);

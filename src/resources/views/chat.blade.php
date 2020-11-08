@@ -32,7 +32,7 @@
 			maps-api-key="{{$maps_api_key}}"
 			admin="{{ isset($userAdmin) ? json_encode($userAdmin) : '' }}"
 			laravel_echo_port = "{{ env('LARAVEL_ECHO_PORT', 6001) }}"
-			currency-symbol="{{ \Settings::getFormattedCurrency() }}"
+			currency-symbol=""
 			logo = "{{Theme::getLogoUrl()}}"
 			>
 		</chat>
