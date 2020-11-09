@@ -2,10 +2,10 @@
 
 namespace Codificar\Chat\Http\Requests;
 
-use App\Http\Requests\BaseRequest;
+use Illuminate\Foundation\Http\FormRequest;
 use Ledger;
 
-class SendMessageRequest extends BaseRequest
+class SendMessageRequest extends FormRequest
 {
 	
 	/**

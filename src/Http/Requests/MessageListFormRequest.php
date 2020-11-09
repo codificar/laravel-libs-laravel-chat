@@ -2,11 +2,13 @@
 
 namespace Codificar\Chat\Http\Requests;
 
-use App\Http\Requests\BaseRequest;
+use Illuminate\Foundation\Http\FormRequest;
 use Nahid\Talk\Conversations\Conversation;
 use Provider, User, Ledger;
+use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Http\Exceptions\HttpResponseException;
 
-class MessageListFormRequest extends BaseRequest {
+class MessageListFormRequest extends FormRequest {
 	
 	/**
      * Determine if the user is authorized to make this request.
@@ -53,16 +55,16 @@ class MessageListFormRequest extends BaseRequest {
 			$provider = $this->provider ? 
 				$this->provider :
 				Provider::find($this->provider_id);
-			$ledger = $provider->getLedger();
+			$ledger = Ledger::where('provider_id', $provider->id)->first();
 		} else {
 			$user = $this->user ? 
 				$this->user : 
 				User::find($this->user_id);
 
-			$ledger = $user->getLedger();
+			$ledger = Ledger::where('user_id', $user->id)->first();
         }
         
-        $conversation = Conversation::find($this->conversation_id);
+		$conversation = Conversation::find($this->conversation_id);
         
 		if($ledger and $conversation and ($conversation->user_one == $ledger->id or $conversation->user_two == $ledger->id)) {
 			$this->merge([ "conversation" => $conversation ]);
@@ -75,4 +77,23 @@ class MessageListFormRequest extends BaseRequest {
             ]
         );
 	}
+
+	/**
+     * Returns a json if validation fails
+     *
+     * @param  \Illuminate\Contracts\Validation\Validator  $validator
+	 * 
+     * @return Json {'success','errors','error_code'}
+     *
+     */
+    protected function failedValidation(Validator $validator)
+    {
+        throw new HttpResponseException(
+            response()->json([
+                'success'       => false,
+                'errors'        => $validator->errors()->all(),
+                'error_code'    => \ApiErrors::REQUEST_FAILED
+            ])
+        );
+    }
 }

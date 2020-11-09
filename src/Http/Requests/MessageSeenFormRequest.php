@@ -2,12 +2,14 @@
 
 namespace Codificar\Chat\Http\Requests;
 
-use App\Http\Requests\BaseRequest;
+use Illuminate\Foundation\Http\FormRequest;
 use Codificar\Chat\Models\ConversationRequest;
 use Ledger;
 use Nahid\Talk\Messages\Message;
+use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Http\Exceptions\HttpResponseException;
 
-class MessageSeenFormRequest extends BaseRequest
+class MessageSeenFormRequest extends FormRequest
 {
 
 	/**
@@ -41,10 +43,14 @@ class MessageSeenFormRequest extends BaseRequest
 	protected function prepareForValidation()
 	{
 		$message = Message::find($this->message_id);
+		$ledger = null;
+
 		if(isset($this->provider)) {
-			$id = $this->provider->ledger->id;
+			$ledger = Ledger::where('provider_id', $this->provider->id)->first();
+			$id = $ledger->id;
 		} else {
-			$id = Ledger::findByUserId($this->user_id)->id;
+			$ledger = Ledger::where('user_id', $this->user->id)->first();
+			$id = $ledger->id;
 		}
 
 		if($message and ($message->conversation->user_one == $id or $message->conversation->user_two == $id)) {
@@ -56,4 +62,23 @@ class MessageSeenFormRequest extends BaseRequest
 			]);
 		}
 	}
+
+	/**
+     * Returns a json if validation fails
+     *
+     * @param  \Illuminate\Contracts\Validation\Validator  $validator
+	 * 
+     * @return Json {'success','errors','error_code'}
+     *
+     */
+    protected function failedValidation(Validator $validator)
+    {
+        throw new HttpResponseException(
+            response()->json([
+                'success'       => false,
+                'errors'        => $validator->errors()->all(),
+                'error_code'    => \ApiErrors::REQUEST_FAILED
+            ])
+        );
+    }
 }
