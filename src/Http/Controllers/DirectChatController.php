@@ -143,7 +143,7 @@ class DirectChatController extends Controller
         $unitMultiply         = Settings::getDefaultMultiplyUnit();
         $referencePoint = new Point($user->latitude, $user->longitude);
 
-        $providersQuery = Provider::getProvidersWithinDistance('position', $referencePoint, $distanceSearchRadius * $unitMultiply);
+        $providersQuery = $this->getProvidersWithinDistance($referencePoint, $distanceSearchRadius * $unitMultiply);
 
         if ($request->name) {
             $providersQuery->where(
@@ -159,4 +159,22 @@ class DirectChatController extends Controller
             'providers' => ListProvidersForConversation::collection($providers)
         ]);
     }
+
+    /**
+	 * Get the providers within a radius from a reference point, sorted by distance (km).
+	 * @param Point $referencePoint the reference coordinate
+	 * @param int $radius in Kilometers
+	 * 
+	 * @return $query the builded query
+	 */
+    public function getProvidersWithinDistance($referencePoint, $radius)
+    {
+        $query = Provider::query();
+        $query->selectRaw("id, first_name, last_name, picture, st_distance_sphere(GeomFromText(CONCAT('POINT(',`latitude`,' ',`longitude`,')')), ST_GeomFromText('{$referencePoint->toWkt()}'))/1000 as distance");
+        $query->whereRaw("st_distance_sphere(GeomFromText(CONCAT('POINT(',`latitude`,' ',`longitude`,')')), ST_GeomFromText('{$referencePoint->toWkt()}')) <= {$radius}*1000");
+        $query->orderBy('distance');
+
+        return $query;
+    }
+
 }
