@@ -143,17 +143,14 @@ class DirectChatController extends Controller
         $unitMultiply         = Settings::getDefaultMultiplyUnit();
         $referencePoint = new Point($user->latitude, $user->longitude);
 
-        $providersQuery = $this->getProvidersWithinDistance($referencePoint, $distanceSearchRadius * $unitMultiply);
-
         if ($request->name) {
-            $providersQuery->where(
-                DB::raw('CONCAT_WS(" ", first_name, last_name)'), 
-                'like', 
-                '%' . $request->name . '%'
+            $providers = $this->getProvidersByName($request->name);
+        } else {
+            $providers = $this->getProvidersWithinDistance(
+                $referencePoint, 
+                $distanceSearchRadius * $unitMultiply
             );
         }
-
-        $providers = $providersQuery->limit(10)->get();
 
         return response()->json([
             'providers' => ListProvidersForConversation::collection($providers)
@@ -173,6 +170,25 @@ class DirectChatController extends Controller
         $query->selectRaw("id, first_name, last_name, picture, st_distance_sphere(GeomFromText(CONCAT('POINT(',`latitude`,' ',`longitude`,')')), ST_GeomFromText('{$referencePoint->toWkt()}'))/1000 as distance");
         $query->whereRaw("st_distance_sphere(GeomFromText(CONCAT('POINT(',`latitude`,' ',`longitude`,')')), ST_GeomFromText('{$referencePoint->toWkt()}')) <= {$radius}*1000");
         $query->orderBy('distance');
+
+        return $query->limit(20)->get();
+    }
+
+    /**
+	 * Get the providers by name.
+	 * @param string $name
+	 * 
+	 * @return $query the builded query
+	 */
+    public function getProvidersByName($name)
+    {
+        $query = Provider::where(
+            DB::raw('CONCAT_WS(" ", first_name, last_name)'), 
+            'like', 
+            '%' . $name . '%'
+        )
+            ->limit(20)
+            ->get();
 
         return $query;
     }
