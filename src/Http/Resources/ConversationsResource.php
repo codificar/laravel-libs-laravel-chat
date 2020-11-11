@@ -2,6 +2,7 @@
 
 namespace Codificar\Chat\Http\Resources;
 
+use Codificar\Chat\Http\Utils\Helper;
 use Codificar\Chat\Models\ConversationRequest;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Ledger, Requests, Theme;
@@ -21,7 +22,9 @@ class ConversationsResource extends JsonResource
 
 		if ($cArray->isEmpty() and isset($request->request_id)) {
 			$ride = Requests::find($request->request_id);
-			$ledger = $this["sender_type"] == 'provider' ? Ledger::findByUserId($ride->user_id) : Ledger::findByProviderId($ride->confirmed_provider);
+			$ledger = $this["sender_type"] == 'provider' ? 
+				Helper::getLedger('user', $ride->user_id) : 
+				Helper::getLedger('provider', $ride->confirmed_provider);
 
 			if ($ledger) {
 				$user = $this["sender_type"] == 'provider' ? $ledger->user : $ledger->provider;
