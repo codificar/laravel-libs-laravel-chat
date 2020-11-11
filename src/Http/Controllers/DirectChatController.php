@@ -69,16 +69,23 @@ class DirectChatController extends Controller
         $conversations = null;
 
         if ($request->sender_type == 'user') {
-            $conversations = Conversation::whereUserOne($request->sender_id)->whereRequestId(0)->pluck('user_two');
-            $receivers = Ledger::whereIn('id', $conversations)->with('provider')->get();
+            $conversations = Conversation::whereUserOne($request->sender_id)
+                ->whereRequestId(0)
+                ->with(['usertwo', 'messages'])
+                ->orderBy('updated_at', 'desc')
+                ->get();
+            
         } else {
-            $conversations = Conversation::whereUserTwo($request->sender_id)->whereRequestId(0)->pluck('user_one');
-            $receivers = Ledger::whereIn('id', $conversations)->with('user')->get();
+            $conversations = Conversation::whereUserTwo($request->sender_id)
+                ->whereRequestId(0)
+                ->with(['userone', 'messages'])
+                ->orderBy('updated_at', 'desc')
+                ->get();
         }
-
+        
         return new ListDirectConversationResource([
-            'receivers' => $receivers,
-            'receiver_type' => $request->sender_type == 'user' ? 'user' : 'provider' 
+            'sender_type' => $request->sender_type,
+            'conversations' => $conversations
         ]);
     }
 
