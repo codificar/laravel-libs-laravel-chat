@@ -35,11 +35,52 @@ class DirectChatController extends Controller
 
         event(new EventConversation($message));
 
+        if ($request->sender_type == 'provider') {
+            // notifica user
+            $this->sendNotificationMessageReceived(
+                trans('laravelchat::laravelchat.new_message'), 
+                $message->conversation_id, 
+                $message->message, 
+                $request->ledger_receiver->user_id, 
+                'user'
+            );
+        }
+        else {
+            // notifica provider
+            $this->sendNotificationMessageReceived(
+                trans('laravelchat::laravelchat.new_message'), 
+                $message->conversation_id, 
+                $message->message, 
+                $request->ledger_receiver->provider_id, 
+                'provider'
+            );
+        }
+
         return response()->json([
             "success" => true, 
             "conversation_id" => $message->conversation_id
         ]);
     }
+
+    /**
+	 * Envia push quando há uma nova mensagem ou proposta
+	 * 
+	 * @return
+	 */
+	public function sendNotificationMessageReceived($title, $conversation_id, $contents, $model_id, $type) {
+		try {
+			// Send Notification
+			$message = array(
+				'success' => true,
+				'conversation_id' => $conversation_id,
+				'message' => $contents
+			);
+			//envia notificação push
+			send_notifications($model_id, $type, $title, $message);
+		} catch (\Exception $ex) {
+			return $ex->getMessage().$ex->getTraceAsString();
+		}
+	}
 
     /**
      * @api {GET} /api/libs/get_direct_message

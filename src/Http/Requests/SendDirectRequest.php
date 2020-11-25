@@ -63,6 +63,7 @@ class SendDirectRequest extends FormRequest
 		$this->merge([
 			"sender_type" => $senderType,
             "sender_id" => $senderLedger ? $senderLedger->id : null,
+            "ledger_receiver" => $receiverLedger,
             "receiver_id" => $receiverLedger ? $receiverLedger->id : null
 		]);
     }
