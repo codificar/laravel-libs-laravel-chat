@@ -17,7 +17,7 @@ class ListDirectConversationResource extends JsonResource
         $response = [];
 
         $conversations = $this['conversations'];
-        $receiverType = $this['sender_type'] == 'user' ? 'usertwo' : 'userone';
+        $receiverType = $this['sender_type'] == 'provider' ? 'userone' : 'usertwo';
 
         foreach ($conversations as $item) {
             $receiver = $receiverType == 'usertwo' ? 
@@ -30,6 +30,7 @@ class ListDirectConversationResource extends JsonResource
                 'id' => $receiver->id,
                 'first_name' => $receiver->first_name,
                 'last_name' => $receiver->last_name,
+                'full_name' => $receiver->first_name . ' ' . $receiver->last_name,
                 'picture' => $receiver->picture,
                 'last_message' => $message->message,
                 'time' => $message->humans_time

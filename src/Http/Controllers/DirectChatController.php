@@ -5,6 +5,7 @@ namespace Codificar\Chat\Http\Controllers;
 use Grimzy\LaravelMysqlSpatial\Types\Point;
 use App\Http\Controllers\Controller;
 use Codificar\Chat\Events\EventConversation;
+use Codificar\Chat\Events\EventNotifyPanel;
 use Codificar\Chat\Http\Requests\GetDirectRequest;
 use Codificar\Chat\Http\Requests\ListDirectConversationRequest;
 use Codificar\Chat\Http\Requests\SendDirectRequest;
@@ -36,6 +37,8 @@ class DirectChatController extends Controller
         event(new EventConversation($message));
 
         if ($request->sender_type == 'provider') {
+            event(new EventNotifyPanel($request->ledger_receiver->user_id));
+            
             // notifica user
             $this->sendNotificationMessageReceived(
                 trans('laravelchat::laravelchat.new_message'), 
@@ -109,7 +112,7 @@ class DirectChatController extends Controller
     {
         $conversations = null;
 
-        if ($request->sender_type == 'user') {
+        if ($request->sender_type == 'user' || $request->sender_type == 'corp') {
             $conversations = Conversation::whereUserOne($request->sender_id)
                 ->whereRequestId(0)
                 ->with(['usertwo', 'messages'])
@@ -161,7 +164,7 @@ class DirectChatController extends Controller
     {
         $conversation = null;
 
-        if ($request->sender_type == 'user') {
+        if ($request->sender_type == 'user' || $request->sender_type == 'corp') {
             $conversation = Conversation::whereUserOne($request->sender_id)
                 ->whereUserTwo($request->receiver_id)
                 ->whereRequestId(0)

@@ -24,6 +24,7 @@ class ChatServiceProvider extends ServiceProvider
 
         $this->publishes([
             __DIR__.'/../public/js' => public_path('vendor/codificar/chat'),
+            __DIR__.'/../public/files' => public_path('vendor/codificar/chat'),
         ], 'public_vuejs_libs');
 
         $router = $this->app->make(Router::class);

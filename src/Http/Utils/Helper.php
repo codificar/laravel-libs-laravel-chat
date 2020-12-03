@@ -14,6 +14,9 @@ class Helper {
      */
     public static function getLedger($type, $id)
     {
+        if ($type == 'corp')
+            $type = 'user';
+
         $type = $type . '_id';
         return self::getOrCreateLedger($type, $id);
     }

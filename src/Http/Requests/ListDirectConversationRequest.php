@@ -36,10 +36,7 @@ class ListDirectConversationRequest  extends FormRequest
      * @return void
      */
     protected function prepareForValidation() {
-        $senderType = strtolower(
-            get_class($this->userSystem)
-        );
-
+        $senderType = $this->userType;
         $senderLedger = Helper::getLedger($senderType, $this->userSystem->id);
         
 		$this->merge([

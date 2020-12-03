@@ -7,6 +7,7 @@ use Log;
 use Provider;
 use User;
 use Admin;
+use App\Models\Institution;
 use Response;
 
 class CheckUserSystem
@@ -46,6 +47,19 @@ class CheckUserSystem
                 $request->route()->setParameter('provider', $isProvider);
                 $request->route()->setParameter('userSystem', $isProvider);
                 $request->route()->setParameter('userType', 'provider');
+                return $next($request);
+            }
+
+            $isInstitution = Institution::where('id', $userSystemId)
+                ->where('api_key', $token)
+                ->first();
+
+            if ($isInstitution) {
+                $user = User::find($isInstitution->default_user_id);
+
+                $request->route()->setParameter('user', $user);
+                $request->route()->setParameter('userSystem', $user);
+                $request->route()->setParameter('userType', 'corp');
                 return $next($request);
             }
 
