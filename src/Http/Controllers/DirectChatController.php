@@ -19,6 +19,7 @@ use Nahid\Talk\Conversations\Conversation;
 use Provider;
 use Settings;
 use Admin, Auth;
+use Codificar\Chat\Http\Utils\Helper;
 
 class DirectChatController extends Controller
 {
@@ -26,13 +27,23 @@ class DirectChatController extends Controller
      * Render chat screen
      * @return view
      */
-    public function renderDirectChat()
+    public function renderDirectChat($id = null)
     {
         $user = Auth::guard('web')->user();
+        $ledger = null;
 
+        if ($user) {
+            $ledger = Helper::getLedger(
+                'corp', 
+                $user->AdminInstitution->Institution->default_user_id
+            );
+        }
+        
         return view('chat::direct_chat', [
             'environment' => 'corp',
-            'user' => $user
+            'user' => $user,
+            'ledger_id' => $ledger ? $ledger->id : null,
+            'user_id' => $id
         ]);
     }
 
@@ -76,7 +87,8 @@ class DirectChatController extends Controller
 
         return response()->json([
             "success" => true, 
-            "conversation_id" => $message->conversation_id
+            "conversation_id" => $message->conversation_id,
+            "message" => $message
         ]);
     }
 

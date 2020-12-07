@@ -12,20 +12,22 @@
             <ul class="list-style-none">
                 <li>
                     <div class="messages-title">
-                        Messages
+                        Conversas
                     </div>
                 </li>
                 <li>
                     <div class="message-center notifications position-relative ps-container ps-theme-default" style="height:250px;">
                         <!-- Message -->
-                        <div v-for="(item, index) in conversations" :key="index" class="message-row">
-                            <div class="message-perfil">
-                                <img class="author-perfil" :src="item.picture" alt="">
-                            </div>
-                            <div class="message-info">
-                                <div>{{ item.full_name }}</div>
-                                <span class="font-12 text-nowrap d-block text-muted text-truncate">{{ item.last_message }}</span>
-                                <span class="font-12 text-nowrap d-block text-muted text-truncate">{{ item.time }}</span>
+                        <div v-for="(item, index) in conversations" :key="index" >
+                            <div @click="navigateToChat(item.id)" class="message-row">
+                                <div class="message-perfil">
+                                    <img class="author-perfil" :src="item.picture" alt="">
+                                </div>
+                                <div class="message-info">
+                                    <div>{{ item.full_name }}</div>
+                                    <span class="font-12 text-nowrap d-block text-muted text-truncate">{{ item.last_message }}</span>
+                                    <span class="font-12 text-nowrap d-block text-muted text-truncate">{{ item.time }}</span>
+                                </div>
                             </div>
                         </div>
 
@@ -38,7 +40,7 @@
                     </div>
                 </li>
                 <li>
-                    <a class="nav-link border-top text-center text-dark pt-3" href="javascript:void(0);"> <strong>Check all notifications</strong> <i class="fa fa-angle-right"></i> </a>
+                    <a class="nav-link border-top text-center text-dark pt-3" href="/corp/lib/chat"> <strong>Todas as conversas</strong> <i class="fa fa-angle-right"></i> </a>
                 </li>
             </ul>
         </div>
@@ -97,8 +99,10 @@ export default {
             await sound.play();
         },
         seeMessage() {
-            
             this.has_notification = false;
+        },
+        navigateToChat(id) {
+            window.location.href = `${this.url}/corp/lib/chat/${id}`
         }
     },
     mounted() {

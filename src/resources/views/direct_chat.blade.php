@@ -24,5 +24,7 @@
 @section('content')
 	<directchat
 		:user="{{ $user }}"
+		ledger="{{ $ledger_id }}"
+		receiverid="{{ $user_id }}"
 	/>
 @stop
