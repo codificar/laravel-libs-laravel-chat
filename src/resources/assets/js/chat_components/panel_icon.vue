@@ -74,7 +74,6 @@ export default {
 
                 const { data } = response;
                 this.conversations = data.conversations;
-                console.log('#####');
             } catch (error) {
                 this.conversations = [];
                 console.log('getConversations', error);
@@ -83,11 +82,10 @@ export default {
         subscribeToChannel(id) {
             window.Echo
                 .channel(`notifyPanel.${id}`)
-                .listen('.PanelNewMessage', async () => {
+                .listen('.PanelNewMessage', async (response) => {
                     await this.playSound();
                     this.has_notification = true;
-                    this.getConversations();
-                    console.log('ssssssss');
+                    this.conversations = response.conversations;
                 });
         },
         async playSound() {

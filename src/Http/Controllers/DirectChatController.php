@@ -18,9 +18,24 @@ use Ledger;
 use Nahid\Talk\Conversations\Conversation;
 use Provider;
 use Settings;
+use Admin, Auth;
 
 class DirectChatController extends Controller
 {
+    /**
+     * Render chat screen
+     * @return view
+     */
+    public function renderDirectChat()
+    {
+        $user = Auth::guard('web')->user();
+
+        return view('chat::direct_chat', [
+            'environment' => 'corp',
+            'user' => $user
+        ]);
+    }
+
     /**
      * @api {POST} /api/libs/set_direct_message
      * Send direct message

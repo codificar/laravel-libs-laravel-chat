@@ -33,7 +33,8 @@ class ListDirectConversationResource extends JsonResource
                 'full_name' => $receiver->first_name . ' ' . $receiver->last_name,
                 'picture' => $receiver->picture,
                 'last_message' => $message->message,
-                'time' => $message->humans_time
+                'time' => $message->humans_time,
+                'messages' => $item['messages']
             ];
 
             $response[] = $data;

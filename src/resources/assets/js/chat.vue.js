@@ -55,14 +55,16 @@ Vue.component('pagination', pagination);
 
 import chat from './pages/request_chat.vue';
 import reporthelp from './pages/reporthelp.vue';
+import directchat from './pages/direct_chat.vue';
 import chatpanelicon from './chat_components/panel_icon.vue';
 
 new Vue({
-    el: '#chat',
+    el: '.chat_lib',
 
     components: {
         chat,
         reporthelp,
-        chatpanelicon
+        chatpanelicon,
+        directchat
     }
-})
+});
