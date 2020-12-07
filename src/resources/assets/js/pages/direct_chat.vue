@@ -86,8 +86,13 @@
             </div>
         </div>
         <div v-else>
-            <div class="right-part chat-container">
-                qweqew
+            <div class="right-part not-selected">
+                <div class="chat-not-selected">
+                    <div class="text-center">
+                        <span class="display-5 text-info"><i class="mdi mdi-comment-outline"></i></span>
+                        <h5>Abra uma conversa da lista</h5>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -371,6 +376,12 @@ export default {
     display: flex;
     flex-direction: column;
     align-content: space-between;
+}
+
+.not-selected {
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .chat-box-inner-part {

@@ -46739,7 +46739,7 @@ exports = module.exports = __webpack_require__(1)(false);
 
 
 // module
-exports.push([module.i, "\n.container-fluid {\n    margin: 0px;\n    padding: 0px;\n}\n* {\n    outline: 0;\n}\n*, ::after, ::before {\n    box-sizing: border-box;\n}\n.left-part {\n    position: absolute;\n    height: 100%;\n    width: 260px;\n    border-right: 1px solid #e9ecef;\n}\n.chat-app {\n    background: #fff;\n}\n.message-row {\n    display: flex;\n    justify-content: row;\n    padding: 10px 20px;\n    border-bottom: 1px solid #eee;\n    max-height: 75px;\n    cursor: pointer;\n}\n.message-row:hover {\n    background-color: #f2f7f8;\n}\n.message-perfil {\n    display: flex;\n    justify-content: center;\n    align-items: center;\n}\n.message-info {\n    margin-left: 12px;\n}\n.message-info div:nth-child(1) {\n    font-size: 1rem;\n    font-weight: 400;\n    color: #212529;\n}\n.font-12 {\n    font-size: 12px;\n}\n.author-perfil {\n    width: 40px;\n    height: 40px;\n    border-radius: 50px;\n}\n.right-part {\n    width: calc(100% - 260px);\n    height: calc(100vh - 125px);\n    margin-left: 260px;\n}\n.border-bottom {\n    border-bottom: 1px solid #eee;\n}\n.card-body {\n    flex: 1 1 auto;\n    min-height: 1px;\n}\n.border-top {\n    border-top: 1px solid #eee!important;\n}\n.current-chat-user-name img {\n    width: 45px;\n    height: 45px;\n    border-radius: 50px;\n}\n.scrollable {\n    position: relative;\n}\n.chat-list {\n    overflow-y: auto;\n}\n.chat-list::-webkit-scrollbar {\n  width: 20px;\n}\n.chat-list::-webkit-scrollbar-track {\n  background-color: transparent;\n}\n.chat-list::-webkit-scrollbar-thumb {\n  background-color: #d6dee1;\n  border-radius: 20px;\n  border: 6px solid transparent;\n  background-clip: content-box;\n}\n.conversation-row {\n    display: flex;\n    flex-direction: row;\n    margin-top: 17px;\n}\n.conversation-row div:nth-child(1) img {\n    width: 45px;\n    height: 45px;\n    border-radius: 40px;\n    margin-right: 15px;\n}\n.conversation-row div:nth-child(2) {\n    width: calc(100% - 70px);\n}\n.conversation-row div:nth-child(2) p {\n    margin-right: 15px;\n}\n.chat-time {\n    font-size: 12px;\n    width: 70px;\n    display: flex;\n    flex-direction: column;\n    align-items: center;\n    justify-content: center;\n}\n.chat-send-message-footer{\n    height: 65px;\n    display: flex;\n    flex-direction: row;\n    align-items: center;\n    padding: 0 15px;\n}\n.chat-send-message-footer input {\n    border: none;\n    width: calc(100% - 70px);\n}\n.chat-container {\n    display: flex;\n    flex-direction: column;\n    align-content: space-between;\n}\n.chat-box-inner-part {\n    height: 100%;\n}\n.chat-send-message-footer a {\n    font-size: 26px;\n}\n", ""]);
+exports.push([module.i, "\n.container-fluid {\n    margin: 0px;\n    padding: 0px;\n}\n* {\n    outline: 0;\n}\n*, ::after, ::before {\n    box-sizing: border-box;\n}\n.left-part {\n    position: absolute;\n    height: 100%;\n    width: 260px;\n    border-right: 1px solid #e9ecef;\n}\n.chat-app {\n    background: #fff;\n}\n.message-row {\n    display: flex;\n    justify-content: row;\n    padding: 10px 20px;\n    border-bottom: 1px solid #eee;\n    max-height: 75px;\n    cursor: pointer;\n}\n.message-row:hover {\n    background-color: #f2f7f8;\n}\n.message-perfil {\n    display: flex;\n    justify-content: center;\n    align-items: center;\n}\n.message-info {\n    margin-left: 12px;\n}\n.message-info div:nth-child(1) {\n    font-size: 1rem;\n    font-weight: 400;\n    color: #212529;\n}\n.font-12 {\n    font-size: 12px;\n}\n.author-perfil {\n    width: 40px;\n    height: 40px;\n    border-radius: 50px;\n}\n.right-part {\n    width: calc(100% - 260px);\n    height: calc(100vh - 125px);\n    margin-left: 260px;\n}\n.border-bottom {\n    border-bottom: 1px solid #eee;\n}\n.card-body {\n    flex: 1 1 auto;\n    min-height: 1px;\n}\n.border-top {\n    border-top: 1px solid #eee!important;\n}\n.current-chat-user-name img {\n    width: 45px;\n    height: 45px;\n    border-radius: 50px;\n}\n.scrollable {\n    position: relative;\n}\n.chat-list {\n    overflow-y: auto;\n}\n.chat-list::-webkit-scrollbar {\n  width: 20px;\n}\n.chat-list::-webkit-scrollbar-track {\n  background-color: transparent;\n}\n.chat-list::-webkit-scrollbar-thumb {\n  background-color: #d6dee1;\n  border-radius: 20px;\n  border: 6px solid transparent;\n  background-clip: content-box;\n}\n.conversation-row {\n    display: flex;\n    flex-direction: row;\n    margin-top: 17px;\n}\n.conversation-row div:nth-child(1) img {\n    width: 45px;\n    height: 45px;\n    border-radius: 40px;\n    margin-right: 15px;\n}\n.conversation-row div:nth-child(2) {\n    width: calc(100% - 70px);\n}\n.conversation-row div:nth-child(2) p {\n    margin-right: 15px;\n}\n.chat-time {\n    font-size: 12px;\n    width: 70px;\n    display: flex;\n    flex-direction: column;\n    align-items: center;\n    justify-content: center;\n}\n.chat-send-message-footer{\n    height: 65px;\n    display: flex;\n    flex-direction: row;\n    align-items: center;\n    padding: 0 15px;\n}\n.chat-send-message-footer input {\n    border: none;\n    width: calc(100% - 70px);\n}\n.chat-container {\n    display: flex;\n    flex-direction: column;\n    align-content: space-between;\n}\n.not-selected {\n    display: flex;\n    align-items: center;\n    justify-content: center;\n}\n.chat-box-inner-part {\n    height: 100%;\n}\n.chat-send-message-footer a {\n    font-size: 26px;\n}\n", ""]);
 
 // exports
 
@@ -46758,6 +46758,11 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
 
+//
+//
+//
+//
+//
 //
 //
 //
@@ -47399,14 +47404,27 @@ var render = function() {
               : _vm._e()
           ])
         ])
-      : _c("div", [
-          _c("div", { staticClass: "right-part chat-container" }, [
-            _vm._v("\n            qweqew\n        ")
-          ])
-        ])
+      : _c("div", [_vm._m(0)])
   ])
 }
-var staticRenderFns = []
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "right-part not-selected" }, [
+      _c("div", { staticClass: "chat-not-selected" }, [
+        _c("div", { staticClass: "text-center" }, [
+          _c("span", { staticClass: "display-5 text-info" }, [
+            _c("i", { staticClass: "mdi mdi-comment-outline" })
+          ]),
+          _vm._v(" "),
+          _c("h5", [_vm._v("Abra uma conversa da lista")])
+        ])
+      ])
+    ])
+  }
+]
 render._withStripped = true
 module.exports = { render: render, staticRenderFns: staticRenderFns }
 if (false) {
