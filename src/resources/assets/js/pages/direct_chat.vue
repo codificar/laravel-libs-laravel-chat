@@ -10,32 +10,49 @@
                         </div>
                     </form>
                 </div>
-                <div v-for="(item, index) in conversations" :key="index" class="message-row">
-                    <div class="message-perfil">
-                        <img class="author-perfil" :src="item.picture" alt="">
-                    </div>
-                    <div class="message-info">
-                        <div>{{ item.full_name }}</div>
-                        <span class="font-12 text-nowrap d-block text-muted text-truncate">{{ item.last_message }}</span>
-                        <span class="font-12 text-nowrap d-block text-muted text-truncate">{{ item.time }}</span>
+                <div v-for="(item, index) in conversations" :key="index">
+                    <div class="message-row" @click="selectConversation(item)">
+                        <div class="message-perfil">
+                            <img class="author-perfil" :src="item.picture" alt="">
+                        </div>
+                        <div class="message-info">
+                            <div>{{ item.full_name }}</div>
+                            <span class="font-12 text-nowrap d-block text-muted text-truncate">{{ item.last_message }}</span>
+                            <span class="font-12 text-nowrap d-block text-muted text-truncate">{{ item.time }}</span>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="right-part chat-container">
+        <div v-if="selectedConversation" class="right-part chat-container">
             <div class="p-20 chat-box-inner-part">
                 <div class="card chatting-box mb-0" style="display: block;">
-                    <div class="card-body">
+                    <div class="card-body chat-content">
                         <div class="chat-meta-user pb-3 border-bottom chat-active">
                             <div class="current-chat-user-name">
                                 <span>
-                                    <img src="https://www.wrappixel.com/demos/admin-templates/monster-bootstrap-latest/monster/src/assets/images/users/1.jpg" alt="dynamic-image" class="rounded-circle" width="45">
-                                    <span class="name font-weight-bold ml-2">Pavan kumar</span>
+                                    <img :src="selectedConversation.picture" alt="dynamic-image">
+                                    <span class="name font-weight-bold ml-2">{{ selectedConversation.full_name }}</span>
                                 </span>
                             </div>
                         </div>
+
+                        <div class="chat-box scrollable ps-container ps-theme-default" style="height: calc(100vh - 260px) !important">
+                            <div 
+                                class="chat-list chat conversation-row" 
+                                v-for="(item, index) in selectedConversation.messages" 
+                                :key="index"
+                            >
+                                <div>
+                                    <h5 class="text-muted">{{ selectedConversation.full_name }}</h5>
+                                    <div class="box mb-2 d-inline-block text-dark rounded p-2 bg-light-info">
+                                        {{ item.message }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="card-body border-top border-bottom chat-send-message-footer chat-active">
+                    <div class="card-body border-top chat-send-message-footer chat-active">
                         <div class="row">
                             <div class="col-12">
                                 <div class="input-field mt-0 mb-0">
@@ -61,7 +78,8 @@ export default {
     data() {
         return {
             institution: {},
-            conversations: []
+            conversations: [],
+            selectedConversation: {}
         }
     },
     methods: {
@@ -90,6 +108,9 @@ export default {
                     this.conversations = response.conversations;
                     console.log('qqqqqq', response);
                 });
+        },
+        selectConversation(data) {
+            this.selectedConversation = data;
         }
     },
     mounted() {
@@ -117,16 +138,6 @@ export default {
 
 .chat-app {
     background: #fff;
-}
-
-.right-part {
-    width: calc(100% - 260px);
-    height: calc(100vh - 125px);
-    margin-left: 260px;
-}
-
-.border-bottom {
-    border-bottom: 1px solid #eee;
 }
 
 .message-row {
@@ -166,6 +177,45 @@ export default {
     width: 40px;
     height: 40px;
     border-radius: 50px;
+}
+
+.right-part {
+    width: calc(100% - 260px);
+    height: calc(100vh - 125px);
+    margin-left: 260px;
+}
+
+.chat-box-inner-part {
+    height: inherit;
+}
+
+.border-bottom {
+    border-bottom: 1px solid #eee;
+}
+
+.chatting-box {
+    height: inherit;
+    display: flex;
+    flex-direction: column;
+}
+
+.card-body {
+    flex: 1 1 auto;
+    min-height: 1px;
+}
+
+.border-top {
+    border-top: 1px solid #eee!important;
+}
+
+.current-chat-user-name img {
+    width: 45px;
+    height: 45px;
+    border-radius: 50px;
+}
+
+.scrollable {
+    position: relative;
 }
 
 </style>

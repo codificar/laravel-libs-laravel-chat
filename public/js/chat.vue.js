@@ -46739,7 +46739,7 @@ exports = module.exports = __webpack_require__(1)(false);
 
 
 // module
-exports.push([module.i, "\n.container-fluid {\n    margin: 0px;\n    padding: 0px;\n}\n.left-part {\n    position: absolute;\n    height: 100%;\n    width: 260px;\n    border-right: 1px solid #e9ecef;\n}\n.chat-app {\n    background: #fff;\n}\n.right-part {\n    width: calc(100% - 260px);\n    height: calc(100vh - 125px);\n    margin-left: 260px;\n}\n.border-bottom {\n    border-bottom: 1px solid #eee;\n}\n.message-row {\n    display: flex;\n    justify-content: row;\n    padding: 10px 20px;\n    border-bottom: 1px solid #eee;\n    max-height: 75px;\n    cursor: pointer;\n}\n.message-row:hover {\n    background-color: #f2f7f8;\n}\n.message-perfil {\n    display: flex;\n    justify-content: center;\n    align-items: center;\n}\n.message-info {\n    margin-left: 12px;\n}\n.message-info div:nth-child(1) {\n    font-size: 1rem;\n    font-weight: 400;\n    color: #212529;\n}\n.font-12 {\n    font-size: 12px;\n}\n.author-perfil {\n    width: 40px;\n    height: 40px;\n    border-radius: 50px;\n}\n\n", ""]);
+exports.push([module.i, "\n.container-fluid {\n    margin: 0px;\n    padding: 0px;\n}\n.left-part {\n    position: absolute;\n    height: 100%;\n    width: 260px;\n    border-right: 1px solid #e9ecef;\n}\n.chat-app {\n    background: #fff;\n}\n.message-row {\n    display: flex;\n    justify-content: row;\n    padding: 10px 20px;\n    border-bottom: 1px solid #eee;\n    max-height: 75px;\n    cursor: pointer;\n}\n.message-row:hover {\n    background-color: #f2f7f8;\n}\n.message-perfil {\n    display: flex;\n    justify-content: center;\n    align-items: center;\n}\n.message-info {\n    margin-left: 12px;\n}\n.message-info div:nth-child(1) {\n    font-size: 1rem;\n    font-weight: 400;\n    color: #212529;\n}\n.font-12 {\n    font-size: 12px;\n}\n.author-perfil {\n    width: 40px;\n    height: 40px;\n    border-radius: 50px;\n}\n.right-part {\n    width: calc(100% - 260px);\n    height: calc(100vh - 125px);\n    margin-left: 260px;\n}\n.chat-box-inner-part {\n    height: inherit;\n}\n.border-bottom {\n    border-bottom: 1px solid #eee;\n}\n.chatting-box {\n    height: inherit;\n    display: flex;\n    flex-direction: column;\n}\n.card-body {\n    flex: 1 1 auto;\n    min-height: 1px;\n}\n.border-top {\n    border-top: 1px solid #eee!important;\n}\n.current-chat-user-name img {\n    width: 45px;\n    height: 45px;\n    border-radius: 50px;\n}\n.scrollable {\n    position: relative;\n}\n\n", ""]);
 
 // exports
 
@@ -46811,6 +46811,23 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -46819,7 +46836,8 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
     data: function data() {
         return {
             institution: {},
-            conversations: []
+            conversations: [],
+            selectedConversation: {}
         };
     },
 
@@ -46895,6 +46913,9 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
                     return _ref2.apply(this, arguments);
                 };
             }());
+        },
+        selectConversation: function selectConversation(data) {
+            this.selectedConversation = data;
         }
     },
     mounted: function mounted() {
@@ -46930,35 +46951,48 @@ var render = function() {
             _vm._m(0),
             _vm._v(" "),
             _vm._l(_vm.conversations, function(item, index) {
-              return _c("div", { key: index, staticClass: "message-row" }, [
-                _c("div", { staticClass: "message-perfil" }, [
-                  _c("img", {
-                    staticClass: "author-perfil",
-                    attrs: { src: item.picture, alt: "" }
-                  })
-                ]),
-                _vm._v(" "),
-                _c("div", { staticClass: "message-info" }, [
-                  _c("div", [_vm._v(_vm._s(item.full_name))]),
-                  _vm._v(" "),
-                  _c(
-                    "span",
-                    {
-                      staticClass:
-                        "font-12 text-nowrap d-block text-muted text-truncate"
-                    },
-                    [_vm._v(_vm._s(item.last_message))]
-                  ),
-                  _vm._v(" "),
-                  _c(
-                    "span",
-                    {
-                      staticClass:
-                        "font-12 text-nowrap d-block text-muted text-truncate"
-                    },
-                    [_vm._v(_vm._s(item.time))]
-                  )
-                ])
+              return _c("div", { key: index }, [
+                _c(
+                  "div",
+                  {
+                    staticClass: "message-row",
+                    on: {
+                      click: function($event) {
+                        return _vm.selectConversation(item)
+                      }
+                    }
+                  },
+                  [
+                    _c("div", { staticClass: "message-perfil" }, [
+                      _c("img", {
+                        staticClass: "author-perfil",
+                        attrs: { src: item.picture, alt: "" }
+                      })
+                    ]),
+                    _vm._v(" "),
+                    _c("div", { staticClass: "message-info" }, [
+                      _c("div", [_vm._v(_vm._s(item.full_name))]),
+                      _vm._v(" "),
+                      _c(
+                        "span",
+                        {
+                          staticClass:
+                            "font-12 text-nowrap d-block text-muted text-truncate"
+                        },
+                        [_vm._v(_vm._s(item.last_message))]
+                      ),
+                      _vm._v(" "),
+                      _c(
+                        "span",
+                        {
+                          staticClass:
+                            "font-12 text-nowrap d-block text-muted text-truncate"
+                        },
+                        [_vm._v(_vm._s(item.time))]
+                      )
+                    ])
+                  ]
+                )
               ])
             })
           ],
@@ -46967,7 +47001,94 @@ var render = function() {
       ]
     ),
     _vm._v(" "),
-    _vm._m(1)
+    _vm.selectedConversation
+      ? _c("div", { staticClass: "right-part chat-container" }, [
+          _c("div", { staticClass: "p-20 chat-box-inner-part" }, [
+            _c(
+              "div",
+              {
+                staticClass: "card chatting-box mb-0",
+                staticStyle: { display: "block" }
+              },
+              [
+                _c("div", { staticClass: "card-body chat-content" }, [
+                  _c(
+                    "div",
+                    {
+                      staticClass:
+                        "chat-meta-user pb-3 border-bottom chat-active"
+                    },
+                    [
+                      _c("div", { staticClass: "current-chat-user-name" }, [
+                        _c("span", [
+                          _c("img", {
+                            attrs: {
+                              src: _vm.selectedConversation.picture,
+                              alt: "dynamic-image"
+                            }
+                          }),
+                          _vm._v(" "),
+                          _c(
+                            "span",
+                            { staticClass: "name font-weight-bold ml-2" },
+                            [_vm._v(_vm._s(_vm.selectedConversation.full_name))]
+                          )
+                        ])
+                      ])
+                    ]
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "div",
+                    {
+                      staticClass:
+                        "chat-box scrollable ps-container ps-theme-default",
+                      staticStyle: { height: "calc(100vh - 260px) !important" }
+                    },
+                    _vm._l(_vm.selectedConversation.messages, function(
+                      item,
+                      index
+                    ) {
+                      return _c(
+                        "div",
+                        {
+                          key: index,
+                          staticClass: "chat-list chat conversation-row"
+                        },
+                        [
+                          _c("div", [
+                            _c("h5", { staticClass: "text-muted" }, [
+                              _vm._v(_vm._s(_vm.selectedConversation.full_name))
+                            ]),
+                            _vm._v(" "),
+                            _c(
+                              "div",
+                              {
+                                staticClass:
+                                  "box mb-2 d-inline-block text-dark rounded p-2 bg-light-info"
+                              },
+                              [
+                                _vm._v(
+                                  "\n                                    " +
+                                    _vm._s(item.message) +
+                                    "\n                                "
+                                )
+                              ]
+                            )
+                          ])
+                        ]
+                      )
+                    }),
+                    0
+                  )
+                ]),
+                _vm._v(" "),
+                _vm._m(1)
+              ]
+            )
+          ])
+        ])
+      : _vm._e()
   ])
 }
 var staticRenderFns = [
@@ -46992,73 +47113,29 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "right-part chat-container" }, [
-      _c("div", { staticClass: "p-20 chat-box-inner-part" }, [
-        _c(
-          "div",
-          {
-            staticClass: "card chatting-box mb-0",
-            staticStyle: { display: "block" }
-          },
-          [
-            _c("div", { staticClass: "card-body" }, [
-              _c(
-                "div",
-                {
-                  staticClass: "chat-meta-user pb-3 border-bottom chat-active"
-                },
-                [
-                  _c("div", { staticClass: "current-chat-user-name" }, [
-                    _c("span", [
-                      _c("img", {
-                        staticClass: "rounded-circle",
-                        attrs: {
-                          src:
-                            "https://www.wrappixel.com/demos/admin-templates/monster-bootstrap-latest/monster/src/assets/images/users/1.jpg",
-                          alt: "dynamic-image",
-                          width: "45"
-                        }
-                      }),
-                      _vm._v(" "),
-                      _c(
-                        "span",
-                        { staticClass: "name font-weight-bold ml-2" },
-                        [_vm._v("Pavan kumar")]
-                      )
-                    ])
-                  ])
-                ]
-              )
-            ]),
-            _vm._v(" "),
-            _c(
-              "div",
-              {
-                staticClass:
-                  "card-body border-top border-bottom chat-send-message-footer chat-active"
-              },
-              [
-                _c("div", { staticClass: "row" }, [
-                  _c("div", { staticClass: "col-12" }, [
-                    _c("div", { staticClass: "input-field mt-0 mb-0" }, [
-                      _c("input", {
-                        staticClass: "message-type-box form-control border-0",
-                        staticStyle: { "font-family": "Arial, FontAwesome" },
-                        attrs: {
-                          id: "textarea1",
-                          placeholder: "Type and hit enter",
-                          type: "text"
-                        }
-                      })
-                    ])
-                  ])
-                ])
-              ]
-            )
-          ]
-        )
-      ])
-    ])
+    return _c(
+      "div",
+      {
+        staticClass: "card-body border-top chat-send-message-footer chat-active"
+      },
+      [
+        _c("div", { staticClass: "row" }, [
+          _c("div", { staticClass: "col-12" }, [
+            _c("div", { staticClass: "input-field mt-0 mb-0" }, [
+              _c("input", {
+                staticClass: "message-type-box form-control border-0",
+                staticStyle: { "font-family": "Arial, FontAwesome" },
+                attrs: {
+                  id: "textarea1",
+                  placeholder: "Type and hit enter",
+                  type: "text"
+                }
+              })
+            ])
+          ])
+        ])
+      ]
+    )
   }
 ]
 render._withStripped = true
