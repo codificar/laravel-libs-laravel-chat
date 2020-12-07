@@ -21,7 +21,12 @@
                         <div v-for="(item, index) in conversations" :key="index" >
                             <div @click="navigateToChat(item.id)" class="message-row">
                                 <div class="message-perfil">
-                                    <img class="author-perfil" :src="item.picture" alt="">
+                                    <img 
+                                        class="author-perfil" 
+                                        :src="item.picture" 
+                                        alt=""
+                                        onerror="this.src='/vendor/codificar/chat/user.png'"
+                                    >
                                 </div>
                                 <div class="message-info">
                                     <div>{{ item.full_name }}</div>
@@ -55,7 +60,8 @@ import {Howl, Howler} from 'howler';
 export default {
     props: [
         'user',
-        'url'
+        'url',
+        'echoport'
     ],
     data() {
         return {
@@ -109,7 +115,7 @@ export default {
         window.Echo = new Echo({
 			broadcaster: 'socket.io',
 			client: require('socket.io-client'),
-			host: 'http://127.0.0.1:6001'
+			host: `${this.url}:${this.echoport}`
 		});
 
         window.io = require('socket.io-client');

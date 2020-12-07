@@ -14,7 +14,11 @@
                     <div v-for="(item, index) in filteredConversations" :key="index">
                         <div class="message-row" @click="selectConversation(item)">
                             <div class="message-perfil">
-                                <img class="author-perfil" :src="item.picture" alt="">
+                                <img 
+                                    class="author-perfil" 
+                                    :src="item.picture"
+                                    onerror="this.src='/vendor/codificar/chat/user.png'"
+                                >
                             </div>
                             <div class="message-info">
                                 <div>{{ item.full_name }}</div>
@@ -28,7 +32,11 @@
                     <div v-for="(item, index) in conversations" :key="index">
                         <div class="message-row" @click="selectConversation(item)">
                             <div class="message-perfil">
-                                <img class="author-perfil" :src="item.picture" alt="">
+                                <img 
+                                    class="author-perfil" 
+                                    :src="item.picture" alt=""
+                                    onerror="this.src='/vendor/codificar/chat/user.png'"
+                                >
                             </div>
                             <div class="message-info">
                                 <div>{{ item.full_name }}</div>
@@ -47,7 +55,10 @@
                         <div class="chat-meta-user pb-3 border-bottom chat-active">
                             <div class="current-chat-user-name">
                                 <span>
-                                    <img :src="selectedConversation.picture" alt="dynamic-image">
+                                    <img 
+                                        :src="selectedConversation.picture" 
+                                        onerror="this.src='/vendor/codificar/chat/user.png'"
+                                    >
                                     <span class="name font-weight-bold ml-2">{{ selectedConversation.full_name }}</span>
                                 </span>
                             </div>
@@ -60,7 +71,11 @@
                                 :key="index"
                             >
                                 <div>
-                                    <img v-if="item.user_id != ledger" :src="selectedConversation.picture" alt="">
+                                    <img 
+                                        v-if="item.user_id != ledger" 
+                                        :src="selectedConversation.picture" 
+                                        onerror="this.src='/vendor/codificar/chat/user.png'"
+                                    >
                                 </div>
                                 <div :class="item.user_id == ledger ? 'text-right' : ''">
                                     <h5 v-if="item.user_id != ledger" class="text-muted">{{ selectedConversation.full_name }}</h5>
@@ -150,8 +165,7 @@ export default {
                 })
 
                 const { data } = response;
-                this.selectedConversation.messages.push(data.message)
-                console.log('sendMessage1', data);
+                this.selectedConversation.messages.push(data.message);
 
                 this.newMessage = data.message;
                 this.textMessage = '';
@@ -185,7 +199,6 @@ export default {
                             }
                         }
                     }
-                    console.log('qqqqqq', response);
                 });
         },
         selectConversation(data) {
@@ -206,13 +219,12 @@ export default {
     },
     mounted() {
         console.log(this.selectedConversation);
-        
+        this.getConversations();
         this.subscribeToChannel(this.institution.default_user_id);
     },
     created() {
-        console.log('dddd',this.receiverid);
         this.institution = this.user.admin_institution.institution;
-        this.getConversations();
+        
     }
 }
 </script>
