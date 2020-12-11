@@ -19,7 +19,7 @@
                     <div class="message-center notifications position-relative ps-container ps-theme-default" style="height:250px;">
                         <!-- Message -->
                         <div v-for="(item, index) in conversations" :key="index" >
-                            <div @click="navigateToChat(item.id)" class="message-row">
+                            <div @click="navigateToChat(item.conversation_id)" class="message-row">
                                 <div class="message-perfil">
                                     <img 
                                         class="author-perfil" 

@@ -22,9 +22,12 @@
 @extends('layout'.$layout)
 
 @section('content')
-	<directchat
-		:user="{{ $user }}"
-		ledger="{{ $ledger_id }}"
-		receiverid="{{ $user_id }}"
-	/>
+	<div class='chat_lib2'>
+		<directchat
+			:user="{{ $user }}"
+			ledger="{{ $ledger_id }}"
+			:newconversation="{{ json_encode($new_conversation) }}"
+			conversationid="{{ $conversation_id }}"
+		/>
+	</div>
 @stop

@@ -50,37 +50,43 @@ class EventNotifyPanel implements ShouldBroadcast {
 	public function broadcastWith() 
 	{
 		if ($this->ledger) {
-			$conversations = Conversation::whereUserOne($this->ledger->id)
-				->whereRequestId(0)
-				->with(['usertwo', 'messages'])
-				->orderBy('updated_at', 'desc')
+			$ledgerId = $this->ledger->id;
+			$conversations = Conversation::where('user_one', $ledgerId)
+                ->orWhere('user_two', $ledgerId)
+                ->with(['messages'])
+                ->orderBy('updated_at', 'desc')
 				->get();
 
-				$response = [];
+			$response = [];
 		
-				foreach ($conversations as $item) {
-					$receiver = $item->usertwo->provider;
-		
-					$message = $item->messages[count($item->messages) -1];
-					
-					$data = [
-						'id' => $receiver->id,
-						'first_name' => $receiver->first_name,
-						'last_name' => $receiver->last_name,
-						'full_name' => $receiver->first_name . ' ' . $receiver->last_name,
-						'picture' => $receiver->picture,
-						'last_message' => $message->message,
-						'time' => $message->humans_time,
-						'messages' => $item['messages']
-					];
-		
-					$response[] = $data;
-				}
-
-				return [
-					'success' => true,
-					'conversations' => $response
+			foreach ($conversations as $item) {
+				$receiver = $item->user_one == $ledgerId ?
+					$item->usertwo->provider :
+					$item->userone->provider;
+	
+				$message = $item->messages[count($item->messages) -1];
+				$ride = $item['request_id'] == 0 ? '' : ' #' . $item['request_id'];
+				
+				$data = [
+					'id' => $receiver->id,
+					'conversation_id' => $item['id'],
+					'request_id' => $item['request_id'],
+					'first_name' => $receiver->first_name,
+					'last_name' => $receiver->last_name,
+					'full_name' => $receiver->first_name . ' ' . $receiver->last_name . $ride,
+					'picture' => $receiver->picture,
+					'last_message' => $message->message,
+					'time' => $message->humans_time,
+					'messages' => $item['messages']
 				];
+	
+				$response[] = $data;
+			}
+
+			return [
+				'success' => true,
+				'conversations' => $response
+			];
 		}
 
 		return [

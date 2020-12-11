@@ -95,7 +95,7 @@
 
             <div class="border-top chat-send-message-footer">
                 <input v-model="textMessage" type="text" placeholder="Digite sua mensagem">
-                <a v-if="textMessage" @click="sendMessage" href="#">
+                <a v-if="textMessage" @click="handleSendMessage" href="#">
                     <i class="mdi mdi-send"></i>
                 </a>
             </div>
@@ -120,7 +120,9 @@ export default {
     props: [
         'user',
         'ledger',
-        'receiverid'
+        'receiverid',
+        'newconversation',
+        'conversationid'
     ],
     data() {
         return {
@@ -143,16 +145,31 @@ export default {
                     }
                 });
 
-                const { data } = response;
-                this.conversations = data.conversations;
+                const { conversations } = response.data;
+                
+                if (this.newconversation) {
+                    conversations.unshift(this.newconversation);
+                    this.conversations = conversations;
+                    this.selectConversation(this.conversations[0]);
+                    return;
+                }
+
+                this.conversations = conversations;
 
                 for (let i = 0; i < this.conversations.length; i++) {
-                    if (this.conversations[i].id == this.receiverid)
+                    if (this.conversations[i].conversation_id == this.conversationid)
                         this.selectConversation(this.conversations[i])
                 }
             } catch (error) {
                 this.conversations = [];
                 console.log('getConversations', error);
+            }
+        },
+        handleSendMessage() {
+            if (this.selectedConversation.request_id != 0) {
+                this.sendRideMessage();
+            } else {
+                this.sendMessage();
             }
         },
         async sendMessage() {
@@ -162,7 +179,7 @@ export default {
                     token: this.institution.api_key,
                     receiver: this.selectedConversation.id,
                     message: this.textMessage
-                })
+                });
 
                 const { data } = response;
                 this.selectedConversation.messages.push(data.message);
@@ -171,6 +188,28 @@ export default {
                 this.textMessage = '';
             } catch (error) {
                 console.log('sendMessage', error);
+            }
+        },
+        async sendRideMessage() {
+            try {
+                const response = await axios.post('/api/libs/chat/send', {
+                    id: this.institution.id,
+                    token: this.institution.api_key,
+                    request_id: this.selectedConversation.request_id,
+                    message: this.textMessage
+                });
+
+                const { data } = response;
+
+                this.selectedConversation.messages.push(data.message);
+                
+                if (this.selectedConversation.conversation_id == 0)
+                    this.selectedConversation.conversation_id = data.conversation_id;
+                    
+                this.newMessage = data.message;
+                this.textMessage = '';
+            } catch (error) {
+                console.log('sendRideMessage', error);
             }
         },
         filterResults() {
@@ -194,7 +233,7 @@ export default {
 
                     if (this.selectedConversation) {
                         for (let i = 0; i < this.conversations.length; i++) {
-                            if (this.selectedConversation.id == this.conversations[i].id) {
+                            if (this.selectedConversation.conversation_id == this.conversations[i].conversation_id) {
                                 this.selectConversation(this.conversations[i])
                             }
                         }
@@ -224,7 +263,6 @@ export default {
     },
     created() {
         this.institution = this.user.admin_institution.institution;
-        
     }
 }
 </script>

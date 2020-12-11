@@ -64,7 +64,14 @@ new Vue({
     components: {
         chat,
         reporthelp,
-        chatpanelicon,
+        chatpanelicon
+    }
+});
+
+new Vue({
+    el: '.chat_lib2',
+
+    components: {
         directchat
     }
 });

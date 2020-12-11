@@ -14,11 +14,14 @@ use Codificar\Chat\Http\Resources\ConversationsResource;
 use Codificar\Chat\Http\Resources\ChatMessagesResource;
 use Codificar\Chat\Events\EventConversation;
 use Codificar\Chat\Events\EventNewConversation;
+use Codificar\Chat\Events\EventNotifyPanel;
 use Codificar\Chat\Events\EventReadMessage;
+use Codificar\Chat\Http\Utils\Helper;
 use Requests, Admin, Auth, User, Provider;
 use Log;
 use Nahid\Talk\Messages\Message;
 use Settings;
+use Nahid\Talk\Conversations\Conversation;
 
 class RideChatController extends Controller
 {
@@ -150,43 +153,44 @@ class RideChatController extends Controller
 	 */
 	public function corpRequestChat($request_id){
 		
-		$admin = Admin::find(Auth::guard('web')->user()->id);
+		$user = Auth::guard('web')->user();
+		$ledger = null;
+		$ride = Requests::find($request_id);
+		$provider = $ride->confirmedProvider;
 
-		if (!$admin) {
-			return \Redirect::to("/corp/report");
-		}
-		
-		$request = Requests::find($request_id);
-
-		//Esses dois campos estavam dando problema no json_encode e não são necessários no chat
-		unset($request->origin);
-		unset($request->destination);
-		if (!$request){
+		if (!$provider)
 			abort(404);
-		}
 
-		$requestPoints = RequestPoint::whereRequestId($request->id)->get();
-
-		$user = User::getUserForChat($request->user_id);
-		\Log::debug($user);
-		if(in_array($request->user_id, Institution::getDefaultUsersIds())){
-			$institution = Institution::getByDefaultUserId($request->user_id);
-		} else {
-			$institution = null;
+        if ($user) {
+            $ledger = Helper::getLedger(
+                'corp', 
+                $user->AdminInstitution->Institution->default_user_id
+            );
 		}
 		
-		$mapsApiKey = Settings::getGoogleMapsApiKey();
-
-		$viewData = [
-			"environment" => "corp",
-			"request" => $request,
-			"requestPoints" => $requestPoints,
-			"user" => $user,
-			"institution" => $institution,
-			"maps_api_key" => $mapsApiKey,
+		$newConversation = [
+			'full_name' => $provider->first_name . ' ' . $provider->last_name,
+			'picture' => $provider->picture,
+			'request_id' => $ride->id,
+			'conversation_id' => 0,
+			'last_message' => '',
+			'time' => '',
+			'messages' => []
 		];
 
-		return view('chat::chat', $viewData);
+		$conversation = Conversation::where('request_id', $ride->id)->first();
+
+		if ($conversation)
+			$newConversation = null;
+        
+        return view('chat::direct_chat', [
+            'environment' => 'corp',
+            'user' => $user,
+            'ledger_id' => $ledger ? $ledger->id : null,
+			'request_id' => $ride ? $ride->id : null,
+			'new_conversation' => $newConversation,
+			'conversation_id' => $conversation ? $conversation->id : null
+        ]);
 	}
 	
     /**
@@ -222,6 +226,7 @@ class RideChatController extends Controller
 			Log::notice("sender_type:". $request->sender_type);
 			Log::notice("receiver_id:". $request->receiver_id);
 			if ($request->sender_type == 'provider') {
+				event(new EventNotifyPanel($ride->user_id));
 				Log::notice("notifica user_id:" . $request->ledger_receiver->user_id);
 				// notifica user
 				$this->sendNotificationMessageReceived(trans('laravelchat::laravelchat.new_message'), $message->conversation_id, $message->message, $request->ledger_receiver->user_id, 'user');
@@ -238,7 +243,8 @@ class RideChatController extends Controller
 
 		return response()->json([
             "success" => true, 
-            "conversation_id" => $message->conversation_id
+			"conversation_id" => $message->conversation_id,
+			"message" => $message
         ]);
     }
 

@@ -19,6 +19,7 @@ use Nahid\Talk\Conversations\Conversation;
 use Provider;
 use Settings;
 use Admin, Auth;
+use Codificar\Chat\Http\Resources\ListConversationsForPanelResource;
 use Codificar\Chat\Http\Utils\Helper;
 
 class DirectChatController extends Controller
@@ -32,18 +33,21 @@ class DirectChatController extends Controller
         $user = Auth::guard('web')->user();
         $ledger = null;
 
-        if ($user) {
-            $ledger = Helper::getLedger(
-                'corp', 
-                $user->AdminInstitution->Institution->default_user_id
-            );
-        }
+        if (!$user)
+            return \Redirect::to("/corp/login");
+
+        $ledger = Helper::getLedger(
+            'corp', 
+            $user->AdminInstitution->Institution->default_user_id
+        );
         
         return view('chat::direct_chat', [
             'environment' => 'corp',
             'user' => $user,
             'ledger_id' => $ledger ? $ledger->id : null,
-            'user_id' => $id
+            'user_id' => $id,
+            'new_conversation' => null,
+            'conversation_id' => $id
         ]);
     }
 
@@ -139,13 +143,26 @@ class DirectChatController extends Controller
     {
         $conversations = null;
 
-        if ($request->sender_type == 'user' || $request->sender_type == 'corp') {
+        if ($request->sender_type == 'user') {
+
             $conversations = Conversation::whereUserOne($request->sender_id)
                 ->whereRequestId(0)
                 ->with(['usertwo', 'messages'])
                 ->orderBy('updated_at', 'desc')
                 ->get();
+        } else if ($request->sender_type == 'corp') {
+
+            $conversations = Conversation::where('user_one', $request->sender_id)
+                ->orWhere('user_two', $request->sender_id)
+                ->with(['messages'])
+                ->orderBy('updated_at', 'desc')
+                ->get();
             
+            return new ListConversationsForPanelResource([
+                'sender_id' => $request->sender_id,
+                'sender_type' => $request->sender_type,
+                'conversations' => $conversations
+            ]);
         } else {
             $conversations = Conversation::whereUserTwo($request->sender_id)
                 ->whereRequestId(0)
