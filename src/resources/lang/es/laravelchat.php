@@ -18,4 +18,9 @@ return [
     'author' => 'Autor',
     'actions' => 'Ações',
     'open_chat' => 'Abrir chat',
+    'conversations' => 'Conversaciones',
+    'all_conversations' => 'Todas las conversaciones',
+    'send_message' => 'Escribe un mensaje',
+    'filter' => 'Filtrar conversaciones',
+    'open_chat' => 'Abrir una conversación de la lista'
 ];

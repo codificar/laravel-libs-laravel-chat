@@ -28,6 +28,7 @@
 			ledger="{{ $ledger_id }}"
 			:newconversation="{{ json_encode($new_conversation) }}"
 			conversationid="{{ $conversation_id }}"
+			:trans="{{ json_encode(trans('laravelchat::laravelchat')) }}"
 		/>
 	</div>
 @stop

@@ -12,7 +12,7 @@
             <ul class="list-style-none">
                 <li>
                     <div class="messages-title">
-                        Conversas
+                        {{ trans.conversations }}
                     </div>
                 </li>
                 <li>
@@ -45,7 +45,7 @@
                     </div>
                 </li>
                 <li>
-                    <a class="nav-link border-top text-center text-dark pt-3" href="/corp/lib/chat"> <strong>Todas as conversas</strong> <i class="fa fa-angle-right"></i> </a>
+                    <a class="nav-link border-top text-center text-dark pt-3" href="/corp/lib/chat"> <strong>{{ trans.all_conversations }}</strong> <i class="fa fa-angle-right"></i> </a>
                 </li>
             </ul>
         </div>
@@ -61,7 +61,8 @@ export default {
     props: [
         'user',
         'url',
-        'echoport'
+        'echoport',
+        'trans'
     ],
     data() {
         return {

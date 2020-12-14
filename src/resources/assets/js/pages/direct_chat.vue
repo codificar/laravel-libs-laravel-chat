@@ -3,10 +3,10 @@
         <div class="left-part bg-white fixed-left-part user-chat-box">
             <div class="scrollable position-relative ps-container ps-theme-default" style="height:100%;">
                 <div class="p-3 border-bottom">
-                    <h5 class="card-title">Filrar conversas</h5>
+                    <h5 class="card-title">{{ trans.filter }}</h5>
                     <form>
                         <div class="searchbar">
-                            <input v-model="filterName" @keyup="filterResults" class="form-control" type="text" placeholder="Filrar conversas">
+                            <input v-model="filterName" @keyup="filterResults" class="form-control" type="text" :placeholder="trans.filter">
                         </div>
                     </form>
                 </div>
@@ -94,7 +94,7 @@
             </div>
 
             <div class="border-top chat-send-message-footer">
-                <input v-model="textMessage" type="text" placeholder="Digite sua mensagem">
+                <input v-model="textMessage" type="text" :placeholder="trans.send_message">
                 <a v-if="textMessage" @click="handleSendMessage" href="#">
                     <i class="mdi mdi-send"></i>
                 </a>
@@ -105,7 +105,7 @@
                 <div class="chat-not-selected">
                     <div class="text-center">
                         <span class="display-5 text-info"><i class="mdi mdi-comment-outline"></i></span>
-                        <h5>Abra uma conversa da lista</h5>
+                        <h5>{{ trans.open_chat }}</h5>
                     </div>
                 </div>
             </div>
@@ -122,7 +122,8 @@ export default {
         'ledger',
         'receiverid',
         'newconversation',
-        'conversationid'
+        'conversationid',
+        'trans'
     ],
     data() {
         return {

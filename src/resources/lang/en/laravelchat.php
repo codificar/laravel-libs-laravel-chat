@@ -17,5 +17,10 @@ return [
     'provider' => 'Driver',
     'author' => 'Author',
     'actions' => 'Actions',
-    'open_chat' => 'Open chat'
+    'open_chat' => 'Open chat',
+    'conversations' => 'Conversations',
+    'all_conversations' => 'All conversations',
+    'send_message' => 'Send a message',
+    'filter' => 'Filter conversations',
+    'open_chat' => 'Open a chat in the list'
 ];
