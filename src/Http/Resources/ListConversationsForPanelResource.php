@@ -19,9 +19,15 @@ class ListConversationsForPanelResource extends JsonResource
         $conversations = $this['conversations'];
 
         foreach ($conversations as $item) {
-            $receiver = $item->user_one == $this['sender_id'] ?
-                $item->usertwo->provider :
-                $item->userone->provider;
+            if ($this['sender_type'] != 'provider') {
+                $receiver = $item->user_one == $this['sender_id'] ?
+                    $item->usertwo->provider :
+                    $item->userone->provider;
+            } else {
+                $receiver = $item->user_one == $this['sender_id'] ?
+                    $item->usertwo->user :
+                    $item->userone->user;
+            }
 
             $message = $item->messages[count($item->messages) -1];
             $ride = $item['request_id'] == 0 ? '' : ' #' . $item['request_id'];

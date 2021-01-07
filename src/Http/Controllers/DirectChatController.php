@@ -164,11 +164,17 @@ class DirectChatController extends Controller
                 'conversations' => $conversations
             ]);
         } else {
-            $conversations = Conversation::whereUserTwo($request->sender_id)
-                ->whereRequestId(0)
-                ->with(['userone', 'messages'])
+            $conversations = Conversation::where('user_one', $request->sender_id)
+                ->orWhere('user_two', $request->sender_id)
+                ->with(['messages'])
                 ->orderBy('updated_at', 'desc')
                 ->get();
+            
+            return new ListConversationsForPanelResource([
+                'sender_id' => $request->sender_id,
+                'sender_type' => $request->sender_type,
+                'conversations' => $conversations
+            ]);
         }
         
         return new ListDirectConversationResource([
