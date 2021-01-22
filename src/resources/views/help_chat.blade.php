@@ -2,7 +2,7 @@
 @extends('layout.master')
 
 @section('content')
-	<div id="chat" style="width: 99%;">
+	<div class="chat_lib" style="width: 99%;  ">
 
 		<chat
 			environment= "{{ $environment }}"

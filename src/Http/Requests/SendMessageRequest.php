@@ -60,7 +60,7 @@ class SendMessageRequest extends FormRequest
 				$provider = $sender_id;
 			} else {
 
-				$ledgerSender = Helper::getLedger($sender_type, $ride->user_id);
+				$ledgerSender = Helper::getLedger('user', $ride->user_id);
 				$ledgerReceiver = Helper::getLedger('provider', $ride->confirmed_provider);
 				$sender_id = $ledgerSender->id;
 				$user = $sender_id;

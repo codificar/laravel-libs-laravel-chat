@@ -48,6 +48,9 @@ class MessageSeenFormRequest extends FormRequest
 		if(isset($this->provider)) {
 			$ledger = Ledger::where('provider_id', $this->provider->id)->first();
 			$id = $ledger->id;
+		} else if($this->user_id) {
+			$ledger = Ledger::where('user_id', $this->user_id)->first();
+			$id = $ledger->id;
 		} else {
 			$ledger = Ledger::where('user_id', $this->user->id)->first();
 			$id = $ledger->id;

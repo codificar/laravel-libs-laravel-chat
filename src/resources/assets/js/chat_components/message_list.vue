@@ -47,8 +47,8 @@
 						</div>
 					</div>
 					<div class="chat-list-img">
-						<div class="chat-img">
-							<img :src="!message.admin_id ? userOne.image : admin.image"  alt="user">
+						<div>
+							<img class="chat-img" :src="!message.admin_id ? userOne.image : admin.image"  alt="user">
 						</div>
 						<div class="chat-time" style="text-align: center;">
 							{{message.humans_time}}
@@ -61,8 +61,8 @@
 					class="chat-list-row"
 				>
 					<div class="chat-list-img">
-						<div class="chat-img">
-							<img :src="!message.admin_id ? userTwo.image : admin.image"  alt="user">
+						<div>
+							<img class="chat-img" :src="!message.admin_id ? userTwo.image : admin.image"  alt="user">
 						</div>
 						<div class="chat-time" style="text-align: center;">
 							{{message.humans_time}}
@@ -98,6 +98,11 @@
 	display: flex; 
 	flex-direction: column;
 	align-items: center;
+}
+
+.chat-img {
+	width: 45px;
+	height: 45px;
 }
 
 .chat-rbox{

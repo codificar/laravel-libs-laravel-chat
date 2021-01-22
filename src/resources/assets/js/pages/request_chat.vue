@@ -57,12 +57,6 @@ export default {
 					<div class="col-md-12 col-sm-12" style="overflow-x: hidden;">
 						<table class="table" >
 							<tbody>
-								<tr v-if="environment == 'admin'">
-									<td v-if="institution"> {{ trans('laravelchat.institution') }} </td>
-									<td v-else> {{ trans('laravelchat.user') }} </td>
-									<td v-if="institution"> {{ institution.name }} </td>
-									<td v-else> {{ user.name }} </td>
-								</tr>
 								<tr v-for="(point, index) in request_points" :key="point.id" >
 									<td v-if="index == 0"> {{ trans('laravelchat.origin') }} </td>
 									<td v-else-if="index != (request_points.length -1)"> {{ trans('laravelchat.next_address') }} </td>

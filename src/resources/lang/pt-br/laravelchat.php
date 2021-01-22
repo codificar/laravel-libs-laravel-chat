@@ -22,5 +22,7 @@ return [
     'all_conversations' => 'Todas as conversas',
     'send_message' => 'Digite uma mensagem',
     'filter' => 'Filtrar conversas',
-    'open_chat' => 'Abra uma conversa da lista'
+    'open_chat' => 'Abra uma conversa da lista',
+    'origin' => 'Origem',
+    'destination' => 'Destino'
 ];

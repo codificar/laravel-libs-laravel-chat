@@ -22,7 +22,7 @@
 @extends('layout'.$layout)
 
 @section('content')
-	<div id="chat" style="width: 99%;">
+	<div class="chat_lib" style="width: 99%;">
 		<chat
 			environment= "{{ $environment }}"
 			request = "{{ json_encode($request) }}"
