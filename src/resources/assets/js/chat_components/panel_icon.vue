@@ -116,7 +116,7 @@ export default {
         window.Echo = new Echo({
 			broadcaster: 'socket.io',
 			client: require('socket.io-client'),
-			host: `${this.url}:${this.echoport}`
+			host: `${window.location.hostname}:${this.echoport}`
 		});
 
         window.io = require('socket.io-client');
