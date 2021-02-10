@@ -24,5 +24,6 @@ return [
     'filter' => 'Filtrar conversas',
     'open_chat' => 'Abra uma conversa da lista',
     'origin' => 'Origem',
-    'destination' => 'Destino'
+    'destination' => 'Destino',
+    'point' => 'Ponto'
 ];

@@ -59,7 +59,7 @@ export default {
 							<tbody>
 								<tr v-for="(point, index) in request_points" :key="point.id" >
 									<td v-if="index == 0"> {{ trans('laravelchat.origin') }} </td>
-									<td v-else-if="index != (request_points.length -1)"> {{ trans('laravelchat.next_address') }} </td>
+									<td v-else-if="index != (request_points.length -1)"> {{ trans('laravelchat.point') + " " + String.fromCharCode(65 + index) }}  </td>
 									<td v-else> {{ trans('laravelchat.destination') }} </td>
 									<td class="text-overflow" :data-text="point.address"> {{ point.address }} </td>
 								</tr>
