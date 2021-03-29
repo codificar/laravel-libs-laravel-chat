@@ -12,4 +12,19 @@ class CanonicalMessages extends Model
      * @var string
      */
     protected $table = 'canonical_messages';
+
+    public static function saveMessage($request)
+    {
+        try {
+            $canonical = new CanonicalMessages();
+            $canonical->shortcode = $request->shortcode;
+            $canonical->message = $request->message;
+            $canonical->save();
+            
+            return true;
+        } catch (\Throwable $th) {
+            \Log::error($th->getMessage());
+            return true;
+        }
+    }
 }

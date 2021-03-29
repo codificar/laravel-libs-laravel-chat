@@ -6,9 +6,9 @@
                 <div class="modal-container">
                     <div class="modal-header">
                         <h3>Adicionar nova mensagem</h3>
-                        <button class="btn btn-danger" @click="$emit('close')">
-                            Fechar
-                        </button> 
+                        <a href="#"
+                          @click="$emit('close')"
+                        >X</a>
                     </div>
 
                     <div class="modal-body">
@@ -175,7 +175,11 @@ export default {
 
 .modal-header h3 {
   margin-top: 0;
-  color: #009efb;
+}
+
+.modal-header a {
+  color: red;
+  font-size: 22px;
 }
 
 .modal-default-button {

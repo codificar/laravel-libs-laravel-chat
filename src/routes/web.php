@@ -80,8 +80,10 @@ Route::group(array('namespace' => 'Codificar\Chat\Http\Controllers'), function (
     //'middleware' => 'auth.admin',
     Route::group(['prefix' => '/admin/lib'], function() {
         Route::get('/chat', 'AdminChatController@renderAdminChat');
+        Route::get('/canonical_messages', 'CanonicalMessagesController@renderCanonicalMessages');
     
         Route::get('/api/canonical_messages', 'CanonicalMessagesController@getMessages');
+        Route::post('/api/save_canonical', 'CanonicalMessagesController@saveMessage');
         Route::get('/api/get_user', 'AdminChatController@getUserForChat');
     });
 });
