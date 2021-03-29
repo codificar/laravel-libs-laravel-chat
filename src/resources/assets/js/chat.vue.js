@@ -57,6 +57,7 @@ import chat from './pages/request_chat.vue';
 import reporthelp from './pages/reporthelp.vue';
 import directchat from './pages/direct_chat.vue';
 import chatpanelicon from './chat_components/panel_icon.vue';
+import canonical from './pages/canonical_messages.vue';
 
 new Vue({
     el: '.chat_lib',
@@ -72,6 +73,7 @@ new Vue({
     el: '.chat_lib2',
 
     components: {
-        directchat
+        directchat,
+        canonical
     }
 });
