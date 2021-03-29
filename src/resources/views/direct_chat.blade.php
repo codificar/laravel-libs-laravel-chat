@@ -29,6 +29,8 @@
 			:newconversation="{{ json_encode($new_conversation) }}"
 			conversationid="{{ $conversation_id }}"
 			:trans="{{ json_encode(trans('laravelchat::laravelchat')) }}"
+			environment="{{ $environment }}"
+			echoport="{{ env('LARAVEL_ECHO_PORT', 6001) }}"
 		/>
 	</div>
 @stop

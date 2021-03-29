@@ -47,22 +47,32 @@ class SendDirectRequest extends FormRequest
         $receiver = null;
         $receiverLedger = null;
         $receiverType = 'user';
+        $receiverName = '';
+        $receiverPicture = '';
         
         if ($senderType == 'user' || $senderType == 'corp') {
             $receiver = Provider::find($this->receiver);
             $receiverType = 'provider';
-        } else {
+        } else if ($senderType == 'provider') {
             $receiver = User::find($this->receiver);
+        } else {
+            $receiver = Provider::find($this->receiver);
+            $receiverType = 'provider';
         }
         
-        if ($receiver)
+        if ($receiver) {
             $receiverLedger = Helper::getLedger($receiverType, $receiver->id);
+            $receiverName = $receiver->first_name . ' ' . $receiver->last_name;
+            $receiverPicture = $receiver->picture;
+        }
         
 		$this->merge([
 			"sender_type" => $senderType,
             "sender_id" => $senderLedger ? $senderLedger->id : null,
             "ledger_receiver" => $receiverLedger,
-            "receiver_id" => $receiverLedger ? $receiverLedger->id : null
+            "receiver_id" => $receiverLedger ? $receiverLedger->id : null,
+            "receiver_name" => $receiverName,
+            "receiver_picture" => $receiverPicture
 		]);
     }
     

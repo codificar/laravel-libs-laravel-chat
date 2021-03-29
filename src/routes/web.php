@@ -71,9 +71,19 @@ Route::group(array('namespace' => 'Codificar\Chat\Http\Controllers'), function (
         Route::get('/api/libs/get_direct_message', 'DirectChatController@getDirectMessages');
         Route::get('/api/libs/list_direct_conversation', 'DirectChatController@listDirectConversations');
         Route::get('/api/libs/get_providers_chat', 'DirectChatController@getProvidersForConversation');
+
+        Route::post('/api/libs/admin_send_message', 'AdminChatController@sendMessage');
     });
 
     Route::get('/corp/lib/chat/{id?}', 'DirectChatController@renderDirectChat');
+
+    //'middleware' => 'auth.admin',
+    Route::group(['prefix' => '/admin/lib'], function() {
+        Route::get('/chat', 'AdminChatController@renderAdminChat');
+    
+        Route::get('/api/canonical_messages', 'CanonicalMessagesController@getMessages');
+        Route::get('/api/get_user', 'AdminChatController@getUserForChat');
+    });
 });
 
 /**

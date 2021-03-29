@@ -63,8 +63,7 @@ class CheckUserSystem
                 return $next($request);
             }
 
-            $isAdmin = Admin::where('remember_token', $token)
-                ->where('id', $userSystemId)
+            $isAdmin = Admin::where('id', $userSystemId)
                 ->first();
 
             if($isAdmin) {

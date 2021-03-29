@@ -66,6 +66,16 @@ class DirectChatController extends Controller
 
         event(new EventConversation($message));
 
+        if ($request->sender_type == 'admin') {
+            return response()->json([
+                "success" => true, 
+                "conversation_id" => $message->conversation_id,
+                "receiver_name" => $request->receiver_name,
+                "receiver_picture" => $request->receiver_picture,
+                "message" => $message
+            ]);
+        }
+
         if ($request->sender_type == 'provider') {
             event(new EventNotifyPanel($request->ledger_receiver->user_id));
             
@@ -92,6 +102,7 @@ class DirectChatController extends Controller
         return response()->json([
             "success" => true, 
             "conversation_id" => $message->conversation_id,
+            "receiver_picture" => $request->receiver_picture,
             "message" => $message
         ]);
     }
@@ -214,7 +225,7 @@ class DirectChatController extends Controller
     {
         $conversation = null;
 
-        if ($request->sender_type == 'user' || $request->sender_type == 'corp') {
+        if ($request->sender_type != 'provider') {
             $conversation = Conversation::whereUserOne($request->sender_id)
                 ->whereUserTwo($request->receiver_id)
                 ->whereRequestId(0)

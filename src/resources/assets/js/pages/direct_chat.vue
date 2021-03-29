@@ -2,6 +2,13 @@
     <div class="chat-app">
         <div class="left-part bg-white fixed-left-part user-chat-box">
             <div class="scrollable position-relative ps-container ps-theme-default" style="height:100%;">
+                <div v-if="isAdmin" class="pt-2 pb-2 pl-3 pr-3 border-bottom new-conversation">
+                    <p>Nova conversa</p>
+                    <a href="#" @click="showModal = true">
+                        <i class="mdi mdi-message-text-outline"></i>
+                    </a>
+                </div>
+
                 <div class="p-3 border-bottom">
                     <h5 class="card-title">{{ trans.filter }}</h5>
                     <form>
@@ -30,7 +37,7 @@
                 </div>
                 <div v-else>
                     <div v-for="(item, index) in conversations" :key="index">
-                        <div class="message-row" @click="selectConversation(item)">
+                        <div class="message-row" :class="activeSelectStyle(item)" @click="selectConversation(item)">
                             <div class="message-perfil">
                                 <img 
                                     class="author-perfil" 
@@ -110,11 +117,21 @@
                 </div>
             </div>
         </div>
+
+        <modal 
+            v-if="showModal" 
+            @close="showModal = false" 
+            :canonicalMessages="canonical_messages" 
+            :user="user"
+            @modalSendMessage="onModalSendMessage"
+        />
     </div>
 </template>
 
 <script>
+import modal from '../components/Modal.vue';
 import axios from 'axios';
+import Echo from 'laravel-echo';
 
 export default {
     props: [
@@ -123,17 +140,25 @@ export default {
         'receiverid',
         'newconversation',
         'conversationid',
-        'trans'
+        'trans',
+        'environment',
+        'echoport'
     ],
+    components: {
+        modal
+    },
     data() {
         return {
-            institution: {},
+            isAdmin: false,
+            showModal: false,
+            userData: {},
             conversations: [],
             selectedConversation: null,
             textMessage: '',
             newMessage: '',
             filterName: '',
-            filteredConversations: []
+            filteredConversations: [],
+            canonical_messages: []
         }
     },
     methods: {
@@ -141,8 +166,8 @@ export default {
             try {
                 const response = await axios.get('/api/libs/list_direct_conversation', {
                     params: {
-                        id: this.institution.id,
-                        token: this.institution.api_key
+                        id: this.userData.id,
+                        token: this.userData.api_key
                     }
                 });
 
@@ -154,7 +179,7 @@ export default {
                     this.selectConversation(this.conversations[0]);
                     return;
                 }
-
+                console.log('1111', conversations);
                 this.conversations = conversations;
 
                 for (let i = 0; i < this.conversations.length; i++) {
@@ -173,11 +198,18 @@ export default {
                 this.sendMessage();
             }
         },
+        activeSelectStyle(item) {
+            if (this.selectedConversation) {
+                return item.conversation_id == this.selectedConversation.conversation_id ? 'selected-chat' : '';
+            }
+
+            return '';
+        },
         async sendMessage() {
             try {
                 const response = await axios.post('/api/libs/set_direct_message', {
-                    id: this.institution.id,
-                    token: this.institution.api_key,
+                    id: this.userData.id,
+                    token: this.userData.api_key,
                     receiver: this.selectedConversation.id,
                     message: this.textMessage
                 });
@@ -194,8 +226,8 @@ export default {
         async sendRideMessage() {
             try {
                 const response = await axios.post('/api/libs/chat/send', {
-                    id: this.institution.id,
-                    token: this.institution.api_key,
+                    id: this.userData.id,
+                    token: this.userData.api_key,
                     request_id: this.selectedConversation.request_id,
                     message: this.textMessage
                 });
@@ -243,6 +275,43 @@ export default {
         },
         selectConversation(data) {
             this.selectedConversation = data;
+        },
+        /**
+         * Request to get canonical messages
+         */
+        async getCanonicalMessages() {
+            try {
+                const response = await axios.get('/admin/lib/api/canonical_messages');
+                const { data } = response;
+                this.canonical_messages = data.messages;
+            } catch (error) {
+                console.log('getCanonicalMessages', error);
+            }
+        },
+        onModalSendMessage(value) {
+            console.log('qqqqqq', value);
+            const conversation = this.conversations.filter(query => {
+                return query.conversation_id == value.conversation_id;
+            });
+
+            if (conversation.length > 0) {
+                this.selectConversation(conversation[0]);
+                this.selectedConversation.messages.push(value.message);
+            } else {
+                const newConversation = {
+                    conversation_id: value.conversation_id,
+                    messages: [value.message],
+                    full_name: value.receiver_name,
+                    picture: value.receiver_picture,
+                    time: value.message.humans_time,
+                    last_message: value.message.message
+                };
+
+                this.conversations.unshift(newConversation);
+                this.selectConversation(this.conversations[0]);
+            }
+
+            this.showModal = false;
         }
     },
     watch: {
@@ -260,10 +329,27 @@ export default {
     mounted() {
         console.log(this.selectedConversation);
         this.getConversations();
-        this.subscribeToChannel(this.institution.default_user_id);
+        this.subscribeToChannel(this.userData.default_user_id);
     },
     created() {
-        this.institution = this.user.admin_institution.institution;
+        if (this.environment == 'corp') {
+            this.userData = this.user.admin_institution.institution;
+        } else if (this.environment == 'admin') {
+            window.Echo = new Echo({
+                broadcaster: 'socket.io',
+                client: require('socket.io-client'),
+                host: `${window.location.hostname}:${this.echoport}`
+            });
+
+            window.io = require('socket.io-client');
+
+            this.isAdmin = true;
+            this.userData = this.user;
+            this.userData.api_key = 'token';
+            this.userData.default_user_id = 'id';
+        }
+
+        this.getCanonicalMessages();
     }
 }
 </script>
@@ -303,7 +389,7 @@ export default {
 }
 
 .message-row:hover {
-    background-color: #f2f7f8;;
+    background-color: #f2f7f8;
 }
 
 .message-perfil {
@@ -441,5 +527,24 @@ export default {
 
 .chat-send-message-footer a {
     font-size: 26px;
+}
+
+.new-conversation {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.new-conversation p {
+    margin-bottom: 0;
+}
+
+.new-conversation a {
+    font-size: 32px;
+}
+
+.selected-chat {
+    background-color: #f2f7f8;
 }
 </style>
