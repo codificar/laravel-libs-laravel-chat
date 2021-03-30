@@ -154,6 +154,14 @@ class RideChatController extends Controller
 	public function corpRequestChat($request_id){
 		
 		$user = Auth::guard('web')->user();
+
+		if (!$user || !$user->AdminInstitution) {
+            $user = Auth::guard('web_corp')->user();
+
+            if (!$user)
+                return \Redirect::to("/corp/login");
+        }
+
 		$ledger = null;
 		$ride = Requests::find($request_id);
 		$provider = $ride->confirmedProvider;

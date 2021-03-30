@@ -33,8 +33,12 @@ class DirectChatController extends Controller
         $user = Auth::guard('web')->user();
         $ledger = null;
 
-        if (!$user)
-            return \Redirect::to("/corp/login");
+        if (!$user || !$user->AdminInstitution) {
+            $user = Auth::guard('web_corp')->user();
+
+            if (!$user)
+                return \Redirect::to("/corp/login");
+        }
 
         $ledger = Helper::getLedger(
             'corp', 
