@@ -28,14 +28,14 @@
                                 >
                             </div>
                             <div class="message-info">
-                                <div>{{ item.full_name }}</div>
-                                <span class="font-12 text-nowrap d-block text-muted text-truncate">{{ item.last_message }}</span>
+                                <div>{{ item.full_name | nameMaxLength(15) }}</div>
+                                <span class="font-12 text-nowrap d-block text-muted text-truncate">{{ item.last_message | nameMaxLength(24) }}</span>
                                 <span class="font-12 text-nowrap d-block text-muted text-truncate">{{ item.time }}</span>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div v-else>
+                <div id="infinite-list" class="message-list scrollable ps-active-y" v-else>
                     <div v-for="(item, index) in conversations" :key="index">
                         <div class="message-row" :class="activeSelectStyle(item)" @click="selectConversation(item)">
                             <div class="message-perfil">
@@ -46,8 +46,8 @@
                                 >
                             </div>
                             <div class="message-info">
-                                <div>{{ item.full_name }}</div>
-                                <span class="font-12 text-nowrap d-block text-muted text-truncate">{{ item.last_message }}</span>
+                                <div>{{ item.full_name | nameMaxLength(15) }}</div>
+                                <span class="font-12 text-nowrap d-block text-muted text-truncate">{{ item.last_message | nameMaxLength(24) }}</span>
                                 <span class="font-12 text-nowrap d-block text-muted text-truncate">{{ item.time }}</span>
                             </div>
                         </div>
@@ -121,7 +121,8 @@
         <modal 
             v-if="showModal" 
             @close="showModal = false" 
-            :canonicalMessages="canonical_messages" 
+            :canonicalMessages="canonical_messages"
+            :locations="locations"
             :user="user"
             @modalSendMessage="onModalSendMessage"
         />
@@ -158,36 +159,66 @@ export default {
             newMessage: '',
             filterName: '',
             filteredConversations: [],
-            canonical_messages: []
+            canonical_messages: [],
+            locations: [],
+            current_page: 1,
+            last_page: 1,
+            is_loading: false
+        }
+    },
+    filters: {
+        nameMaxLength: function (value, limit) {
+            if (!value) return '';
+            else if (value.length <= limit) return value;
+            
+            return value.substring(0, limit) + '...';
         }
     },
     methods: {
-        async getConversations() {
+        async getConversations(page = 1) {
             try {
-                const response = await axios.get('/api/libs/list_direct_conversation', {
+                const response = await axios.get('/api/libs/filter_conversations', {
                     params: {
                         id: this.userData.id,
-                        token: this.userData.api_key
+                        token: this.userData.api_key,
+                        page: isNaN(page) ? 1 : page
                     }
                 });
 
                 const { conversations } = response.data;
-                
-                if (this.newconversation) {
-                    conversations.unshift(this.newconversation);
-                    this.conversations = conversations;
-                    this.selectConversation(this.conversations[0]);
-                    return;
-                }
-                console.log('1111', conversations);
-                this.conversations = conversations;
+                const { locations } = response.data;
+                const { last_page } = response.data;
+                const { current_page } = response.data;
 
-                for (let i = 0; i < this.conversations.length; i++) {
-                    if (this.conversations[i].conversation_id == this.conversationid)
-                        this.selectConversation(this.conversations[i])
+                this.last_page = last_page;
+                this.current_page = current_page;
+                this.locations = locations;
+
+                if (page == 1) {
+                    if (this.newconversation) {
+                        conversations.unshift(this.newconversation);
+                        this.conversations = conversations;
+                        this.selectConversation(this.conversations[0]);
+                        return;
+                    }
+                    console.log('1111', conversations);
+                    this.conversations = conversations;
+    
+    
+                    for (let i = 0; i < this.conversations.length; i++) {
+                        if (this.conversations[i].conversation_id == this.conversationid)
+                            this.selectConversation(this.conversations[i])
+                    }
+                } else if (page > 1) {
+                    for (let index = 0; index < conversations.length; index++) {
+                        this.conversations.push(conversations[index]);
+                    }
                 }
+                
+                this.is_loading = false;
             } catch (error) {
                 this.conversations = [];
+                this.is_loading = false;
                 console.log('getConversations', error);
             }
         },
@@ -327,7 +358,15 @@ export default {
         }
     },
     mounted() {
-        console.log(this.selectedConversation);
+        const listElm = document.getElementById('infinite-list');
+
+        listElm.addEventListener('scroll', async e => {
+            if(listElm.scrollTop + listElm.clientHeight >= (listElm.scrollHeight - 200) && this.is_loading == false) {
+                this.is_loading = true;
+                await this.getConversations(this.current_page + 1);
+            }
+        });
+
         this.getConversations();
         this.subscribeToChannel(this.userData.default_user_id);
     },
@@ -546,5 +585,25 @@ export default {
 
 .selected-chat {
     background-color: #f2f7f8;
+}
+
+.message-list {
+    height: 75vh;
+    overflow: auto;
+}
+
+.message-list::-webkit-scrollbar {
+  width: 20px;
+}
+
+.message-list::-webkit-scrollbar-track {
+  background-color: transparent;
+}
+
+.message-list::-webkit-scrollbar-thumb {
+  background-color: #d6dee1;
+  border-radius: 20px;
+  border: 6px solid transparent;
+  background-clip: content-box;
 }
 </style>

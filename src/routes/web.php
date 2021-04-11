@@ -73,6 +73,8 @@ Route::group(array('namespace' => 'Codificar\Chat\Http\Controllers'), function (
         Route::get('/api/libs/get_providers_chat', 'DirectChatController@getProvidersForConversation');
 
         Route::post('/api/libs/admin_send_message', 'AdminChatController@sendMessage');
+        Route::post('/api/libs/admin_bulk_message', 'AdminChatController@sendBulkMessage');
+        Route::get('/api/libs/filter_conversations', 'DirectChatController@filterConversations');
     });
 
     Route::get('/corp/lib/chat/{id?}', 'DirectChatController@renderDirectChat');

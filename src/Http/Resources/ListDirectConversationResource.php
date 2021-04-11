@@ -42,7 +42,8 @@ class ListDirectConversationResource extends JsonResource
         
         return [
             'success' => true,
-            'conversations' => $response
+            'conversations' => $response,
+            'locations' => $this['locations']
         ];
     }
 }

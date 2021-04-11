@@ -19,8 +19,10 @@ use Nahid\Talk\Conversations\Conversation;
 use Provider;
 use Settings;
 use Admin, Auth;
+use Codificar\Chat\Http\Resources\FilterConversationsResource;
 use Codificar\Chat\Http\Resources\ListConversationsForPanelResource;
 use Codificar\Chat\Http\Utils\Helper;
+use Location;
 
 class DirectChatController extends Controller
 {
@@ -153,6 +155,7 @@ class DirectChatController extends Controller
     public function listDirectConversations(ListDirectConversationRequest $request)
     {
         $conversations = null;
+        $locations = Location::select('id', 'name')->get();
 
         if ($request->sender_type == 'user') {
 
@@ -172,7 +175,8 @@ class DirectChatController extends Controller
             return new ListConversationsForPanelResource([
                 'sender_id' => $request->sender_id,
                 'sender_type' => $request->sender_type,
-                'conversations' => $conversations
+                'conversations' => $conversations,
+                'locations' => $locations
             ]);
         } else {
             $conversations = Conversation::where('user_one', $request->sender_id)
@@ -184,13 +188,36 @@ class DirectChatController extends Controller
             return new ListConversationsForPanelResource([
                 'sender_id' => $request->sender_id,
                 'sender_type' => $request->sender_type,
-                'conversations' => $conversations
+                'conversations' => $conversations,
+                'locations' => $locations
             ]);
         }
         
         return new ListDirectConversationResource([
             'sender_type' => $request->sender_type,
-            'conversations' => $conversations
+            'conversations' => $conversations,
+            'locations' => $locations
+        ]);
+    }
+
+    /**
+     * Get paginated conversations
+     * 
+     * @param ListDirectConversationRequest $request
+     * @return FilterConversationsResource
+     */
+    public function filterConversations(ListDirectConversationRequest $request)
+    {
+        $conversations = Helper::filterDirectFetch($request);
+        $locations = Location::select('id', 'name')->get();
+        
+        return new FilterConversationsResource([
+            'sender_id' => $request->sender_id,
+            'sender_type' => $request->sender_type,
+            'conversations' => $conversations['data'],
+            'last_page' => $conversations['last_page'],
+            'current_page' => $conversations['current_page'],
+            'locations' => $locations
         ]);
     }
 

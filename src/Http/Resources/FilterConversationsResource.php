@@ -2,9 +2,10 @@
 
 namespace Codificar\Chat\Http\Resources;
 
+use Codificar\Chat\Http\Utils\Helper;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class ListConversationsForPanelResource extends JsonResource
+class FilterConversationsResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -20,16 +21,16 @@ class ListConversationsForPanelResource extends JsonResource
 
         foreach ($conversations as $item) {
             if ($this['sender_type'] != 'provider') {
-                $receiver = $item->user_one == $this['sender_id'] ?
-                    $item->usertwo->provider :
-                    $item->userone->provider;
+                $receiver = $item['user_one'] == $this['sender_id'] ?
+                    Helper::getUserTypeInstance($item['user_two']) :
+                    Helper::getUserTypeInstance($item['user_one']);
             } else {
                 $receiver = $item->user_one == $this['sender_id'] ?
                     $item->usertwo->user :
                     $item->userone->user;
             }
 
-            $message = $item->messages[count($item->messages) -1];
+            $message = $item['messages'][count($item['messages']) -1];
             $ride = $item['request_id'] == 0 ? '' : ' #' . $item['request_id'];
             
             $data = [
@@ -40,8 +41,8 @@ class ListConversationsForPanelResource extends JsonResource
                 'last_name' => $receiver->last_name,
                 'full_name' => $receiver->first_name . ' ' . $receiver->last_name . $ride,
                 'picture' => $receiver->picture,
-                'last_message' => $message->message,
-                'time' => $message->humans_time,
+                'last_message' => $message['message'],
+                'time' => $message['humans_time'],
                 'messages' => $item['messages']
             ];
 
@@ -51,6 +52,8 @@ class ListConversationsForPanelResource extends JsonResource
         return [
             'success' => true,
             'conversations' => $response,
+            'last_page' => $this['last_page'],
+            'current_page' => $this['current_page'],
             'locations' => $this['locations']
         ];
     }

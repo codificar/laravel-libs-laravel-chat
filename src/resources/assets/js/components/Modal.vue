@@ -37,6 +37,22 @@
 
                         <div class="form-group">
                             <label class="control-label" for="email">
+                                Localização
+                            </label>
+                            <select v-model="location_id" class="form-control">
+                                <option value=''>Selecione...</option>
+                                <option 
+                                  v-for="(item, index) in locations"
+                                  :key="index"
+                                  :value="item.id"
+                                >
+                                  {{ item.name }}
+                                </option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="control-label" for="email">
                                 Tipo de mensagem
                             </label>
                             <select v-model="selectedMessageIndex" class="form-control">
@@ -55,8 +71,8 @@
                     
                     <div class="modal-footer">            
                        <div class="message-footer chat-send-message-footer">
-                          <input v-model="messageText" type="text" placeholder="Enviar">
-                          <a href="#" @click="sendMessage">
+                          <input v-model="messageText" type="text" placeholder="Digite sua mensagem">
+                          <a v-if="messageText != ''" href="#" @click="beforeSend">
                             <i class="mdi mdi-send"></i>
                           </a>
                       </div>                    
@@ -74,7 +90,8 @@ import axios from 'axios';
 export default {
   props: [
     'canonicalMessages',
-    'user'
+    'user',
+    'locations'
   ],
   components: {
     autocomplete
@@ -86,18 +103,26 @@ export default {
       who: 'provider',
       receiver_id: '',
       messageText: '',
+      location_id: '',
       id: '',
       token: ''
     }
   },
   methods: {
+    beforeSend() {
+      if (this.receiver_id && this.receiver_id != '')
+        this.sendMessage();
+      else
+        this.sendBulkMessage();
+    },
     async sendMessage() {
       try {
         const params = {
           id: this.id,
           token: this.token,
           receiver: this.receiver_id,
-          message: this.messageText
+          message: this.messageText,
+          location_id: this.location_id
         };
 
         const response = await axios.post('/api/libs/set_direct_message', params);
@@ -105,6 +130,22 @@ export default {
         this.$emit('modalSendMessage', data);
       } catch (error) {
         console.log('sendMessage', error);
+      }
+    },
+    async sendBulkMessage() {
+      console.log('qeqwe');
+      try {
+        const params = {
+          id: this.id,
+          token: this.token,
+          message: this.messageText,
+          location_id: this.location_id
+        };
+
+        await axios.post('/api/libs/admin_bulk_message', params);
+        window.location.reload();
+      } catch (error) {
+        console.log('sendBulkMessage', error);
       }
     },
     getWhoUrlString() {
