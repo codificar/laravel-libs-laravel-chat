@@ -8,6 +8,7 @@ use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Provider;
 use User;
+use Ledger;
 
 class SendDirectRequest extends FormRequest
 {
@@ -47,25 +48,17 @@ class SendDirectRequest extends FormRequest
         $senderLedger = Helper::getLedger($senderType, $this->userSystem->id);
         $receiver = null;
         $receiverLedger = null;
-        $receiverType = 'user';
         $receiverName = '';
         $receiverPicture = '';
-        
-        if ($senderType == 'user' || $senderType == 'corp') {
-            $receiver = Provider::find($this->receiver);
-            $receiverType = 'provider';
-        } else if ($senderType == 'provider') {
-            $receiver = User::find($this->receiver);
-        } else {
-            $receiver = Provider::find($this->receiver);
-            $receiverType = 'provider';
-        }
-        
+
+        $receiverLedger = Ledger::find($this->receiver);
+        $receiver = $receiverLedger ? Helper::getUserTypeInstance($receiverLedger->id) : null;
+
         if ($receiver) {
-            $receiverLedger = Helper::getLedger($receiverType, $receiver->id);
             $receiverName = $receiver->first_name . ' ' . $receiver->last_name;
             $receiverPicture = $receiver->picture;
         }
+
         
 		$this->merge([
 			"sender_type" => $senderType,

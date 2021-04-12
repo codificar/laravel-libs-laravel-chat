@@ -6,6 +6,7 @@ use Illuminate\Foundation\Http\FormRequest;
 use Codificar\Chat\Http\Utils\Helper;
 use Provider;
 use User;
+use Ledger;
 
 class GetDirectRequest extends FormRequest
 {
@@ -47,15 +48,7 @@ class GetDirectRequest extends FormRequest
         $receiverLedger = null;
         $receiverType = 'user';
 
-        if ($senderType == 'user') {
-            $receiver = Provider::find($this->receiver);
-            $receiverType = 'provider';
-        } else {
-            $receiver = User::find($this->receiver);
-        }
-
-        if ($receiver)
-            $receiverLedger = Helper::getLedger($receiverType, $receiver->id);
+        $receiverLedger = Ledger::find($this->receiver);
         
 		$this->merge([
 			"sender_type" => $senderType,

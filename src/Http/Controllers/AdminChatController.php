@@ -33,7 +33,9 @@ class AdminChatController extends Controller
             $request->picture->move(public_path() . "/uploads", $fileName);
         }
 
-        SendBulkMessageJob::dispatch($data, $requestObj, $request->message, $fileName);
+        foreach ($data as $item) {
+            SendBulkMessageJob::dispatch($item, $requestObj, $request->message, $fileName);
+        }
         
         return response()->json([
             'success' => true
@@ -76,8 +78,9 @@ class AdminChatController extends Controller
 
         if ($request->type == 'provider') {
             $users = Provider::where(DB::raw('CONCAT_WS(" ", first_name, last_name)'), 'like', '%' . $request->name . '%')
+                ->leftJoin('ledger', 'provider.id', '=', 'ledger.provider_id')
                 ->select(
-                    'id',
+                    'ledger.id as id',
                     DB::raw('CONCAT_WS(" ", first_name, last_name) as name'),
                     'picture'
                 )

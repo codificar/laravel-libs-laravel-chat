@@ -20,21 +20,15 @@ class FilterConversationsResource extends JsonResource
         $conversations = $this['conversations'];
 
         foreach ($conversations as $item) {
-            if ($this['sender_type'] != 'provider') {
-                $receiver = $item['user_one'] == $this['sender_id'] ?
-                    Helper::getUserTypeInstance($item['user_two']) :
-                    Helper::getUserTypeInstance($item['user_one']);
-            } else {
-                $receiver = $item->user_one == $this['sender_id'] ?
-                    $item->usertwo->user :
-                    $item->userone->user;
-            }
+            $receiver = $item['user_one'] == $this['sender_id'] ?
+                Helper::getUserTypeInstance($item['user_two']) :
+                Helper::getUserTypeInstance($item['user_one']);
 
             $message = $item['messages'][count($item['messages']) -1];
             $ride = $item['request_id'] == 0 ? '' : ' #' . $item['request_id'];
             
             $data = [
-                'id' => $receiver->id,
+                'id' => $receiver->ledger_id,
                 'conversation_id' => $item['id'],
                 'request_id' => $item['request_id'],
                 'first_name' => $receiver->first_name,

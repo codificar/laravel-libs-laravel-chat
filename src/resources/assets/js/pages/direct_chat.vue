@@ -85,12 +85,12 @@
                                         onerror="this.src='/vendor/codificar/chat/user.png'"
                                     >
                                 </div>
-                                <div :class="item.user_id == ledger ? 'text-right' : ''">
+                                <div :class="item.user_id == ledger ? 'text-right' : 'text-left'">
                                     <h5 v-if="item.user_id != ledger" class="text-muted">{{ selectedConversation.full_name }}</h5>
-                                    <div class="box mb-2 d-inline-block text-dark rounded p-2 message-display" :class="item.user_id == ledger ? ' bg-light-inverse' : ' bg-light-info'">
+                                    <span class="box mb-2 d-inline-block text-dark rounded p-2 message-display" :class="item.user_id == ledger ? ' bg-light-inverse' : ' bg-light-info'">
                                         <p>{{ item.message }}</p>
-                                        <img class="message-display-img" v-if="item.picture" :src="'/uploads/'+item.picture" alt="">
-                                    </div>
+                                        <img class="message-display-img" v-if="item.picture" :src="'/img/cache/thumb/' + item.picture" alt="">
+                                    </span>
                                 </div>
                                 <div class="chat-time text-right text-muted">
                                     {{ item.humans_time }}
@@ -542,9 +542,6 @@ export default {
     width: calc(100% - 70px);
 }
 
-.conversation-row div:nth-child(2) p {
-    margin-right: 15px;
-}
 
 .chat-time {
     font-size: 12px;
@@ -649,6 +646,6 @@ export default {
 }
 
 .message-display-img {
-    max-width: 300px;
+    width: 300px;
 }
 </style>

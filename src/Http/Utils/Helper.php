@@ -2,7 +2,7 @@
 
 namespace Codificar\Chat\Http\Utils;
 
-use Ledger, User, Provider;
+use Ledger, User, Provider, Admin;
 use Nahid\Talk\Conversations\Conversation;
 use Illuminate\Pagination\Paginator;
 
@@ -59,10 +59,21 @@ class Helper {
             $data = User::find($ledger->user_id);
             $data->ledger_id = $id;
             $data->full_name = $data->first_name . ' ' . $data->last_name;
+            $data->user_type = 'user';
             
             return $data;
         } else if ($ledger && $ledger->provider_id) {
-            return Provider::find($ledger->provider_id);
+            $data = Provider::find($ledger->provider_id);
+            $data->full_name = $data->first_name . ' ' . $data->last_name;
+            $data->ledger_id = $id;
+            $data->user_type = 'provider';
+            return $data;
+        } else if ($ledger && $ledger->admin_id) {
+            $data = Admin::find($ledger->admin_id);
+            $data->full_name = $data->name;
+            $data->ledger_id = $id;
+            $data->user_type = 'admin';
+            return $data;
         }
 
         return null;
@@ -75,14 +86,13 @@ class Helper {
      */
     public static function getBulkUserTypeData($request)
     {
-        $data = Provider::select('provider.id', 'provider.email', 'ledger.id as ledger_id')
-            ->leftJoin('ledger', 'provider.id', '=', 'ledger.provider_id')
-            ->limit(50);
+        $data = Provider::select('provider.id', 'provider.email', 'provider.device_token', 'provider.device_type', 'ledger.id as ledger_id')
+            ->leftJoin('ledger', 'provider.id', '=', 'ledger.provider_id');
 
         if ($request->location_id && $request->location_id != '') 
             $data = $data->where('location_id', $request->location_id);
 
-        return $data->get();
+        return $data->get()->chunk(250);
     }
 
     /**

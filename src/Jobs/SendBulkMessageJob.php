@@ -58,15 +58,9 @@ class SendBulkMessageJob implements ShouldQueue
 					$message->picture = $this->fileName;
 					$message->save();
 				}
-    
-                Helper::sendNotificationMessageReceived(
-                    trans('laravelchat::laravelchat.new_message'), 
-                    $message->conversation_id, 
-                    $message->message, 
-                    $item->id, 
-                    'provider'
-                );
             }
+
+			SendBulkNotificationJob::dispatch($this->data);
 		} catch (Exception $e) {
 			Log::error($e);
 		}
