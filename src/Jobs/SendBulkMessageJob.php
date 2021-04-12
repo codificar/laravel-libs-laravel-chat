@@ -18,6 +18,7 @@ class SendBulkMessageJob implements ShouldQueue
     protected $data;
     protected $requestObj;
     protected $message;
+    protected $fileName;
 
     public function tags() 
     {
@@ -29,11 +30,12 @@ class SendBulkMessageJob implements ShouldQueue
 	 *
 	 * @return void
 	 */
-	public function __construct($data, $requestObj, $message)
+	public function __construct($data, $requestObj, $message, $fileName)
 	{
 		$this->data = $data;
 		$this->requestObj = $requestObj;
 		$this->message = $message;
+		$this->fileName = $fileName;
 	}
 
 	/**
@@ -51,6 +53,11 @@ class SendBulkMessageJob implements ShouldQueue
                 
                 $conversation = Helper::geOrCreatetConversation($this->requestObj);
                 $message = \Talk::sendMessage($conversation->id, $this->message);
+
+				if ($this->fileName) {
+					$message->picture = $this->fileName;
+					$message->save();
+				}
     
                 Helper::sendNotificationMessageReceived(
                     trans('laravelchat::laravelchat.new_message'), 

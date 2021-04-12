@@ -65,6 +65,7 @@ class DirectChatController extends Controller
 
         \Talk::setAuthUserId($request->sender_id);
         $message = \Talk::sendMessage($conversation->id, $request->message);
+        Helper::savePicture($request, $message);
 
         event(new EventConversation($message));
 

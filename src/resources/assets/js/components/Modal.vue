@@ -71,8 +71,12 @@
                     
                     <div class="modal-footer">            
                        <div class="message-footer chat-send-message-footer">
+                          <input @change="onFileChange" ref="picture" type="file" hidden>
+                          <a @click="attachmentPicture" class="chat-attachment" href="#">
+                              <i class="mdi mdi-attachment"></i>
+                          </a>
                           <input v-model="messageText" type="text" placeholder="Digite sua mensagem">
-                          <a v-if="messageText != ''" href="#" @click="beforeSend">
+                          <a class="chat-send-btn" v-if="messageText != ''" href="#" @click="beforeSend">
                             <i class="mdi mdi-send"></i>
                           </a>
                       </div>                    
@@ -105,7 +109,8 @@ export default {
       messageText: '',
       location_id: '',
       id: '',
-      token: ''
+      token: '',
+      picture: null
     }
   },
   methods: {
@@ -117,15 +122,19 @@ export default {
     },
     async sendMessage() {
       try {
-        const params = {
-          id: this.id,
-          token: this.token,
-          receiver: this.receiver_id,
-          message: this.messageText,
-          location_id: this.location_id
-        };
 
-        const response = await axios.post('/api/libs/set_direct_message', params);
+        let dataForm = new FormData();
+
+        dataForm.append('id', this.id);
+        dataForm.append('token', this.token);
+        dataForm.append('receiver', this.receiver_id);
+        dataForm.append('message', this.messageText);
+        dataForm.append('location_id', this.location_id);
+
+        if (this.picture)
+          dataForm.append('picture', this.picture);
+
+        const response = await axios.post('/api/libs/set_direct_message', dataForm);
         const { data } = response;
         this.$emit('modalSendMessage', data);
       } catch (error) {
@@ -133,16 +142,18 @@ export default {
       }
     },
     async sendBulkMessage() {
-      console.log('qeqwe');
       try {
-        const params = {
-          id: this.id,
-          token: this.token,
-          message: this.messageText,
-          location_id: this.location_id
-        };
+        let dataForm = new FormData();
 
-        await axios.post('/api/libs/admin_bulk_message', params);
+        dataForm.append('id', this.id);
+        dataForm.append('token', this.token);
+        dataForm.append('message', this.messageText);
+        dataForm.append('location_id', this.location_id);
+
+        if (this.picture)
+          dataForm.append('picture', this.picture);
+
+        await axios.post('/api/libs/admin_bulk_message', dataForm);
         window.location.reload();
       } catch (error) {
         console.log('sendBulkMessage', error);
@@ -166,7 +177,14 @@ export default {
     },
     clearSelectReceiver () {
 			this.receiver_id = '';
-		}
+		},
+    attachmentPicture() {
+        this.$refs.picture.click();
+    },
+    onFileChange(e) {
+        this.picture = e.target.files[0];
+        console.log('333', this.picture);
+    }
   },
   watch: {
     selectedMessageIndex: function() {

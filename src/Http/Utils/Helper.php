@@ -171,4 +171,26 @@ class Helper {
         return $data->toArray();
     }
 
+    /**
+     * Upload message picture
+     * 
+     * @param object $request
+     * @return string
+     */
+    public static function savePicture($request, $message)
+    {
+        try {
+            if ($request->picture) {
+
+				$fileName = str_random(40) . "." . $request->picture->getClientOriginalExtension();
+				$request->picture->move(public_path() . "/uploads", $fileName);
+
+				$message->picture = $fileName;
+                $message->save(); 
+			}
+        } catch (\Throwable $th) {
+            \Log::error($th->getMessage());
+        }
+    }
+
 }

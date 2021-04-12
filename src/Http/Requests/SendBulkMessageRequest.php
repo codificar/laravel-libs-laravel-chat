@@ -30,7 +30,8 @@ class SendBulkMessageRequest extends FormRequest
     {
         return [
             "message" => "string|required",
-            "sender_id" => "required"
+            "sender_id" => "required",
+            "picture" => "image"
         ];
     }
 

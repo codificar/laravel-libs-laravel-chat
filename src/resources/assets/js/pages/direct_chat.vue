@@ -78,7 +78,8 @@
                                 :key="index"
                             >
                                 <div>
-                                    <img 
+                                    <img
+                                        class="message-avatar"
                                         v-if="item.user_id != ledger" 
                                         :src="selectedConversation.picture" 
                                         onerror="this.src='/vendor/codificar/chat/user.png'"
@@ -86,9 +87,10 @@
                                 </div>
                                 <div :class="item.user_id == ledger ? 'text-right' : ''">
                                     <h5 v-if="item.user_id != ledger" class="text-muted">{{ selectedConversation.full_name }}</h5>
-                                    <p class="box mb-2 d-inline-block text-dark rounded p-2" :class="item.user_id == ledger ? ' bg-light-inverse' : ' bg-light-info'">
-                                        {{ item.message }}
-                                    </p>
+                                    <div class="box mb-2 d-inline-block text-dark rounded p-2 message-display" :class="item.user_id == ledger ? ' bg-light-inverse' : ' bg-light-info'">
+                                        <p>{{ item.message }}</p>
+                                        <img class="message-display-img" v-if="item.picture" :src="'/uploads/'+item.picture" alt="">
+                                    </div>
                                 </div>
                                 <div class="chat-time text-right text-muted">
                                     {{ item.humans_time }}
@@ -101,8 +103,12 @@
             </div>
 
             <div class="border-top chat-send-message-footer">
+                <input @change="onFileChange" ref="picture" type="file" hidden>
+                <a @click="attachmentPicture" class="chat-attachment" href="#">
+                    <i class="mdi mdi-attachment"></i>
+                </a>
                 <input v-model="textMessage" type="text" :placeholder="trans.send_message">
-                <a v-if="textMessage" @click="handleSendMessage" href="#">
+                <a class="chat-send-btn" v-if="textMessage" @click="handleSendMessage" href="#">
                     <i class="mdi mdi-send"></i>
                 </a>
             </div>
@@ -163,7 +169,8 @@ export default {
             locations: [],
             current_page: 1,
             last_page: 1,
-            is_loading: false
+            is_loading: false,
+            picture: null
         }
     },
     filters: {
@@ -238,18 +245,24 @@ export default {
         },
         async sendMessage() {
             try {
-                const response = await axios.post('/api/libs/set_direct_message', {
-                    id: this.userData.id,
-                    token: this.userData.api_key,
-                    receiver: this.selectedConversation.id,
-                    message: this.textMessage
-                });
+                let dataForm = new FormData();
+
+                dataForm.append('id', this.userData.id);
+                dataForm.append('token', this.userData.api_key);
+                dataForm.append('receiver', this.selectedConversation.id);
+                dataForm.append('message', this.textMessage);
+
+                if (this.picture)
+                    dataForm.append('picture', this.picture);
+                
+                const response = await axios.post('/api/libs/set_direct_message', dataForm);
 
                 const { data } = response;
                 this.selectedConversation.messages.push(data.message);
 
                 this.newMessage = data.message;
                 this.textMessage = '';
+                this.picture = null;
             } catch (error) {
                 console.log('sendMessage', error);
             }
@@ -343,6 +356,13 @@ export default {
             }
 
             this.showModal = false;
+        },
+        attachmentPicture() {
+            this.$refs.picture.click();
+        },
+        onFileChange(e) {
+            this.picture = e.target.files[0];
+            console.log('333', this.picture);
         }
     },
     watch: {
@@ -511,7 +531,7 @@ export default {
     margin-top: 17px;
 }
 
-.conversation-row div:nth-child(1) img {
+.message-avatar {
     width: 45px;
     height: 45px;
     border-radius: 40px;
@@ -541,10 +561,14 @@ export default {
     flex-direction: row;
     align-items: center;
     padding: 0 15px;
+    background: #eee;
 }
 
 .chat-send-message-footer input {
     border: none;
+    border-radius: 50px;
+    height: 40px;
+    padding-left: 22px;
     width: calc(100% - 70px);
 }
 
@@ -564,8 +588,16 @@ export default {
     height: 100%;
 }
 
-.chat-send-message-footer a {
+.chat-send-btn {
     font-size: 26px;
+    margin-left: 20px;
+    color: #919191;
+}
+
+.chat-attachment {
+    font-size: 35px;
+    color: #919191;
+    margin-right: 15px;
 }
 
 .new-conversation {
@@ -605,5 +637,18 @@ export default {
   border-radius: 20px;
   border: 6px solid transparent;
   background-clip: content-box;
+}
+
+.message-display {
+    display: flex;
+    flex-direction: row;
+}
+
+.message-display p {
+    margin-right: 0;
+}
+
+.message-display-img {
+    max-width: 300px;
 }
 </style>

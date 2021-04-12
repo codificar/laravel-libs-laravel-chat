@@ -31,7 +31,8 @@ class SendDirectRequest extends FormRequest
         return [
             "message" => "string|required",
             "sender_id" => "required",
-            "receiver_id" => "required"
+            "receiver_id" => "required",
+            "picture" => "image"
         ];
     }
 

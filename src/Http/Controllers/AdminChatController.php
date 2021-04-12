@@ -26,7 +26,14 @@ class AdminChatController extends Controller
         $requestObj->sender_type = $request->sender_type;
         $requestObj->sender_id = $request->sender_id;
 
-        SendBulkMessageJob::dispatch($data, $requestObj, $request->message);
+        $fileName = null;
+
+        if ($request->picture) {
+            $fileName = str_random(40) . "." . $request->picture->getClientOriginalExtension();
+            $request->picture->move(public_path() . "/uploads", $fileName);
+        }
+
+        SendBulkMessageJob::dispatch($data, $requestObj, $request->message, $fileName);
         
         return response()->json([
             'success' => true
