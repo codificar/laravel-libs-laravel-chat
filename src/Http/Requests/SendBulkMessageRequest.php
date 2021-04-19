@@ -31,7 +31,7 @@ class SendBulkMessageRequest extends FormRequest
         return [
             "message" => "string|required",
             "sender_id" => "required",
-            "picture" => "image"
+            "picture" => "file|mimes:jpeg,png,jpg|max:2048"
         ];
     }
 

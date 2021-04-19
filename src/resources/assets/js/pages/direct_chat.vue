@@ -89,7 +89,7 @@
                                     <h5 v-if="item.user_id != ledger" class="text-muted">{{ selectedConversation.full_name }}</h5>
                                     <span class="box mb-2 d-inline-block text-dark rounded p-2 message-display" :class="item.user_id == ledger ? ' bg-light-inverse' : ' bg-light-info'">
                                         <p>{{ item.message }}</p>
-                                        <img class="message-display-img" v-if="item.picture" :src="'/img/cache/thumb/' + item.picture" alt="">
+                                        <img class="message-display-img" v-if="item.picture" :src="'/uploads/' + item.picture" alt="">
                                     </span>
                                 </div>
                                 <div class="chat-time text-right text-muted">

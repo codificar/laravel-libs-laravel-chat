@@ -33,7 +33,7 @@ class SendDirectRequest extends FormRequest
             "message" => "string|required",
             "sender_id" => "required",
             "receiver_id" => "required",
-            "picture" => "image"
+            "picture" => "file|mimes:jpeg,png,jpg|max:2048"
         ];
     }
 
