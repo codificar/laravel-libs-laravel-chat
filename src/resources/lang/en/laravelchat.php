@@ -25,5 +25,6 @@ return [
     'open_chat' => 'Open a chat in the list',
     'origin' => 'Origin',
     'destination' => 'Destination',
-    'point' => 'Points'
+    'point' => 'Points',
+    'image_uploaded' => 'Successfully selected image!'
 ];

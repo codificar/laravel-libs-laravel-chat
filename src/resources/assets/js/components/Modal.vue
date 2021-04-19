@@ -183,7 +183,15 @@ export default {
     },
     onFileChange(e) {
         this.picture = e.target.files[0];
-        console.log('333', this.picture);
+        this.$toasted.show(
+          'Imagem selecionada com sucesso!', 
+          { 
+              theme: "bubble", 
+              type: "info" ,
+              position: "bottom-center", 
+              duration : 5000
+          }
+        );
     }
   },
   watch: {

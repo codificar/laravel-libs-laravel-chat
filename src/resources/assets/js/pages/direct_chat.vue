@@ -208,9 +208,8 @@ export default {
                         this.selectConversation(this.conversations[0]);
                         return;
                     }
-                    console.log('1111', conversations);
+                    
                     this.conversations = conversations;
-    
     
                     for (let i = 0; i < this.conversations.length; i++) {
                         if (this.conversations[i].conversation_id == this.conversationid)
@@ -290,8 +289,6 @@ export default {
             }
         },
         filterResults() {
-            console.log(this.filterName);
-
             if (this.filterName.length > 0) {
                 this.filteredConversations = this.conversations.filter(query => {
                     return query.full_name.
@@ -333,7 +330,6 @@ export default {
             }
         },
         onModalSendMessage(value) {
-            console.log('qqqqqq', value);
             const conversation = this.conversations.filter(query => {
                 return query.conversation_id == value.conversation_id;
             });
@@ -362,7 +358,15 @@ export default {
         },
         onFileChange(e) {
             this.picture = e.target.files[0];
-            console.log('333', this.picture);
+            this.$toasted.show(
+                this.trans.image_uploaded, 
+                { 
+                    theme: "bubble", 
+                    type: "info" ,
+                    position: "bottom-center", 
+                    duration : 5000
+                }
+            );
         }
     },
     watch: {
