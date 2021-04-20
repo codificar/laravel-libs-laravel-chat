@@ -131,6 +131,7 @@
             :locations="locations"
             :user="user"
             @modalSendMessage="onModalSendMessage"
+            :trans="trans"
         />
     </div>
 </template>

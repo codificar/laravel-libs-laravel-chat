@@ -5,7 +5,7 @@
             <div class="modal-wrapper">
                 <div class="modal-container">
                     <div class="modal-header">
-                        <h3>Adicionar nova mensagem</h3>
+                        <h3>{{ trans.add_message }}</h3>
                         <a href="#"
                           @click="$emit('close')"
                         >X</a>
@@ -14,10 +14,10 @@
                     <div class="modal-body">
                         <div class="form-group">
                             <label class="control-label" for="email">
-                                Com quem
+                                {{ trans.with_who }}
                             </label>
                             <select v-model="who" class="form-control">
-                                <option value="provider">Prestador</option>
+                                <option value="provider">{{ trans.provider }}</option>
                             </select>
                         </div>
 
@@ -27,7 +27,7 @@
                             method="get"
                             input-class="form-control"
                             name="receiver_id"
-                            placeholder="Procurar"
+                            :placeholder="trans.search"
                             results-property="users"
                             :results-display="formattedAutocomplete"
                             @selected="selectReceiver"
@@ -37,10 +37,10 @@
 
                         <div class="form-group">
                             <label class="control-label" for="email">
-                                Localização
+                                {{ trans.location }}
                             </label>
                             <select v-model="location_id" class="form-control">
-                                <option value=''>Selecione...</option>
+                                <option value=''>{{ trans.select }}</option>
                                 <option 
                                   v-for="(item, index) in locations"
                                   :key="index"
@@ -53,10 +53,10 @@
 
                         <div class="form-group">
                             <label class="control-label" for="email">
-                                Tipo de mensagem
+                                {{ trans.message_type }}
                             </label>
                             <select v-model="selectedMessageIndex" class="form-control">
-                                <option value=''>Selecione...</option>
+                                <option value=''>{{ trans.select }}</option>
                                 <option 
                                   v-for="(item, index) in canonical_messages"
                                   :key="index"
@@ -75,7 +75,7 @@
                           <a @click="attachmentPicture" class="chat-attachment" href="#">
                               <i class="mdi mdi-attachment"></i>
                           </a>
-                          <input v-model="messageText" type="text" placeholder="Digite sua mensagem">
+                          <input v-model="messageText" type="text" :placeholder="trans.send_message">
                           <a class="chat-send-btn" v-if="messageText != ''" href="#" @click="beforeSend">
                             <i class="mdi mdi-send"></i>
                           </a>
@@ -95,7 +95,8 @@ export default {
   props: [
     'canonicalMessages',
     'user',
-    'locations'
+    'locations',
+    'trans'
   ],
   components: {
     autocomplete

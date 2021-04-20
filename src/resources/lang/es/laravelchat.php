@@ -26,5 +26,12 @@ return [
     'origin' => 'Origem',
     'destination' => 'Destino',
     'point' => 'Punto',
-    'image_uploaded' => 'Imagen seleccionada correctamente!'
+    'image_uploaded' => 'Imagen seleccionada correctamente!',
+    'add_message' => 'Agregar mensaje nuevo',
+    'with_who' => 'Com quem',
+    'provider' => 'Proveedor',
+    'search' => 'Buscar',
+    'location' => 'Localización',
+    'select' => 'Seleccione...',
+    'message_type' => 'Tipo de mensaje'
 ];
