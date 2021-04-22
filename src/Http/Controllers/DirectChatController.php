@@ -32,7 +32,7 @@ class DirectChatController extends Controller
      */
     public function renderDirectChat($id = null)
     {
-        $user = Auth::guard('web')->user();
+        $user = Auth::guard('web_corp')->user();
         $ledger = null;
 
         if (!$user)
