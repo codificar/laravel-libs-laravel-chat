@@ -71,7 +71,7 @@ class DirectChatController extends Controller
         $message = \Talk::sendMessage($conversation->id, $request->message);
         Helper::savePicture($request, $message);
 
-        event(new EventConversation($message));
+        event(new EventConversation($message->id));
 
         if ($request->sender_type == 'admin') {
             return response()->json([
