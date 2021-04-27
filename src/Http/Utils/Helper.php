@@ -62,8 +62,8 @@ class Helper {
             $data->user_type = 'user';
             
             return $data;
-        } else if ($ledger && $ledger->provider_id) {
-            $data = Provider::find($ledger->provider_id);
+        } else if ($ledger && $ledger->provider_id && ($provider = Provider::find($ledger->provider_id))) {
+            $data = $provider;
             $data->full_name = $data->first_name . ' ' . $data->last_name;
             $data->ledger_id = $id;
             $data->user_type = 'provider';
