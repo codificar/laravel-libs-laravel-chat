@@ -119,7 +119,7 @@ class RequestHelpController extends Controller
         \Talk::setAuthUserId($request->sender_id);
         $message = \Talk::sendMessage($conversation->id, $request->message);
 
-        event(new EventConversation($message));
+        event(new EventConversation($message->id));
 
         $receiver = Ledger::find($conversation->user_one);
 

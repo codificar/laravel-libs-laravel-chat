@@ -218,7 +218,7 @@ class RideChatController extends Controller
 			$message = $convRequest->sendMessage($request->receiver_id, $request->message);
 			
 			if ($isNewConversation) {
-				event(new EventNewConversation($ride, $message->conversation_id, $request->receiver_id));
+				event(new EventNewConversation($ride->id, $message->conversation_id, $request->receiver_id));
 			}
 
 			if ($request->is_admin) {
@@ -229,7 +229,7 @@ class RideChatController extends Controller
 				}
 			}
 			
-            event(new EventConversation($message));
+            event(new EventConversation($message->id));
             
 			Log::notice("sender_type:". $request->sender_type);
 			Log::notice("receiver_id:". $request->receiver_id);
@@ -330,7 +330,7 @@ class RideChatController extends Controller
 		$message = Message::find($request->message_id);
 		ConversationRequest::setMessagesAsSeen($message, $request->u_id);
 
-		event(new EventReadMessage($message));
+		event(new EventReadMessage($message->id));
 
 		return response()->json([
             "success" => true

@@ -20,8 +20,8 @@ class EventNewConversation implements ShouldBroadcast {
 	 *
 	 * @return void
 	 */
-	public function __construct(Requests $request, $conversationId, $receiverId) {
-		$this->request = $request;
+	public function __construct($request_id, $conversationId, $receiverId) {
+		$this->request = \Requests::find($request_id);
 		$this->conversationId = $conversationId;
 		$this->receiverId = $receiverId;
 	}

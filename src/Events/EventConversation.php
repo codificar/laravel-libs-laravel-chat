@@ -18,8 +18,8 @@ class EventConversation implements ShouldBroadcast {
 	 *
 	 * @return void
 	 */
-	public function __construct($message) {
-		$this->message = $message;
+	public function __construct($message_id) {
+		$this->message = Message::find($message_id);
 	}
 
 	/**
