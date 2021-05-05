@@ -16,6 +16,7 @@ class SendBulkNotificationJob implements ShouldQueue
 	use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     protected $data;
+    protected $message;
 
     public function tags() 
     {
@@ -27,9 +28,10 @@ class SendBulkNotificationJob implements ShouldQueue
 	 *
 	 * @return void
 	 */
-	public function __construct($data)
+	public function __construct($data, $message)
 	{
 		$this->data = $data;
+		$this->message = $message;
 	}
 
 	/**
@@ -39,7 +41,6 @@ class SendBulkNotificationJob implements ShouldQueue
 	 */
 	public function handle()
 	{
-		$items = $this->data->toArray();
-        send_android_push($items, trans('laravelchat::laravelchat.new_message'), trans('laravelchat::laravelchat.new_message'));
+        send_android_push($this->data, trans('laravelchat::laravelchat.new_message'), $this->message);
 	}
 }

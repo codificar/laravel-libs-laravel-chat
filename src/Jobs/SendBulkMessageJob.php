@@ -60,9 +60,30 @@ class SendBulkMessageJob implements ShouldQueue
 				}
             }
 
-			SendBulkNotificationJob::dispatch($this->data);
+			SendBulkNotificationJob::dispatch($this->parseDeviceTokens($this->data), $this->message);
 		} catch (Exception $e) {
 			Log::error($e);
+		}
+	}
+
+	/**
+	 * Mount device token array
+	 * 
+	 * @param Provider $data
+	 * @return array
+	 */
+	public function parseDeviceTokens($data)	
+	{
+		try {
+			$tokens = [];
+
+			foreach($data as $item) {
+				array_push($tokens, $item->device_token);
+			}
+
+			return $tokens;
+		} catch (\Throwable $th) {
+			return [];
 		}
 	}
 }
