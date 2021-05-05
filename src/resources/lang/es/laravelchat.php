@@ -33,5 +33,6 @@ return [
     'search' => 'Buscar',
     'location' => 'Localización',
     'select' => 'Seleccione...',
-    'message_type' => 'Tipo de mensaje'
+    'message_type' => 'Tipo de mensaje',
+    'user' => 'Usuário'
 ];

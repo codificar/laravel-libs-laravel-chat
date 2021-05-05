@@ -19,6 +19,7 @@ class SendBulkMessageJob implements ShouldQueue
     protected $requestObj;
     protected $message;
     protected $fileName;
+    protected $type;
 
     public function tags() 
     {
@@ -30,12 +31,13 @@ class SendBulkMessageJob implements ShouldQueue
 	 *
 	 * @return void
 	 */
-	public function __construct($data, $requestObj, $message, $fileName)
+	public function __construct($data, $requestObj, $message, $fileName, $type)
 	{
 		$this->data = $data;
 		$this->requestObj = $requestObj;
 		$this->message = $message;
 		$this->fileName = $fileName;
+		$this->type = $type;
 	}
 
 	/**
@@ -49,14 +51,23 @@ class SendBulkMessageJob implements ShouldQueue
             \Talk::setAuthUserId($this->requestObj->sender_id);
             
 			foreach ($this->data as $item) {
-                $this->requestObj->receiver_id = $item->ledger_id;
-                
-                $conversation = Helper::geOrCreatetConversation($this->requestObj);
-                $message = \Talk::sendMessage($conversation->id, $this->message);
+				if ($item->ledger_id) {
+					$ledgerId = $item->ledger_id;
+				} else {
+					$ledger = Helper::getLedger($this->type, $item->id);
+					$ledgerId = $ledger ? $ledger->id : null;
+				}
 
-				if ($this->fileName) {
-					$message->picture = $this->fileName;
-					$message->save();
+				if ($ledgerId) {
+					$this->requestObj->receiver_id = $ledgerId;
+					
+					$conversation = Helper::geOrCreatetConversation($this->requestObj);
+					$message = \Talk::sendMessage($conversation->id, $this->message);
+	
+					if ($this->fileName) {
+						$message->picture = $this->fileName;
+						$message->save();
+					}
 				}
             }
 

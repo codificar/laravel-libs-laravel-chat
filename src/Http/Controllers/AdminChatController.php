@@ -7,7 +7,7 @@ use Codificar\Chat\Http\Requests\AdminGetUserForChatRequest;
 use Codificar\Chat\Http\Requests\SendBulkMessageRequest;
 use Codificar\Chat\Http\Utils\Helper;
 use Codificar\Chat\Jobs\SendBulkMessageJob;
-use Provider, DB, Auth;
+use Provider, DB, Auth, User;
 use stdClass;
 
 class AdminChatController extends Controller 
@@ -34,7 +34,7 @@ class AdminChatController extends Controller
         }
 
         foreach ($data as $item) {
-            SendBulkMessageJob::dispatch($item, $requestObj, $request->message, $fileName);
+            SendBulkMessageJob::dispatch($item, $requestObj, $request->message, $fileName, $request->type);
         }
         
         return response()->json([
@@ -79,6 +79,16 @@ class AdminChatController extends Controller
         if ($request->type == 'provider') {
             $users = Provider::where(DB::raw('CONCAT_WS(" ", first_name, last_name)'), 'like', '%' . $request->name . '%')
                 ->leftJoin('ledger', 'provider.id', '=', 'ledger.provider_id')
+                ->select(
+                    'ledger.id as id',
+                    DB::raw('CONCAT_WS(" ", first_name, last_name) as name'),
+                    'picture'
+                )
+                ->limit(10)
+                ->get();
+        } elseif ($request->type == 'user') {
+            $users = User::where(DB::raw('CONCAT_WS(" ", first_name, last_name)'), 'like', '%' . $request->name . '%')
+                ->leftJoin('ledger', 'user.id', '=', 'ledger.user_id')
                 ->select(
                     'ledger.id as id',
                     DB::raw('CONCAT_WS(" ", first_name, last_name) as name'),

@@ -18,6 +18,7 @@
                             </label>
                             <select v-model="who" class="form-control">
                                 <option value="provider">{{ trans.provider }}</option>
+                                <option value="user">{{ trans.user }}</option>
                             </select>
                         </div>
 
@@ -150,6 +151,7 @@ export default {
         dataForm.append('token', this.token);
         dataForm.append('message', this.messageText);
         dataForm.append('location_id', this.location_id);
+        dataForm.append('type', this.who);
 
         if (this.picture)
           dataForm.append('picture', this.picture);

@@ -37,9 +37,9 @@ class Helper {
 			return $ledger;
 
 		$ledger = new Ledger;
-		$ledger->admin_id = $id;
-		$ledger->user_id = null;
-		$ledger->provider_id = null;
+		$ledger->admin_id = $type == 'admin' ? $id : null;
+		$ledger->user_id = $type == 'user' ? $id : null;
+		$ledger->provider_id = $type == 'provider' ? $id : null;
 		$ledger->parent_id = null;
 		$ledger->save();
 
@@ -86,8 +86,13 @@ class Helper {
      */
     public static function getBulkUserTypeData($request)
     {
-        $data = Provider::select('provider.id', 'provider.email', 'provider.device_token', 'provider.device_type', 'ledger.id as ledger_id')
-            ->leftJoin('ledger', 'provider.id', '=', 'ledger.provider_id');
+        if ($request->type == 'provider') {
+            $data = Provider::select('provider.id', 'provider.email', 'provider.device_token', 'provider.device_type', 'ledger.id as ledger_id')
+                ->leftJoin('ledger', 'provider.id', '=', 'ledger.provider_id');
+        } elseif ($request->type == 'user') {
+            $data = User::select('user.id', 'user.email', 'user.device_token', 'user.device_type', 'ledger.id as ledger_id')
+                ->leftJoin('ledger', 'user.id', '=', 'ledger.user_id');
+        }
 
         if ($request->location_id && $request->location_id != '') 
             $data = $data->where('location_id', $request->location_id);
