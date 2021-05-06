@@ -169,11 +169,20 @@ class Helper {
 
     public static function filterDirectFetch($request)
     {
-        $conversations = Conversation::whereRequestId(0)
-            ->where('user_one', $request->sender_id)
-            ->orWhere('user_two', $request->sender_id)
-            ->with(['messages'])
-            ->orderBy('updated_at', 'desc');
+        if ($request->sender_type == 'corp') {
+            $conversations = Conversation::where('request_id', '>', 0)
+                ->where('user_two', $request->sender_id)
+                ->with(['messages'])
+                ->orderBy('updated_at', 'desc');
+
+        } else {
+            $conversations = Conversation::whereRequestId(0)
+                ->where('user_one', $request->sender_id)
+                ->orWhere('user_two', $request->sender_id)
+                ->with(['messages'])
+                ->orderBy('updated_at', 'desc');
+
+        }
         
         $currentPage = $request->page;
 

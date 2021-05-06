@@ -104,7 +104,7 @@
 
             <div class="border-top chat-send-message-footer">
                 <input @change="onFileChange" ref="picture" type="file" hidden>
-                <a @click="attachmentPicture" class="chat-attachment" href="#">
+                <a v-if="environment != 'corp'" @click="attachmentPicture" class="chat-attachment" href="#">
                     <i class="mdi mdi-attachment"></i>
                 </a>
                 <input v-model="textMessage" type="text" :placeholder="trans.send_message">
