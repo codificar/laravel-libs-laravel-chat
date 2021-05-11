@@ -24,7 +24,7 @@ class ListDirectConversationResource extends JsonResource
                 $item->usertwo->provider :
                 $item->userone->user;
                 
-            if($receiver){
+            if($receiver && $item){
 
                 $message = $item->messages[count($item->messages) -1];
             
