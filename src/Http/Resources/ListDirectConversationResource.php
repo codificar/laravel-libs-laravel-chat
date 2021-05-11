@@ -23,21 +23,24 @@ class ListDirectConversationResource extends JsonResource
             $receiver = $receiverType == 'usertwo' ? 
                 $item->usertwo->provider :
                 $item->userone->user;
+                
+            if($receiver){
 
-            $message = $item->messages[count($item->messages) -1];
+                $message = $item->messages[count($item->messages) -1];
             
-            $data = [
-                'id' => $receiver->id,
-                'first_name' => $receiver->first_name,
-                'last_name' => $receiver->last_name,
-                'full_name' => $receiver->first_name . ' ' . $receiver->last_name,
-                'picture' => $receiver->picture,
-                'last_message' => $message->message,
-                'time' => $message->humans_time,
-                'messages' => $item['messages']
-            ];
-
-            $response[] = $data;
+                $data = [
+                    'id' => $receiver->id,
+                    'first_name' => $receiver->first_name,
+                    'last_name' => $receiver->last_name,
+                    'full_name' => $receiver->first_name . ' ' . $receiver->last_name,
+                    'picture' => $receiver->picture,
+                    'last_message' => $message->message,
+                    'time' => $message->humans_time,
+                    'messages' => $item['messages']
+                ];
+    
+                $response[] = $data;
+            }
         }
         
         return [
