@@ -76,6 +76,7 @@ class DirectChatController extends Controller
         if ($request->sender_type == 'admin') {
             return response()->json([
                 "success" => true, 
+                "id" => $request->receiver_id,
                 "conversation_id" => $message->conversation_id,
                 "receiver_name" => $request->receiver_name,
                 "receiver_picture" => $request->receiver_picture,

@@ -230,7 +230,7 @@ export default {
             }
         },
         handleSendMessage() {
-            if (this.selectedConversation.request_id != 0) {
+            if (this.selectedConversation.request_id != 0 && this.selectedConversation.request_id != undefined) {
                 this.sendRideMessage();
             } else {
                 this.sendMessage();
@@ -340,6 +340,7 @@ export default {
                 this.selectedConversation.messages.push(value.message);
             } else {
                 const newConversation = {
+                    id: value.id,
                     conversation_id: value.conversation_id,
                     messages: [value.message],
                     full_name: value.receiver_name,

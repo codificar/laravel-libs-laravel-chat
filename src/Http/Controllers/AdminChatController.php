@@ -2,12 +2,13 @@
 
 namespace Codificar\Chat\Http\Controllers;
 
+use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Codificar\Chat\Http\Requests\AdminGetUserForChatRequest;
 use Codificar\Chat\Http\Requests\SendBulkMessageRequest;
 use Codificar\Chat\Http\Utils\Helper;
 use Codificar\Chat\Jobs\SendBulkMessageJob;
-use Provider, DB, Auth, User;
+use Provider, DB, Auth, User, Settings, Admin;
 use stdClass;
 
 class AdminChatController extends Controller 
@@ -67,6 +68,52 @@ class AdminChatController extends Controller
     }
 
     /**
+     * Render blade view for chat settings
+     * 
+     * @return view
+     */
+    public function renderChatSettings()
+    {
+        $user = Auth::guard('web')->user($id = null);
+        
+        if (!$user)
+            return \Redirect::to("/admin/login");
+        
+        $admins = Admin::whereProfileId(4)->select('id', 'username')->get()->toArray();
+        $defaultAdmin =  $this->getDefaultAdminChat();
+
+        return view('chat::chat_settings', [
+            'admins' => json_encode($admins),
+            'defaultAdmin' => $defaultAdmin
+        ]);
+    }
+
+    /**
+     * Render blade view for chat settings
+     * 
+     * @return view
+     */
+    public function saveDefaultAdminSetting(Request $request)
+    {
+        try {
+            $id = $request->id;
+
+            if ($id && $setting = Settings::where('key', 'default_admin_for_chat')->first()) {
+                $setting->value = $id;
+                $setting->save();
+            }
+
+            return response()->json([
+                "success" => true
+            ]);
+        } catch (\Throwable $th) {
+            return response()->json([
+                "success" => false
+            ]);
+        }
+    }
+
+    /**
      * Get specific user to send message
      * 
      * @param AdminGetUserForChatRequest $request
@@ -102,5 +149,35 @@ class AdminChatController extends Controller
             'success' => true,
             'users' => $users
         ]);
+    }
+
+    /**
+     * Get default admin id for chat
+     * 
+     * @return int 
+     */
+    public function getDefaultAdminChat()
+    {
+        $setting = Settings::where('key', 'default_admin_for_chat')->first();
+
+        if ($setting) {
+            return $setting->value;
+        } else {
+            $admin = Admin::whereUsername('root@codificar.com.br')->first();
+
+            if (!$admin)
+                $admin = Admin::whereProfileId(4)->first();
+
+            if ($admin) {
+                $setting = Settings::updateOrCreate([
+                    'key' => 'default_admin_for_chat'
+                ], [
+                    'key' => 'default_admin_for_chat',
+                    'value' => $admin->id
+                ]);
+
+                return $setting->value;
+            }
+        }
     }
 }

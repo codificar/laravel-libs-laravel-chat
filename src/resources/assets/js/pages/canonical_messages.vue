@@ -1,17 +1,17 @@
 <template>
   <div class=" card-outline-info">
     <div class="card-header">
-			<h4 class="m-b-0 text-white">Mensagens canonicas</h4>
+			<h4 class="m-b-0 text-white">{{ trans('laravelchat.canonical_messages') }}</h4>
       <button 
         @click="showModal = true"
         class="btn btn-success"
-      >Adicionar mensagem</button>
+      >{{ trans('laravelchat.add_message') }}</button>
 		</div>
     <div class="card-block">
       <table class="table table-condensed">
         <tr>
           <th>Shortcode</th>
-          <th>Mensagem</th>
+          <th>{{ trans('laravelchat.message') }}</th>
         </tr>
         <tr v-for="(item, index) in messages" :key="index">
           <td>{{ item.shortcode }}</td>
@@ -26,7 +26,7 @@
             <div class="modal-wrapper">
                 <div class="modal-container">
                     <div class="modal-header">
-                        <h3>Adicionar nova mensagem</h3>
+                        <h3>{{ trans('laravelchat.add_message') }}</h3>
                         <a href="#"
                           @click="showModal = false"
                         >X</a>
@@ -35,22 +35,22 @@
                     <div class="modal-body">
                         <div class="form-group">
                             <label class="control-label">
-                                Código
+                                {{ trans('laravelchat.code') }}
                             </label>
-                            <input v-model="shortcode" class="form-control" type="text" placeholder="Código">
+                            <input v-model="shortcode" class="form-control" type="text" :placeholder="trans('laravelchat.code')">
                         </div>
                         <div class="form-group">
                             <label class="control-label">
-                                Mensagem
+                                {{ trans('laravelchat.message') }}
                             </label>
-                            <input v-model="message" class="form-control" type="text" placeholder="Mensagem">
+                            <input v-model="message" class="form-control" type="text" :placeholder="trans('laravelchat.message')">
                         </div>
 
                     </div>
                     
                     <div class="modal-footer">            
                         <div class="message-footer">
-                          <button @click="saveMessage" class="btn btn-success">Enviar</button>
+                          <button @click="saveMessage" class="btn btn-success">{{ trans('laravelchat.save') }}</button>
                         </div>                    
                     </div>
                 </div>

@@ -34,5 +34,12 @@ return [
     'location' => 'Localização',
     'select' => 'Selecione...',
     'message_type' => 'Tipo de mensagem',
-    'user' => 'Usuário'
+    'user' => 'Usuário',
+    'config_title' => 'Configurações sobre o chat',
+    'config' => 'Configurações',
+    'set_default_admin' => 'Selecionar admin padrão para mensagens',
+    'canonical_messages' => 'Mensagens canonicas',
+    'message' => 'Mensagem',
+    'save' => 'Salvar',
+    'code' => 'Código'
 ];

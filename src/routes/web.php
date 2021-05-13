@@ -87,6 +87,8 @@ Route::group(array('namespace' => 'Codificar\Chat\Http\Controllers'), function (
         Route::get('/api/canonical_messages', 'CanonicalMessagesController@getMessages');
         Route::post('/api/save_canonical', 'CanonicalMessagesController@saveMessage');
         Route::get('/api/get_user', 'AdminChatController@getUserForChat');
+        Route::get('/chat_settings', 'AdminChatController@renderChatSettings');
+        Route::post('/api/set_default_admin', 'AdminChatController@saveDefaultAdminSetting');
     });
 });
 
