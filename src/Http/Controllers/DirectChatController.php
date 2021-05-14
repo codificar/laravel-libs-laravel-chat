@@ -166,8 +166,7 @@ class DirectChatController extends Controller
         if ($request->sender_type == 'user' || $request->sender_type == 'provider') {
 
             $conversations = Conversation::whereRequestId(0)
-                ->where('user_one', $request->sender_id)
-                ->orWhere('user_two', $request->sender_id)
+                ->where('user_two', $request->sender_id)
                 ->with(['messages'])
                 ->orderBy('updated_at', 'desc')
                 ->get();
