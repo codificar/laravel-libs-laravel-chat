@@ -24,23 +24,25 @@ class ListConversationsForPanelResource extends JsonResource
                 Helper::getUserTypeInstance($item['user_two']) :
                 Helper::getUserTypeInstance($item['user_one']);
 
-            $message = $item->messages[count($item->messages) -1];
-            $ride = $item['request_id'] == 0 ? '' : ' #' . $item['request_id'];
-            
-            $data = [
-                'id' => $receiver->ledger_id,
-                'conversation_id' => $item['id'],
-                'request_id' => $item['request_id'],
-                'first_name' => $receiver->first_name,
-                'last_name' => $receiver->last_name,
-                'full_name' => $receiver->full_name ? $receiver->full_name : $receiver->first_name . ' ' . $receiver->last_name . $ride,
-                'picture' => $receiver->picture,
-                'last_message' => $message->message,
-                'time' => $message->humans_time,
-                'messages' => $item['messages']
-            ];
+            if ($receiver) {
+                $message = $item->messages[count($item->messages) -1];
+                $ride = $item['request_id'] == 0 ? '' : ' #' . $item['request_id'];
+                
+                $data = [
+                    'id' => $receiver->ledger_id,
+                    'conversation_id' => $item['id'],
+                    'request_id' => $item['request_id'],
+                    'first_name' => $receiver->first_name,
+                    'last_name' => $receiver->last_name,
+                    'full_name' => $receiver->full_name ? $receiver->full_name : $receiver->first_name . ' ' . $receiver->last_name . $ride,
+                    'picture' => $receiver->picture,
+                    'last_message' => $message->message,
+                    'time' => $message->humans_time,
+                    'messages' => $item['messages']
+                ];
 
-            $response[] = $data;
+                $response[] = $data;
+            }
         }
         
         return [

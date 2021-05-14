@@ -79,11 +79,11 @@ class AdminChatController extends Controller
         if (!$user)
             return \Redirect::to("/admin/login");
         
-        $admins = Admin::whereProfileId(4)->select('id', 'username')->get()->toArray();
+        $admins = Admin::whereType('admin')->select('id', 'username')->get();
         $defaultAdmin =  $this->getDefaultAdminChat();
 
         return view('chat::chat_settings', [
-            'admins' => json_encode($admins),
+            'admins' => json_encode($admins->toArray()),
             'defaultAdmin' => $defaultAdmin
         ]);
     }
