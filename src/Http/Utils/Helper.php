@@ -37,10 +37,11 @@ class Helper {
 			return $ledger;
 
 		$ledger = new Ledger;
-		$ledger->admin_id = $type == 'admin' ? $id : null;
-		$ledger->user_id = $type == 'user' ? $id : null;
-		$ledger->provider_id = $type == 'provider' ? $id : null;
+		$ledger->admin_id = $type == 'admin_id' ? $id : null;
+		$ledger->user_id = $type == 'user_id' ? $id : null;
+		$ledger->provider_id = $type == 'provider_id' ? $id : null;
 		$ledger->parent_id = null;
+		$ledger->referral_code = str_random(6);
 		$ledger->save();
 
 		return $ledger;

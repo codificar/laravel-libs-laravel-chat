@@ -22,7 +22,7 @@
 @extends('layout'.$layout)
 
 @section('content')
-	<div class='chat_lib2'>
+	<div class='chat_lib2' style="width: 99%;">
 		<directchat
 			:user="{{ $user }}"
 			ledger="{{ $ledger_id }}"
