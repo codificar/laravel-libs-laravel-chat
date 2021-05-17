@@ -179,8 +179,8 @@ class DirectChatController extends Controller
             ]);
         } else if ($request->sender_type == 'corp') {
 
-            $conversations = Conversation::where('request_id', '>', 0)
-                ->where('user_two', $request->sender_id)
+            $conversations = Conversation::where('user_one', $request->sender_id)
+                ->orWhere('user_two', $request->sender_id)
                 ->with(['messages'])
                 ->orderBy('updated_at', 'desc')
                 ->get();
@@ -252,7 +252,7 @@ class DirectChatController extends Controller
     {
         $conversation = null;
 
-        if ($request->sender_type == 'user') {
+        if ($request->sender_type == 'user' || $request->sender_type == 'corp') {
             $conversations = Conversation::whereRequestId(0)
                 ->where('user_one', $request->sender_id)
                 ->orWhere('user_two', $request->sender_id)

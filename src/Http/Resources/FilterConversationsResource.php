@@ -34,7 +34,7 @@ class FilterConversationsResource extends JsonResource
                     'request_id' => $item['request_id'],
                     'first_name' => $receiver->first_name,
                     'last_name' => $receiver->last_name,
-                    'full_name' => $receiver->first_name . ' ' . $receiver->last_name . $ride,
+                    'full_name' => $receiver->full_name . $ride,
                     'picture' => $receiver->picture,
                     'last_message' => $message['message'],
                     'time' => $message['humans_time'],

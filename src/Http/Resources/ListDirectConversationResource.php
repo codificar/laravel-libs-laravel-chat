@@ -27,12 +27,13 @@ class ListDirectConversationResource extends JsonResource
             if($receiver && $item){
 
                 $message = $item->messages[count($item->messages) -1];
+                $ride = $item['request_id'] == 0 ? '' : ' #' . $item['request_id'];
             
                 $data = [
                     'id' => $receiver->id,
                     'first_name' => $receiver->first_name,
                     'last_name' => $receiver->last_name,
-                    'full_name' => $receiver->first_name . ' ' . $receiver->last_name,
+                    'full_name' => $receiver->first_name . ' ' . $receiver->last_name . $ride,
                     'picture' => $receiver->picture,
                     'last_message' => $message->message,
                     'time' => $message->humans_time,
