@@ -130,22 +130,16 @@ class Helper {
      */
     public static function getConversationBySender($request)
     {
-        $conversation = null;
-
-        if ($request->sender_type != 'provider') {
-            $conversation = Conversation::whereUserOne($request->sender_id)
-                ->whereUserTwo($request->receiver_id)
-                ->whereRequestId(0)
+        try {
+            $conversation = Conversation::whereRaw("request_id = 0 and ((user_one = $request->sender_id and user_two = $request->receiver_id) or (user_one = $request->receiver_id and user_two = $request->sender_id))")
+                ->with(['messages'])
+                ->orderBy('updated_at', 'desc')
                 ->first();
-            
+    
             return $conversation;
+        } catch (\Throwable $th) {
+            return null;
         }
-
-        return Conversation::whereUserOne($request->receiver_id)
-            ->whereUserTwo($request->sender_id)
-            ->whereRequestId(0)
-            ->first();
-        
     }
 
     /**
@@ -177,9 +171,7 @@ class Helper {
                 ->orderBy('updated_at', 'desc');
 
         } else {
-            $conversations = Conversation::whereRequestId(0)
-                ->where('user_one', $request->sender_id)
-                ->orWhere('user_two', $request->sender_id)
+            $conversations = Conversation::whereRaw("request_id = 0 and (user_one = $request->sender_id or user_two = $request->sender_id)")
                 ->with(['messages'])
                 ->orderBy('updated_at', 'desc');
 

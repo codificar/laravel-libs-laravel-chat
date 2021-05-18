@@ -136,9 +136,8 @@ export default {
         if (this.picture)
           dataForm.append('picture', this.picture);
 
-        const response = await axios.post('/api/libs/set_direct_message', dataForm);
-        const { data } = response;
-        this.$emit('modalSendMessage', data);
+        await axios.post('/api/libs/set_direct_message', dataForm);
+        window.location.reload();
       } catch (error) {
         console.log('sendMessage', error);
       }
