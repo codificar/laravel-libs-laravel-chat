@@ -47,7 +47,7 @@ class RideChatController extends Controller
 		$requestPoints = RequestPoint::whereRequestId($request->id)->get();
 
 		$user = User::getUserForChat($request->user_id);
-		Log::debug($user);
+		
 		if(in_array($request->user_id, Institution::getDefaultUsersIds())){
 			$institution = Institution::getByDefaultUserId($request->user_id);
 		} else {
@@ -231,16 +231,12 @@ class RideChatController extends Controller
 			
             event(new EventConversation($message->id));
             
-			Log::notice("sender_type:". $request->sender_type);
-			Log::notice("receiver_id:". $request->receiver_id);
 			if ($request->sender_type == 'provider') {
-				event(new EventNotifyPanel($ride->user_id));
-				Log::notice("notifica user_id:" . $request->ledger_receiver->user_id);
+				event(new EventNotifyPanel($request->receiver_id));
 				// notifica user
 				$this->sendNotificationMessageReceived(trans('laravelchat::laravelchat.new_message'), $message->conversation_id, $message->message, $request->ledger_receiver->user_id, 'user');
 			}
 			else {
-				Log::notice("notifica provider_id:". $request->ledger_receiver->provider_id);
 				// notifica provider
 				$this->sendNotificationMessageReceived(trans('laravelchat::laravelchat.new_message'), $message->conversation_id, $message->message, $request->ledger_receiver->provider_id, 'provider');
 			}

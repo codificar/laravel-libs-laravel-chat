@@ -305,7 +305,7 @@ export default {
                 .channel(`notifyPanel.${id}`)
                 .listen('.PanelNewMessage', async (response) => {
                     this.conversations = response.conversations;
-
+                    
                     if (this.selectedConversation) {
                         for (let i = 0; i < this.conversations.length; i++) {
                             if (this.selectedConversation.conversation_id == this.conversations[i].conversation_id) {
@@ -411,7 +411,7 @@ export default {
             this.isAdmin = true;
             this.userData = this.user;
             this.userData.api_key = 'token';
-            this.userData.default_user_id = 'id';
+            this.userData.default_user_id = this.user.id;
         }
 
         this.getCanonicalMessages();

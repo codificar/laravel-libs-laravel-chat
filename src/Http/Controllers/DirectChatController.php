@@ -73,7 +73,7 @@ class DirectChatController extends Controller
 
         event(new EventConversation($message->id));
 
-        if ($request->sender_type != 'admin' || $request->sender_type != 'corp')
+        if ($request->ledger_receiver->admin_id)
             event(new EventNotifyPanel($request->receiver_id));
 
         if ($request->ledger_receiver->user_id) {

@@ -10,6 +10,7 @@ use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Nahid\Talk\Messages\Message;
 use Nahid\Talk\Conversations\Conversation;
+use Ledger;
 
 class EventNotifyPanel implements ShouldBroadcast {
     use InteractsWithSockets, SerializesModels;
@@ -24,12 +25,13 @@ class EventNotifyPanel implements ShouldBroadcast {
 	 */
     public function __construct($id) 
     {
-		$this->id = $id;
-
-		$ledger = Helper::getLedger('corp', $id);
+		$ledger = Ledger::find($id);
 		
-		if ($ledger)
+		if ($ledger) {
 			$this->ledger = $ledger;
+
+			$this->id = $ledger->admin_id ? $ledger->admin_id : $ledger->user_id;
+		}
     }
     
     /**
@@ -51,11 +53,21 @@ class EventNotifyPanel implements ShouldBroadcast {
 	{
 		if ($this->ledger) {
 			$ledgerId = $this->ledger->id;
-			$conversations = Conversation::where('user_one', $ledgerId)
-                ->orWhere('user_two', $ledgerId)
-                ->with(['messages'])
-                ->orderBy('updated_at', 'desc')
-				->get();
+
+			if ($this->ledger->admin_id) {
+				$conversations = Conversation::whereRaw("request_id = 0 and (user_one = $ledgerId or user_two = $ledgerId)")
+					->with(['messages'])
+					->limit(20)
+					->orderBy('updated_at', 'desc')
+					->get();
+			} else {
+				$conversations = Conversation::where('user_one', $ledgerId)
+					->orWhere('user_two', $ledgerId)
+					->with(['messages'])
+					->limit(20)
+					->orderBy('updated_at', 'desc')
+					->get();
+			}
 
 			$response = [];
 		
@@ -69,12 +81,12 @@ class EventNotifyPanel implements ShouldBroadcast {
 					$ride = $item['request_id'] == 0 ? '' : ' #' . $item['request_id'];
 					
 					$data = [
-						'id' => $receiver->id,
+						'id' => $receiver->ledger_id,
 						'conversation_id' => $item['id'],
 						'request_id' => $item['request_id'],
 						'first_name' => $receiver->first_name,
 						'last_name' => $receiver->last_name,
-						'full_name' => $receiver->first_name . ' ' . $receiver->last_name . $ride,
+						'full_name' => $receiver->full_name . $ride,
 						'picture' => $receiver->picture,
 						'last_message' => $message->message,
 						'time' => $message->humans_time,
