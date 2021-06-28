@@ -66,9 +66,10 @@ class DirectChatController extends Controller
     public function sendDirectMessage(SendDirectRequest $request)
     {
         $conversation = $this->geOrCreatetConversation($request);
-
+        $messageText = $request->message ? $request->message : date('d/m/Y');
+        
         \Talk::setAuthUserId($request->sender_id);
-        $message = \Talk::sendMessage($conversation->id, $request->message);
+        $message = \Talk::sendMessage($conversation->id, $messageText);
         Helper::savePicture($request, $message);
 
         event(new EventConversation($message->id));

@@ -30,7 +30,7 @@ class SendDirectRequest extends FormRequest
     public function rules()
     {
         return [
-            "message" => "string|required",
+            "message" => "string|required_without:picture",
             "sender_id" => "required",
             "receiver_id" => "required",
             "picture" => "file|mimes:jpeg,png,jpg|max:2048"

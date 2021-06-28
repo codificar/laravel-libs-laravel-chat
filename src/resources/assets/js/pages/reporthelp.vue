@@ -101,7 +101,7 @@
                                 v-for="(item, index) in request_help.data"
                                 :key="index"
                             >
-                                <td>{{ item.request_id }}</td>
+                                <td><a target="_blank" :href="'/admin/request/details/'+item.request_id">{{ item.request_id }}</a></td>
                                 <td>{{ item.user_name }}</td>
                                 <td>{{ item.provider_name }}</td>
                                 <td>{{ trans(`laravelchat.${item.author}`) }}</td>

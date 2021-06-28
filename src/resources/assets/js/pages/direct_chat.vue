@@ -103,12 +103,12 @@
             </div>
 
             <div class="border-top chat-send-message-footer">
-                <input @change="onFileChange" ref="picture" type="file" hidden>
+                <input @change="onFileChange" ref="picture" type="file" accept="image/png, image/jpeg" hidden>
                 <a v-if="environment != 'corp'" @click="attachmentPicture" class="chat-attachment" href="#">
                     <i class="mdi mdi-attachment"></i>
                 </a>
                 <input v-model="textMessage" type="text" :placeholder="trans.send_message">
-                <a class="chat-send-btn" v-if="textMessage" @click="handleSendMessage" href="#">
+                <a class="chat-send-btn" v-if="textMessage || picture" @click="handleSendMessage" href="#">
                     <i class="mdi mdi-send"></i>
                 </a>
             </div>
@@ -360,6 +360,7 @@ export default {
         },
         onFileChange(e) {
             this.picture = e.target.files[0];
+            console.log(e.target.files[0]);
             this.$toasted.show(
                 this.trans.image_uploaded, 
                 { 
