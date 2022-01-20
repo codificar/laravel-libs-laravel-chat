@@ -14,5 +14,7 @@
         "psr-4": {
             "Codificar\\Chat\\": "src/"
         }
-    }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
 }
