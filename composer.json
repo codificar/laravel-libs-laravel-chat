@@ -8,7 +8,7 @@
         }
     ],
     "require": {
-        "codificar/talk": "dev-development_update"
+        "codificar/talk": "dev-master"
     },
     "autoload": {
         "psr-4": {
