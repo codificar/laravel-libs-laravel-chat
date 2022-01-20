@@ -8,7 +8,7 @@
         }
     ],
     "require": {
-        "codificar/talk": "dev-update_laravel_8"
+        "codificar/talk": "dev-development_update@dev"
     },
     "autoload": {
         "psr-4": {
