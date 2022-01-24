@@ -38,6 +38,6 @@
 @section('javascripts')
 	<script src="/chat/lang.trans/laravelchat"> </script>
 	@if ($environment != 'corp') 
-		<script src="{{ elixir('vendor/codificar/chat/chat.vue.js') }}"> </script> 
+		<script src="{{ asset('vendor/codificar/chat/chat.vue.js') }}"> </script> 
 	@endif
 @endsection
