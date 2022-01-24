@@ -106,7 +106,7 @@ export default {
 	</div>
 </template>
 
-<style lang="scss">
+<style>
 
 .main-content {
 	height: 84vh;

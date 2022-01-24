@@ -183,7 +183,7 @@ export default {
 	</div>
 </template>
 
-<style lang="scss">
+<style>
 .full-panel {
 	height: 100%;
 	width: 100%;

@@ -80,9 +80,7 @@
 		</ul>
 	</div>
 </template>
-
-<style lang="scss">
-
+<style>
 .chat-list {
 	overflow-y: auto; 
 	width: auto; 
@@ -113,5 +111,4 @@
 .reverse {
 	margin-top: 10px !important;
 }
-
 </style>

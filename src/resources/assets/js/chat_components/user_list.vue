@@ -53,7 +53,7 @@ import UserListElement from './user_list_element.vue'
 	</div>
 </template>
 
-<style lang="scss">
+<style>
 
 .chat-left-aside{
 	height: 100%;

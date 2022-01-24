@@ -23,8 +23,7 @@
 		</div>
 	</div>
 </template>
-
-<style lang="scss">
+<style>
 .chat-main-header{
 	border: 1px solid #eee;
 	display: flex;
@@ -52,5 +51,4 @@
 	height: 50px;
 	border-radius: 50px;
 }
-
 </style>

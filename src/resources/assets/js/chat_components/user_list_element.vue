@@ -42,7 +42,7 @@
 	</div>
 </template>
 
-<style lang="scss">
+<style>
 	.last-message {
 		display: flex;
 		align-content: center;

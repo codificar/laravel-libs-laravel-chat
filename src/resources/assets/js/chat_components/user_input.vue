@@ -50,7 +50,7 @@
 	</div>
 </template>
 
-<style lang="scss">
+<style>
 .chat-bottom{
 	border-top: 1px solid #eee;
 	background-color: white;
