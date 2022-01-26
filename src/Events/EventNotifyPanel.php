@@ -76,7 +76,7 @@ class EventNotifyPanel implements ShouldBroadcast {
 					Helper::getUserTypeInstance($item['user_two']) :
 					Helper::getUserTypeInstance($item['user_one']);
 	
-				if ($receiver) {
+				if ($receiver && count($item->messages) > 0) {
 					$message = $item->messages[count($item->messages) -1];
 					$ride = $item['request_id'] == 0 ? '' : ' #' . $item['request_id'];
 					
