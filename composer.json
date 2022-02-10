@@ -3,9 +3,14 @@
     "description": "A chat library for laravel.",
     "authors": [
         {
-            "name": "Codificar",
-            "email": "libs@codificar.com.br"
+            "name": "Joao Aires",
+            "email": "joao.aires@codificar.com.br"
+        },
+        {
+            "name": "Raphael Canguçu",
+            "email": "raphael.cangucu@codificar.com.br"
         }
+
     ],
     "require": {
         "codificar/talk": "2.3.2"
@@ -15,6 +20,25 @@
             "Codificar\\Chat\\": "src/"
         }
     },
-    "minimum-stability": "dev",
-    "prefer-stable": true
+    ,
+    "repositories": [
+        {
+          "type": "package",
+          "package": {
+            "name": "codificar/chat",
+            "version": "master",
+            "source": {
+              "url": "https://libs:ofImhksJ@git.codificar.com.br/laravel-libs/laravel-chat.git",
+              "type": "git",
+              "reference": "master"
+            }
+          }
+        }
+    ],    
+    "config": {
+        "optimize-autoloader": true,
+        "preferred-install": "dist",
+        "sort-packages": true
+    },
+    "minimum-stability": "dev"
 }
