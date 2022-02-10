@@ -29,7 +29,7 @@ Add in composer.json:
 
 ```php
 require:{
-        "codificar/chat": "1.1.2",
+        "codificar/chat": "0.1.0",
 }
 ```
 
