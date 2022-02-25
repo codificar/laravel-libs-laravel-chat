@@ -163,7 +163,7 @@ class AdminChatController extends Controller
         $admin =  null; 
         
         if ($defaultAdminIdForChat) {
-            $admin = Admin::find($defaultAdminIdForChat)->first();
+            $admin = Admin::find($defaultAdminIdForChat);
         }
         
         if(!$admin) {
