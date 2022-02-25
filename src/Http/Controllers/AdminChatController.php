@@ -8,7 +8,7 @@ use Codificar\Chat\Http\Requests\AdminGetUserForChatRequest;
 use Codificar\Chat\Http\Requests\SendBulkMessageRequest;
 use Codificar\Chat\Http\Utils\Helper;
 use Codificar\Chat\Jobs\SendBulkMessageJob;
-use Provider, DB, Auth, User, Settings, Admin;
+use Provider, DB, Auth, User, Settings, Admin, Profile;
 use stdClass;
 
 class AdminChatController extends Controller 
@@ -158,26 +158,32 @@ class AdminChatController extends Controller
      */
     public function getDefaultAdminChat()
     {
-        $setting = Settings::where('key', 'default_admin_for_chat')->first();
+        $defaultAdminIdForChat = Settings::findByKey('default_admin_for_chat');
 
-        if ($setting) {
-            return $setting->value;
-        } else {
+        $admin =  null; 
+        
+        if ($defaultAdminIdForChat) {
+            $admin = Admin::find($defaultAdminIdForChat)->first();
+        }
+        
+        if(!$admin) {
+            $admin = Admin::whereProfileId(Profile::ROOT_ID)->first();
+        }
+
+        if (!$admin)
             $admin = Admin::whereUsername('root@codificar.com.br')->first();
 
-            if (!$admin)
-                $admin = Admin::whereProfileId(4)->first();
 
-            if ($admin) {
-                $setting = Settings::updateOrCreate([
-                    'key' => 'default_admin_for_chat'
-                ], [
-                    'key' => 'default_admin_for_chat',
-                    'value' => $admin->id
-                ]);
+        if ($admin) {
+            $setting = Settings::updateOrCreate([
+                'key' => 'default_admin_for_chat'
+            ], [
+                'key' => 'default_admin_for_chat',
+                'value' => $admin->id
+            ]);
 
-                return $setting->value;
-            }
+            return $admin->id;
         }
+        else return null;
     }
 }
