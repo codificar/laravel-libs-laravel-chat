@@ -1,5 +1,7 @@
 <?php
 
+
+namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 
 class AddAdminChatSeeder extends Seeder
@@ -51,18 +53,6 @@ class AddAdminChatSeeder extends Seeder
         if($admins && $permission){
             $findProfiles = array();
             foreach($admins as $admin){
-                \AdminPermission::updateOrCreate(
-                    ['admin_id' => $admin->id, 'permission_id' => $permission->id],
-                    ['admin_id' => $admin->id, 'permission_id' => $permission->id]
-                );
-                \AdminPermission::updateOrCreate(
-                    ['admin_id' => $admin->id, 'permission_id' => $permission1->id],
-                    ['admin_id' => $admin->id, 'permission_id' => $permission1->id]
-                );
-                \AdminPermission::updateOrCreate(
-                    ['admin_id' => $admin->id, 'permission_id' => $permission2->id],
-                    ['admin_id' => $admin->id, 'permission_id' => $permission2->id]
-                );
                 
                 if ($admin->profile_id && !in_array($admin->profile_id, $findProfiles)) {
                     $findProfiles = array_merge($findProfiles, array($admin->profile_id));

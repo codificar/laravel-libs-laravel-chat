@@ -1,5 +1,6 @@
 <?php
 
+namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 
 class AddChatSettingsMenuSeeder extends Seeder
@@ -31,10 +32,6 @@ class AddChatSettingsMenuSeeder extends Seeder
                 $findProfiles = array();
 
                 foreach($admins as $admin) {
-                    \AdminPermission::updateOrCreate(
-                        ['admin_id' => $admin->id, 'permission_id' => $permission1->id],
-                        ['admin_id' => $admin->id, 'permission_id' => $permission1->id]
-                    );
 
                     if ($admin->profile_id && !in_array($admin->profile_id, $findProfiles)) {
                         \ProfilePermission::updateOrCreate(

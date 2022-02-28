@@ -24,7 +24,7 @@ class ChatServiceProvider extends ServiceProvider
 
         // Load seeds
         $this->publishes([
-            __DIR__.'/Database/seeds' => database_path('seeds')
+            __DIR__.'/Database/seeders' => database_path('seeders')
         ], 'public_vuejs_libs');
 
 
