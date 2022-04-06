@@ -34,13 +34,12 @@ class ConversationsResource extends JsonResource
 					"conversations" => [[
 						"id" => 0, //Ainda não tem id
 						"request" => [
-							"id" => $ride->id,
-							//"product" => $ride->loadProduct->name
+							"id" => $ride->id
 						],
 						"user" => [
 							"id" => $ledger->id,
 							"name" => $ledger->fullname,
-							"image" => $user->thumb ? $user->thumb : Theme::getLogoUrl()
+							"image" => $user ? $user->thumb : Theme::getLogoUrl()
 						]
 					]]
 				];
