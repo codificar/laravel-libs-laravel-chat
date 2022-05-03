@@ -114,5 +114,5 @@ Route::get('/chat/lang.trans/{file}', function () {
     return response('window.lang = ' . json_encode($strings) . ';')
             ->header('Content-Type', 'text/javascript');
     
-})->name('assets.lang');
+});
 
