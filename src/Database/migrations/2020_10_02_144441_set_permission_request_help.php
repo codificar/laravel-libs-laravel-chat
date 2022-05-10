@@ -30,10 +30,6 @@ class SetPermissionRequestHelp extends Migration
         if($admins && $permission){
             $findProfiles = array();
             foreach($admins as $admin){
-                \AdminPermission::updateOrCreate(
-                    ['admin_id' => $admin->id, 'permission_id' => $permission->id],
-                    ['admin_id' => $admin->id, 'permission_id' => $permission->id]
-                );
                 
                 if ($admin->profile_id && !in_array($admin->profile_id, $findProfiles)) {
                     $findProfiles = array_merge($findProfiles, array($admin->profile_id));
