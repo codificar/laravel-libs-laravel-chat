@@ -3,6 +3,7 @@
 namespace Codificar\Chat\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\DeliveryPackage;
 use App\Models\Institution;
 use App\Models\RequestPoint;
 use Codificar\Chat\Models\ConversationRequest;
@@ -17,11 +18,13 @@ use Codificar\Chat\Events\EventNewConversation;
 use Codificar\Chat\Events\EventNotifyPanel;
 use Codificar\Chat\Events\EventReadMessage;
 use Codificar\Chat\Http\Utils\Helper;
+use Codificar\Chat\Models\DeliveryPackageRequest;
 use Requests, Admin, Auth, User, Provider;
 use Log;
 use Nahid\Talk\Messages\Message;
 use Settings;
 use Nahid\Talk\Conversations\Conversation;
+use Illuminate\Http\Request;
 
 class RideChatController extends Controller
 {
@@ -332,4 +335,47 @@ class RideChatController extends Controller
             "success" => true
         ]);
 	}
+
+	/**
+     * Retrieve a ride conversation
+     * @api {GET} /api/libs/user/chat/conversation
+     * @api {GET} /api/libs/provider/chat/conversation
+     * @param ConversationFormRequest $request
+     * @return ConversationsResource
+     */
+    public function responseQuickReply(Request $request, $id)
+	{
+		//dd($request);
+		try {
+			DeliveryPackage::where('id', $id)->update(['accepted_status' => $request->status]);
+			if(Message::where('delivery_package_id', $id)
+				->where('conversation_id', $request->conversation)
+				->update(['response_quick_reply' => $request->status]))
+			{
+				$message = new Message();
+				//dd($message);
+				$message->create([
+					'message' => $request->auto_response,
+					'conversation_id' => $request->conversation,
+					'user_id' => $request->receiver,
+					'is_seen' => 0,
+				]);
+			}
+			
+			
+			
+			return response()->json([
+				'success' => true,
+			]);
+		}
+		catch (\Throwable $th) {
+			return response()->json([
+				'success' => false,
+				'message' => $th->getMessage(),
+			]);
+			//dd($th->getMessage());
+			Log::error($th->getMessage());
+		}
+		
+    }
 }
