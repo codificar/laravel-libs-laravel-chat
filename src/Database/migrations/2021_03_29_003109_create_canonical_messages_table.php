@@ -13,12 +13,14 @@ class CreateCanonicalMessagesTable extends Migration
      */
     public function up()
     {
-        Schema::create('canonical_messages', function (Blueprint $table) {
-            $table->increments('id');
-            $table->timestamps();
-            $table->string('shortcode');
-            $table->string('message');
-        });
+		if (!Schema::hasTable('canonical_messages')) {
+			Schema::create('canonical_messages', function (Blueprint $table) {
+				$table->increments('id');
+				$table->timestamps();
+				$table->string('shortcode');
+				$table->string('message');
+			});
+		}
     }
 
     /**
