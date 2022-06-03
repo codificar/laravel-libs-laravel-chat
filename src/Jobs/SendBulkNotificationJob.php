@@ -2,13 +2,14 @@
 
 namespace Codificar\Chat\Jobs;
 
-
+use Codificar\Chat\Http\Utils\Helper;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
-
+use Exception;
+use Log;
 
 class SendBulkNotificationJob implements ShouldQueue
 {
@@ -16,7 +17,6 @@ class SendBulkNotificationJob implements ShouldQueue
 
     protected $data;
     protected $message;
-	protected $quickReply;
 
     public function tags() 
     {
@@ -28,11 +28,10 @@ class SendBulkNotificationJob implements ShouldQueue
 	 *
 	 * @return void
 	 */
-	public function __construct($data, $message, $quickReply = false)
+	public function __construct($data, $message)
 	{
 		$this->data = $data;
 		$this->message = $message;
-		$this->quickReply = $quickReply;
 	}
 
 	/**
@@ -42,6 +41,6 @@ class SendBulkNotificationJob implements ShouldQueue
 	 */
 	public function handle()
 	{
-        send_android_push($this->data, trans('laravelchat::laravelchat.new_message'), $this->message, $this->quickReply);
+        send_android_push($this->data, trans('laravelchat::laravelchat.new_message'), $this->message);
 	}
 }

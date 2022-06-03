@@ -2,6 +2,7 @@
 
 namespace Codificar\Chat\Http\Controllers;
 
+use App\Events\EventQuickReply;
 use App\Http\Controllers\Controller;
 use App\Models\DeliveryPackage;
 use App\Models\Institution;
@@ -343,21 +344,26 @@ class RideChatController extends Controller
      * @param ConversationFormRequest $request
      * @return ConversationsResource
      */
-    public function responseQuickReply(Request $request, $id)
+    public function responseQuickReply(Request $request)
 	{
-		//dd($request);
+		\Log::info($request);
+		$req = json_decode($request->quick_reply, true);
+		\Log::info($req['value']);
 		try {
-			DeliveryPackage::where('id', $id)->update(['accepted_status' => $request->status]);
-			if(Message::where('delivery_package_id', $id)
-				->where('conversation_id', $request->conversation)
-				->update(['response_quick_reply' => $request->status]))
+			$response_quick_reply = json_decode(Message::find($req['message_id'])->response_quick_reply);
+			$response_quick_reply->answered = $req['value'];
+
+			EventQuickReply::dispatch(json_encode($response_quick_reply));
+
+			if(Message::where('conversation_id', $req['conversation'])
+				->whereJsonContains('response_quick_reply->delivery_package_id', $req['delivery_package_id'])
+				->update(['response_quick_reply' => json_encode($response_quick_reply)]))
 			{
 				$message = new Message();
-				//dd($message);
 				$message->create([
-					'message' => $request->auto_response,
-					'conversation_id' => $request->conversation,
-					'user_id' => $request->receiver,
+					'message' => $req['auto_response'],
+					'conversation_id' => $req['conversation'],
+					'user_id' => $req['receiver'],
 					'is_seen' => 0,
 				]);
 			}
@@ -373,7 +379,6 @@ class RideChatController extends Controller
 				'success' => false,
 				'message' => $th->getMessage(),
 			]);
-			//dd($th->getMessage());
 			Log::error($th->getMessage());
 		}
 		
