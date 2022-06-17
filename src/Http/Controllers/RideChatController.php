@@ -2,9 +2,8 @@
 
 namespace Codificar\Chat\Http\Controllers;
 
-use App\Events\EventQuickReply;
+use Codificar\Chat\Events\EventQuickReply;
 use App\Http\Controllers\Controller;
-use App\Models\DeliveryPackage;
 use App\Models\Institution;
 use App\Models\RequestPoint;
 use Codificar\Chat\Models\ConversationRequest;
@@ -19,7 +18,6 @@ use Codificar\Chat\Events\EventNewConversation;
 use Codificar\Chat\Events\EventNotifyPanel;
 use Codificar\Chat\Events\EventReadMessage;
 use Codificar\Chat\Http\Utils\Helper;
-use Codificar\Chat\Models\DeliveryPackageRequest;
 use Requests, Admin, Auth, User, Provider;
 use Log;
 use Nahid\Talk\Messages\Message;
@@ -346,15 +344,15 @@ class RideChatController extends Controller
      */
     public function responseQuickReply(Request $request)
 	{
-		\Log::info($request);
+
 		$req = json_decode($request->quick_reply, true);
-		\Log::info($req['value']);
 		try {
 			$response_quick_reply = json_decode(Message::find($req['message_id'])->response_quick_reply);
 			$response_quick_reply->answered = $req['value'];
 
+			//criar listening
 			EventQuickReply::dispatch(json_encode($response_quick_reply));
-
+			//DeliveryPackage::where('id', $id)->update(['accepted_status' => $request->status]);
 			if(Message::where('conversation_id', $req['conversation'])
 				->whereJsonContains('response_quick_reply->delivery_package_id', $req['delivery_package_id'])
 				->update(['response_quick_reply' => json_encode($response_quick_reply)]))

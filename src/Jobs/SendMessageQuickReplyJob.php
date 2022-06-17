@@ -11,29 +11,30 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Exception;
 use Log;
 use Nahid\Talk\Conversations\Conversation;
+use Codificar\Chat\Jobs\SendNotificationJob;
 
 class SendMessageQuickReplyJob implements ShouldQueue
 {
 	use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-	protected $data;
+	protected $ledgerId;
 	protected $requestObj;
 	protected $message;
-	protected $type;
 	protected $quickReply;
+	protected $device_token;
 
 	/**
 	 * Create a new job instance.
 	 *
 	 * @return void
 	 */
-	public function __construct($data, $requestObj, $message, $type, $quickReply = [])
+	public function __construct($ledgerId, $requestObj, $message, $quickReply = [], $device_token)
 	{
-		$this->data = $data[0];
+		$this->ledgerId = $ledgerId;
 		$this->requestObj = $requestObj;
 		$this->message = $message;
-		$this->type = $type;
 		$this->quickReply = $quickReply;
+		$this->device_token = $device_token;
 	}
 
 	/**
@@ -44,51 +45,24 @@ class SendMessageQuickReplyJob implements ShouldQueue
 	public function handle()
 	{
 		try {
-
-			$item = $this->data;
-
 			\Talk::setAuthUserId($this->requestObj->sender_id);
 
-			if ($item->ledger_id) {
-				$ledgerId = $item->ledger_id;
-			} else {
-				$ledger = Helper::getLedger($this->type, $item->id);
-				$ledgerId = $ledger ? $ledger->id : null;
-			}
-			if ($ledgerId) {
-				$this->requestObj->receiver_id = $ledgerId;
+			if ($this->ledgerId) {
+				$this->requestObj->receiver_id = $this->ledgerId;
 
-				$conversation = Helper::geOrCreatetConversation($this->requestObj);
+				$conversation = Helper::getOrCreateConversation($this->requestObj);
 				
 				$quickReply = $this->insertConversationId($this->quickReply, $conversation->id);
 				$message = \Talk::sendMessage($conversation->id, $this->message, json_encode($quickReply));
-				//\Log::info($message);
-				// if ($this->fileName) {
-				// 	$message->picture = $this->fileName;
-				// 	$message->save();
-				// }
+
 			}
 
-			SendBulkNotificationJob::dispatch($this->parseDeviceTokens($this->data), $this->message);
+			SendNotificationJob::dispatch($this->device_token, $this->message);
 		} catch (Exception $e) {
 			Log::error($e);
 		}
 	}
 
-	/**
-	 * Mount device token array
-	 * 
-	 * @param Provider $data
-	 * @return array
-	 */
-	public function parseDeviceTokens($data)
-	{
-		try {
-			return $data->device_token;
-		} catch (\Throwable $th) {
-			return null;
-		}
-	}
 	/**
 	 * 
 	 */
