@@ -106,7 +106,7 @@ class Helper {
      * @param object $request
      * @return Conversation
      */
-    public static function geOrCreateConversation($request)
+    public static function getOrCreateConversation($request)
     {
         $conversation = self::getConversationBySender($request);
 

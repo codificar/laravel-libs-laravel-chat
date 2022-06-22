@@ -50,7 +50,7 @@ class SendMessageQuickReplyJob implements ShouldQueue
 			if ($this->ledgerId) {
 				$this->requestObj->receiver_id = $this->ledgerId;
 
-				$conversation = Helper::geOrCreateConversation($this->requestObj);
+				$conversation = Helper::getOrCreateConversation($this->requestObj);
 				
 				$quickReply = $this->insertConversationId($this->quickReply, $conversation->id);
 				$message = \Talk::sendMessage($conversation->id, $this->message, json_encode($quickReply));

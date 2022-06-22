@@ -61,7 +61,7 @@ class SendBulkMessageJob implements ShouldQueue
 				if ($ledgerId) {
 					$this->requestObj->receiver_id = $ledgerId;
 					
-					$conversation = Helper::geOrCreateConversation($this->requestObj);
+					$conversation = Helper::getOrCreateConversation($this->requestObj);
 					$message = \Talk::sendMessage($conversation->id, $this->message);
 	
 					if ($this->fileName) {
