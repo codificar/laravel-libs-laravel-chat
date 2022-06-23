@@ -13,7 +13,7 @@
 
     ],
     "require": {
-        "codificar/talk": "2.3.3"
+        "codificar/talk": ">=2"
     },
     "autoload": {
         "psr-4": {
