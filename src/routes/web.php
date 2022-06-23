@@ -63,7 +63,7 @@ Route::group(array('namespace' => 'Codificar\Chat\Http\Controllers'), function (
         Route::get('/api/libs/chat/conversation', "RideChatController@getConversation");
         Route::get('/api/libs/chat/messages', "RideChatController@getMessages");
         Route::post('/api/libs/chat/seen', "RideChatController@setMessagesSeen");
-        Route::post('/api/libs/chat/response-quick-reply/{id}', "RideChatController@responseQuickReply");
+        Route::post('/api/libs/chat/response-quick-reply', "RideChatController@responseQuickReply");
 
         Route::post('/api/libs/set_help_message', 'RequestHelpController@setHelpChatMessage');
         Route::get('/api/libs/get_help_message', 'RequestHelpController@getHelpChatMessage');
