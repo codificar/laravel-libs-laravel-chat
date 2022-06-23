@@ -373,11 +373,11 @@ class RideChatController extends Controller
 			]);
 		}
 		catch (\Throwable $th) {
+			Log::error($th->getMessage().$th->getTraceAsString());
 			return response()->json([
 				'success' => false,
 				'message' => $th->getMessage(),
 			]);
-			Log::error($th->getMessage());
 		}
 		
     }
