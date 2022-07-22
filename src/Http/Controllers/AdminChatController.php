@@ -8,6 +8,8 @@ use Codificar\Chat\Http\Requests\AdminGetUserForChatRequest;
 use Codificar\Chat\Http\Requests\SendBulkMessageRequest;
 use Codificar\Chat\Http\Utils\Helper;
 use Codificar\Chat\Jobs\SendBulkMessageJob;
+use Error;
+use Log;
 use Provider, DB, Auth, User, Settings, Admin, Profile;
 use stdClass;
 
@@ -165,9 +167,14 @@ class AdminChatController extends Controller
         if ($defaultAdminIdForChat) {
             $admin = Admin::find($defaultAdminIdForChat);
         }
-        
-        if(!$admin) {
-            $admin = Admin::whereProfileId(Profile::ROOT_ID)->first();
+        try {
+            if(!$admin) {
+                $admin = Admin::whereProfileId(Profile::ROOT_ID)->first();
+            }
+        } catch (Error $e) {
+            $admin = null;
+            Log::error('Error while getting default admin chat');
+            Log::error($e->getMessage());
         }
 
         if (!$admin)
