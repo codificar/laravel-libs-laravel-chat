@@ -20,6 +20,13 @@ Route::group(array('namespace' => 'Codificar\Chat\Http\Controllers'), function (
     Route::get('/provider/libs/chat/{request_id}', 'RideChatController@providerRequestChat')
         ->middleware(['auth.provider', 'talk:providers']);
 
+    ///Route chatbot
+    Route::get('/user/libs/chat/{request_id}', [
+        'as' => 'userRequestChatBot', 
+        'uses' => 'RideChatController@userRequestChat'
+    ])->middleware(['talk:clients']);
+
+
     Route::group(['prefix' => 'api/libs/'], function () {
 
         Route::group(['middleware' => 'auth.provider_api', 'prefix' => 'provider/chat'], function () {
