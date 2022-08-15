@@ -286,7 +286,7 @@ export default {
     methods: {
         async getConversations(page = 1) {
             try {
-                console.log('getConversations > id', this.userData);
+                console.log('getConversations > request_id', this.requestId);
 
                 const response = await axios.get(
                     '/api/libs/filter_conversations',
@@ -539,17 +539,17 @@ export default {
     },
     created() {
         console.log('Chat created: ', this.environment);
+        window.Echo = new Echo({
+            broadcaster: 'socket.io',
+            client: require('socket.io-client'),
+            host: `${window.location.hostname}:${this.echoport}`,
+        });
+
+        window.io = require('socket.io-client');
+
         if (this.environment == 'corp') {
             this.userData = this.user.admin_institution.institution;
         } else if (this.environment == 'admin') {
-            window.Echo = new Echo({
-                broadcaster: 'socket.io',
-                client: require('socket.io-client'),
-                host: `${window.location.hostname}:${this.echoport}`,
-            });
-
-            window.io = require('socket.io-client');
-
             this.isAdmin = true;
             this.userData = this.user;
             this.userData.api_key = 'token';
