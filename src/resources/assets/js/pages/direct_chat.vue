@@ -422,7 +422,7 @@ export default {
             }
         },
         subscribeToChannel(id) {
-            console.log(`Chat > subscribeToChannel: notifyPanel.${id}`);
+            console.log(`Chat > subscribeToChannel: notifyPanel`);
             try {
                 window.Echo.channel(`notifyPanel.${id}`).listen(
                     '.PanelNewMessage',
