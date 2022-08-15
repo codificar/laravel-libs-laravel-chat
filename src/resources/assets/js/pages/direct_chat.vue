@@ -421,23 +421,33 @@ export default {
         },
         subscribeToChannel(id) {
             console.log(`Chat > subscribeToChannel: notifyPanel.${id}`);
-            window.Echo.channel(`notifyPanel.${id}`).listen(
-                '.PanelNewMessage',
-                async (response) => {
-                    this.conversations = response.conversations;
+            try {
+                window.Echo.channel(`notifyPanel.${id}`).listen(
+                    '.PanelNewMessage',
+                    async (response) => {
+                        this.conversations = response.conversations;
 
-                    if (this.selectedConversation) {
-                        for (let i = 0; i < this.conversations.length; i++) {
-                            if (
-                                this.selectedConversation.conversation_id ==
-                                this.conversations[i].conversation_id
+                        if (this.selectedConversation) {
+                            for (
+                                let i = 0;
+                                i < this.conversations.length;
+                                i++
                             ) {
-                                this.selectConversation(this.conversations[i]);
+                                if (
+                                    this.selectedConversation.conversation_id ==
+                                    this.conversations[i].conversation_id
+                                ) {
+                                    this.selectConversation(
+                                        this.conversations[i]
+                                    );
+                                }
                             }
                         }
                     }
-                }
-            );
+                );
+            } catch (e) {
+                console.log('sendSubscriptionMessage', e);
+            }
         },
         selectConversation(data) {
             this.selectedConversation = data;
