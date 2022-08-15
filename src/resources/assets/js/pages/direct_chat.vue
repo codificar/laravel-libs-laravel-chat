@@ -246,6 +246,7 @@ export default {
         'user',
         'ledger',
         'receiverid',
+        'requestId',
         'newconversation',
         'conversationid',
         'trans',
@@ -294,6 +295,7 @@ export default {
                             id: this.userData.id,
                             token: this.userData.api_key,
                             page: isNaN(page) ? 1 : page,
+                            request_id: this.requestId ? this.requestId : null,
                         },
                     }
                 );
