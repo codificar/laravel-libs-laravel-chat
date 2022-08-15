@@ -21,6 +21,7 @@
 @endswitch
 @extends('layout'.$layout)
 
+
 @section('content')
 	<div class='chat_lib2' style="width: 99%;">
 		<directchat
@@ -37,7 +38,5 @@
 
 @section('javascripts')
 	<script src="/chat/lang.trans/laravelchat"> </script>
-	@if ($environment != 'corp') 
-		<script src="{{ asset('vendor/codificar/chat/chat.vue.js') }}"> </script> 
-	@endif
+	<script src="{{ asset('vendor/codificar/chat/chat.vue.js') }}"> </script>
 @endsection

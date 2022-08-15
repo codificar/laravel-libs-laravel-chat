@@ -1,8 +1,14 @@
 <template>
     <div class="chat-app">
         <div class="left-part bg-white fixed-left-part user-chat-box">
-            <div class="scrollable position-relative ps-container ps-theme-default" style="height:100%;">
-                <div v-if="isAdmin" class="pt-2 pb-2 pl-3 pr-3 border-bottom new-conversation">
+            <div
+                class="scrollable position-relative ps-container ps-theme-default"
+                style="height: 100%"
+            >
+                <div
+                    v-if="isAdmin"
+                    class="pt-2 pb-2 pl-3 pr-3 border-bottom new-conversation"
+                >
                     <p>Nova conversa</p>
                     <a href="#" @click="showModal = true">
                         <i class="mdi mdi-message-text-outline"></i>
@@ -13,42 +19,83 @@
                     <h5 class="card-title">{{ trans.filter }}</h5>
                     <form>
                         <div class="searchbar">
-                            <input v-model="filterName" @keyup="filterResults" class="form-control" type="text" :placeholder="trans.filter">
+                            <input
+                                v-model="filterName"
+                                @keyup="filterResults"
+                                class="form-control"
+                                type="text"
+                                :placeholder="trans.filter"
+                            />
                         </div>
                     </form>
                 </div>
                 <div v-if="filteredConversations.length > 0">
-                    <div v-for="(item, index) in filteredConversations" :key="index">
-                        <div class="message-row" @click="selectConversation(item)">
+                    <div
+                        v-for="(item, index) in filteredConversations"
+                        :key="index"
+                    >
+                        <div
+                            class="message-row"
+                            @click="selectConversation(item)"
+                        >
                             <div class="message-perfil">
-                                <img 
-                                    class="author-perfil" 
+                                <img
+                                    class="author-perfil"
                                     :src="item.picture"
                                     onerror="this.src='/vendor/codificar/chat/user.png'"
-                                >
+                                />
                             </div>
                             <div class="message-info">
-                                <div>{{ item.full_name | nameMaxLength(15) }}</div>
-                                <span class="font-12 text-nowrap d-block text-muted text-truncate">{{ item.last_message | nameMaxLength(24) }}</span>
-                                <span class="font-12 text-nowrap d-block text-muted text-truncate">{{ item.time }}</span>
+                                <div>
+                                    {{ item.full_name | nameMaxLength(15) }}
+                                </div>
+                                <span
+                                    class="font-12 text-nowrap d-block text-muted text-truncate"
+                                    >{{
+                                        item.last_message | nameMaxLength(24)
+                                    }}</span
+                                >
+                                <span
+                                    class="font-12 text-nowrap d-block text-muted text-truncate"
+                                    >{{ item.time }}</span
+                                >
                             </div>
                         </div>
                     </div>
                 </div>
-                <div id="infinite-list" class="message-list scrollable ps-active-y" v-else>
+                <div
+                    id="infinite-list"
+                    class="message-list scrollable ps-active-y"
+                    v-else
+                >
                     <div v-for="(item, index) in conversations" :key="index">
-                        <div class="message-row" :class="activeSelectStyle(item)" @click="selectConversation(item)">
+                        <div
+                            class="message-row"
+                            :class="activeSelectStyle(item)"
+                            @click="selectConversation(item)"
+                        >
                             <div class="message-perfil">
-                                <img 
-                                    class="author-perfil" 
-                                    :src="item.picture" alt=""
+                                <img
+                                    class="author-perfil"
+                                    :src="item.picture"
+                                    alt=""
                                     onerror="this.src='/vendor/codificar/chat/user.png'"
-                                >
+                                />
                             </div>
                             <div class="message-info">
-                                <div>{{ item.full_name | nameMaxLength(15) }}</div>
-                                <span class="font-12 text-nowrap d-block text-muted text-truncate">{{ item.last_message | nameMaxLength(24) }}</span>
-                                <span class="font-12 text-nowrap d-block text-muted text-truncate">{{ item.time }}</span>
+                                <div>
+                                    {{ item.full_name | nameMaxLength(15) }}
+                                </div>
+                                <span
+                                    class="font-12 text-nowrap d-block text-muted text-truncate"
+                                    >{{
+                                        item.last_message | nameMaxLength(24)
+                                    }}</span
+                                >
+                                <span
+                                    class="font-12 text-nowrap d-block text-muted text-truncate"
+                                    >{{ item.time }}</span
+                                >
                             </div>
                         </div>
                     </div>
@@ -57,39 +104,71 @@
         </div>
         <div v-if="selectedConversation" class="right-part chat-container">
             <div class="p-20 chat-box-inner-part">
-                <div class="card chatting-box mb-0" style="display: block;">
+                <div class="card chatting-box mb-0" style="display: block">
                     <div class="card-body chat-content">
-                        <div class="chat-meta-user pb-3 border-bottom chat-active">
+                        <div
+                            class="chat-meta-user pb-3 border-bottom chat-active"
+                        >
                             <div class="current-chat-user-name">
                                 <span>
-                                    <img 
-                                        :src="selectedConversation.picture" 
+                                    <img
+                                        :src="selectedConversation.picture"
                                         onerror="this.src='/vendor/codificar/chat/user.png'"
-                                    >
-                                    <span class="name font-weight-bold ml-2">{{ selectedConversation.full_name }}</span>
+                                    />
+                                    <span class="name font-weight-bold ml-2">{{
+                                        selectedConversation.full_name
+                                    }}</span>
                                 </span>
                             </div>
                         </div>
 
-                        <div class="chat-list scrollable ps-active-y" style="height: calc(100vh - 300px)">
-                            <div 
-                                class="conversation-row" 
-                                v-for="(item, index) in selectedConversation.messages" 
+                        <div
+                            class="chat-list scrollable ps-active-y"
+                            style="height: calc(100vh - 300px)"
+                        >
+                            <div
+                                class="conversation-row"
+                                v-for="(
+                                    item, index
+                                ) in selectedConversation.messages"
                                 :key="index"
                             >
                                 <div>
                                     <img
                                         class="message-avatar"
-                                        v-if="item.user_id != ledger" 
-                                        :src="selectedConversation.picture" 
+                                        v-if="item.user_id != ledger"
+                                        :src="selectedConversation.picture"
                                         onerror="this.src='/vendor/codificar/chat/user.png'"
-                                    >
+                                    />
                                 </div>
-                                <div :class="item.user_id == ledger ? 'text-right' : 'text-left'">
-                                    <h5 v-if="item.user_id != ledger" class="text-muted">{{ selectedConversation.full_name }}</h5>
-                                    <span class="box mb-2 d-inline-block text-dark rounded p-2 message-display" :class="item.user_id == ledger ? ' bg-light-inverse' : ' bg-light-info'">
+                                <div
+                                    :class="
+                                        item.user_id == ledger
+                                            ? 'text-right'
+                                            : 'text-left'
+                                    "
+                                >
+                                    <h5
+                                        v-if="item.user_id != ledger"
+                                        class="text-muted"
+                                    >
+                                        {{ selectedConversation.full_name }}
+                                    </h5>
+                                    <span
+                                        class="box mb-2 d-inline-block text-dark rounded p-2 message-display"
+                                        :class="
+                                            item.user_id == ledger
+                                                ? ' bg-light-inverse'
+                                                : ' bg-light-info'
+                                        "
+                                    >
                                         <p>{{ item.message }}</p>
-                                        <img class="message-display-img" v-if="item.picture" :src="'/uploads/' + item.picture" alt="">
+                                        <img
+                                            class="message-display-img"
+                                            v-if="item.picture"
+                                            :src="'/uploads/' + item.picture"
+                                            alt=""
+                                        />
                                     </span>
                                 </div>
                                 <div class="chat-time text-right text-muted">
@@ -99,16 +178,35 @@
                         </div>
                     </div>
                 </div>
-
             </div>
 
             <div class="border-top chat-send-message-footer">
-                <input @change="onFileChange" ref="picture" type="file" accept="image/png, image/jpeg" hidden>
-                <a v-if="environment != 'corp'" @click="attachmentPicture" class="chat-attachment" href="#">
+                <input
+                    @change="onFileChange"
+                    ref="picture"
+                    type="file"
+                    accept="image/png, image/jpeg"
+                    hidden
+                />
+                <a
+                    v-if="environment != 'corp'"
+                    @click="attachmentPicture"
+                    class="chat-attachment"
+                    href="#"
+                >
                     <i class="mdi mdi-attachment"></i>
                 </a>
-                <input v-model="textMessage" type="text" :placeholder="trans.send_message">
-                <a class="chat-send-btn" v-if="textMessage || picture" @click="handleSendMessage" href="#">
+                <input
+                    v-model="textMessage"
+                    type="text"
+                    :placeholder="trans.send_message"
+                />
+                <a
+                    class="chat-send-btn"
+                    v-if="textMessage || picture"
+                    @click="handleSendMessage"
+                    href="#"
+                >
                     <i class="mdi mdi-send"></i>
                 </a>
             </div>
@@ -117,16 +215,18 @@
             <div class="right-part not-selected">
                 <div class="chat-not-selected">
                     <div class="text-center">
-                        <span class="display-5 text-info"><i class="mdi mdi-comment-outline"></i></span>
+                        <span class="display-5 text-info"
+                            ><i class="mdi mdi-comment-outline"></i
+                        ></span>
                         <h5>{{ trans.open_chat }}</h5>
                     </div>
                 </div>
             </div>
         </div>
 
-        <modal 
-            v-if="showModal" 
-            @close="showModal = false" 
+        <modal
+            v-if="showModal"
+            @close="showModal = false"
             :canonicalMessages="canonical_messages"
             :locations="locations"
             :user="user"
@@ -150,10 +250,10 @@ export default {
         'conversationid',
         'trans',
         'environment',
-        'echoport'
+        'echoport',
     ],
     components: {
-        modal
+        modal,
     },
     data() {
         return {
@@ -171,27 +271,32 @@ export default {
             current_page: 1,
             last_page: 1,
             is_loading: false,
-            picture: null
-        }
+            picture: null,
+        };
     },
     filters: {
         nameMaxLength: function (value, limit) {
             if (!value) return '';
             else if (value.length <= limit) return value;
-            
+
             return value.substring(0, limit) + '...';
-        }
+        },
     },
     methods: {
         async getConversations(page = 1) {
             try {
-                const response = await axios.get('/api/libs/filter_conversations', {
-                    params: {
-                        id: this.userData.id,
-                        token: this.userData.api_key,
-                        page: isNaN(page) ? 1 : page
+                console.log('getConversations > id', this.userData);
+
+                const response = await axios.get(
+                    '/api/libs/filter_conversations',
+                    {
+                        params: {
+                            id: this.userData.id,
+                            token: this.userData.api_key,
+                            page: isNaN(page) ? 1 : page,
+                        },
                     }
-                });
+                );
 
                 const { conversations } = response.data;
                 const { locations } = response.data;
@@ -209,19 +314,22 @@ export default {
                         this.selectConversation(this.conversations[0]);
                         return;
                     }
-                    
+
                     this.conversations = conversations;
-    
+
                     for (let i = 0; i < this.conversations.length; i++) {
-                        if (this.conversations[i].conversation_id == this.conversationid)
-                            this.selectConversation(this.conversations[i])
+                        if (
+                            this.conversations[i].conversation_id ==
+                            this.conversationid
+                        )
+                            this.selectConversation(this.conversations[i]);
                     }
                 } else if (page > 1) {
                     for (let index = 0; index < conversations.length; index++) {
                         this.conversations.push(conversations[index]);
                     }
                 }
-                
+
                 this.is_loading = false;
             } catch (error) {
                 this.conversations = [];
@@ -230,7 +338,10 @@ export default {
             }
         },
         handleSendMessage() {
-            if (this.selectedConversation.request_id != 0 && this.selectedConversation.request_id != undefined) {
+            if (
+                this.selectedConversation.request_id != 0 &&
+                this.selectedConversation.request_id != undefined
+            ) {
                 this.sendRideMessage();
             } else {
                 this.sendMessage();
@@ -238,7 +349,10 @@ export default {
         },
         activeSelectStyle(item) {
             if (this.selectedConversation) {
-                return item.conversation_id == this.selectedConversation.conversation_id ? 'selected-chat' : '';
+                return item.conversation_id ==
+                    this.selectedConversation.conversation_id
+                    ? 'selected-chat'
+                    : '';
             }
 
             return '';
@@ -252,10 +366,12 @@ export default {
                 dataForm.append('receiver', this.selectedConversation.id);
                 dataForm.append('message', this.textMessage);
 
-                if (this.picture)
-                    dataForm.append('picture', this.picture);
-                
-                const response = await axios.post('/api/libs/set_direct_message', dataForm);
+                if (this.picture) dataForm.append('picture', this.picture);
+
+                const response = await axios.post(
+                    '/api/libs/set_direct_message',
+                    dataForm
+                );
 
                 const { data } = response;
                 this.selectedConversation.messages.push(data.message);
@@ -273,16 +389,17 @@ export default {
                     id: this.userData.id,
                     token: this.userData.api_key,
                     request_id: this.selectedConversation.request_id,
-                    message: this.textMessage
+                    message: this.textMessage,
                 });
 
                 const { data } = response;
 
                 this.selectedConversation.messages.push(data.message);
-                
+
                 if (this.selectedConversation.conversation_id == 0)
-                    this.selectedConversation.conversation_id = data.conversation_id;
-                    
+                    this.selectedConversation.conversation_id =
+                        data.conversation_id;
+
                 this.newMessage = data.message;
                 this.textMessage = '';
             } catch (error) {
@@ -291,29 +408,36 @@ export default {
         },
         filterResults() {
             if (this.filterName.length > 0) {
-                this.filteredConversations = this.conversations.filter(query => {
-                    return query.full_name.
-                        toLowerCase()
-                        .includes(this.filterName.toLowerCase());
-                });
+                this.filteredConversations = this.conversations.filter(
+                    (query) => {
+                        return query.full_name
+                            .toLowerCase()
+                            .includes(this.filterName.toLowerCase());
+                    }
+                );
             } else {
                 this.filteredConversations = [];
             }
         },
         subscribeToChannel(id) {
-            window.Echo
-                .channel(`notifyPanel.${id}`)
-                .listen('.PanelNewMessage', async (response) => {
+            console.log(`Chat > subscribeToChannel: notifyPanel.${id}`);
+            window.Echo.channel(`notifyPanel.${id}`).listen(
+                '.PanelNewMessage',
+                async (response) => {
                     this.conversations = response.conversations;
-                    
+
                     if (this.selectedConversation) {
                         for (let i = 0; i < this.conversations.length; i++) {
-                            if (this.selectedConversation.conversation_id == this.conversations[i].conversation_id) {
-                                this.selectConversation(this.conversations[i])
+                            if (
+                                this.selectedConversation.conversation_id ==
+                                this.conversations[i].conversation_id
+                            ) {
+                                this.selectConversation(this.conversations[i]);
                             }
                         }
                     }
-                });
+                }
+            );
         },
         selectConversation(data) {
             this.selectedConversation = data;
@@ -323,7 +447,9 @@ export default {
          */
         async getCanonicalMessages() {
             try {
-                const response = await axios.get('/admin/lib/api/canonical_messages');
+                const response = await axios.get(
+                    '/admin/lib/api/canonical_messages'
+                );
                 const { data } = response;
                 this.canonical_messages = data.messages;
             } catch (error) {
@@ -331,7 +457,7 @@ export default {
             }
         },
         onModalSendMessage(value) {
-            const conversation = this.conversations.filter(query => {
+            const conversation = this.conversations.filter((query) => {
                 return query.conversation_id == value.conversation_id;
             });
 
@@ -346,7 +472,7 @@ export default {
                     full_name: value.receiver_name,
                     picture: value.receiver_picture,
                     time: value.message.humans_time,
-                    last_message: value.message.message
+                    last_message: value.message.message,
                 };
 
                 this.conversations.unshift(newConversation);
@@ -361,34 +487,35 @@ export default {
         onFileChange(e) {
             this.picture = e.target.files[0];
             console.log(e.target.files[0]);
-            this.$toasted.show(
-                this.trans.image_uploaded, 
-                { 
-                    theme: "bubble", 
-                    type: "info" ,
-                    position: "bottom-center", 
-                    duration : 5000
-                }
-            );
-        }
+            this.$toasted.show(this.trans.image_uploaded, {
+                theme: 'bubble',
+                type: 'info',
+                position: 'bottom-center',
+                duration: 5000,
+            });
+        },
     },
     watch: {
-        selectedConversation: async function() {
+        selectedConversation: async function () {
             await this.$nextTick();
             var chat = $('.chat-list');
-            chat.scrollTop(chat.prop("scrollHeight"));
+            chat.scrollTop(chat.prop('scrollHeight'));
         },
-        newMessage: async function() {
+        newMessage: async function () {
             await this.$nextTick();
             var chat = $('.chat-list');
-            chat.scrollTop(chat.prop("scrollHeight"));
-        }
+            chat.scrollTop(chat.prop('scrollHeight'));
+        },
     },
     mounted() {
         const listElm = document.getElementById('infinite-list');
 
-        listElm.addEventListener('scroll', async e => {
-            if(listElm.scrollTop + listElm.clientHeight >= (listElm.scrollHeight - 200) && this.is_loading == false) {
+        listElm.addEventListener('scroll', async (e) => {
+            if (
+                listElm.scrollTop + listElm.clientHeight >=
+                    listElm.scrollHeight - 200 &&
+                this.is_loading == false
+            ) {
                 this.is_loading = true;
                 await this.getConversations(this.current_page + 1);
             }
@@ -398,13 +525,14 @@ export default {
         this.subscribeToChannel(this.userData.default_user_id);
     },
     created() {
+        console.log('Chat created: ', this.environment);
         if (this.environment == 'corp') {
             this.userData = this.user.admin_institution.institution;
         } else if (this.environment == 'admin') {
             window.Echo = new Echo({
                 broadcaster: 'socket.io',
                 client: require('socket.io-client'),
-                host: `${window.location.hostname}:${this.echoport}`
+                host: `${window.location.hostname}:${this.echoport}`,
             });
 
             window.io = require('socket.io-client');
@@ -416,8 +544,8 @@ export default {
         }
 
         this.getCanonicalMessages();
-    }
-}
+    },
+};
 </script>
 
 <style>
@@ -430,7 +558,9 @@ export default {
     outline: 0;
 }
 
-*, ::after, ::before {
+*,
+::after,
+::before {
     box-sizing: border-box;
 }
 
@@ -500,7 +630,7 @@ export default {
 }
 
 .border-top {
-    border-top: 1px solid #eee!important;
+    border-top: 1px solid #eee !important;
 }
 
 .current-chat-user-name img {
@@ -518,18 +648,18 @@ export default {
 }
 
 .chat-list::-webkit-scrollbar {
-  width: 20px;
+    width: 20px;
 }
 
 .chat-list::-webkit-scrollbar-track {
-  background-color: transparent;
+    background-color: transparent;
 }
 
 .chat-list::-webkit-scrollbar-thumb {
-  background-color: #d6dee1;
-  border-radius: 20px;
-  border: 6px solid transparent;
-  background-clip: content-box;
+    background-color: #d6dee1;
+    border-radius: 20px;
+    border: 6px solid transparent;
+    background-clip: content-box;
 }
 
 .conversation-row {
@@ -549,7 +679,6 @@ export default {
     width: calc(100% - 70px);
 }
 
-
 .chat-time {
     font-size: 12px;
     width: 70px;
@@ -559,7 +688,7 @@ export default {
     justify-content: center;
 }
 
-.chat-send-message-footer{
+.chat-send-message-footer {
     height: 65px;
     display: flex;
     flex-direction: row;
@@ -629,18 +758,18 @@ export default {
 }
 
 .message-list::-webkit-scrollbar {
-  width: 20px;
+    width: 20px;
 }
 
 .message-list::-webkit-scrollbar-track {
-  background-color: transparent;
+    background-color: transparent;
 }
 
 .message-list::-webkit-scrollbar-thumb {
-  background-color: #d6dee1;
-  border-radius: 20px;
-  border: 6px solid transparent;
-  background-clip: content-box;
+    background-color: #d6dee1;
+    border-radius: 20px;
+    border: 6px solid transparent;
+    background-clip: content-box;
 }
 
 .message-display {
