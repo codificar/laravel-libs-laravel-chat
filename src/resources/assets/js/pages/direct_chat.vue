@@ -508,6 +508,7 @@ export default {
         },
     },
     mounted() {
+        console.log('mounted');
         const listElm = document.getElementById('infinite-list');
 
         listElm.addEventListener('scroll', async (e) => {
