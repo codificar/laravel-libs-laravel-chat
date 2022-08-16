@@ -52,6 +52,14 @@ Route::group(array('namespace' => 'Codificar\Chat\Http\Controllers'), function (
             Route::get('messages', "RideChatController@getMessages");
             Route::post('seen', "RideChatController@setMessagesSeen");
         });
+
+        Route::group(['prefix' => 'corp/chat'], function () {
+
+            //Route::post('send', 'RideChatController@sendMessage');
+            //Route::get('conversation', "RideChatController@getConversation");
+            Route::get('messages', "RideChatController@getMessages");
+            //Route::post('seen', "RideChatController@setMessagesSeen");
+        });
     });
 
     Route::get('/admin/libs/help_report', [

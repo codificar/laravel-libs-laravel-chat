@@ -519,6 +519,15 @@ export default {
             chat.scrollTop(chat.prop('scrollHeight'));
         },
     },
+    beforeCreated() {
+        window.Echo = new Echo({
+            broadcaster: 'socket.io',
+            client: require('socket.io-client'),
+            host: `${window.location.hostname}:${this.echoport}`,
+        });
+
+        window.io = require('socket.io-client');
+    },
     mounted() {
         console.log('mounted');
         const listElm = document.getElementById('infinite-list');
@@ -538,17 +547,10 @@ export default {
         this.subscribeToChannel(this.userData.default_user_id);
     },
     created() {
-        console.log('Chat created: ', this.environment);
-        window.Echo = new Echo({
-            broadcaster: 'socket.io',
-            client: require('socket.io-client'),
-            host: `${window.location.hostname}:${this.echoport}`,
-        });
-
-        window.io = require('socket.io-client');
-
+        this.isAdmin = false;
         if (this.environment == 'corp') {
-            this.userData = this.user.admin_institution.institution;
+            this.userData.default_user_id =
+                this.user.admin_institution.institution;
         } else if (this.environment == 'admin') {
             this.isAdmin = true;
             this.userData = this.user;

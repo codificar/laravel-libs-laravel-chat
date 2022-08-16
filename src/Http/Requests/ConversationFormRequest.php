@@ -2,6 +2,7 @@
 
 namespace Codificar\Chat\Http\Requests;
 
+use App\Models\Institution;
 use Illuminate\Foundation\Http\FormRequest;
 use Requests, User;
 
@@ -25,7 +26,7 @@ class ConversationFormRequest extends FormRequest
 	public function rules()
 	{
 		return [
-			"request_id" => "integer".($this->sender_type == "admin"?"|required":"")
+			"request_id" => "integer".(($this->sender_type == "admin" || $this->sender_type == "corp") ?"|required":"")
 		];
 	}
 
@@ -35,6 +36,7 @@ class ConversationFormRequest extends FormRequest
      * @return void
      */
 	protected function prepareForValidation() {
+
 		$sender_type = request()->segments()[2];
 		
 		if($this->userType) {
@@ -43,14 +45,23 @@ class ConversationFormRequest extends FormRequest
 
 		if($sender_type == "provider") {
 			$ledger_id = $this->provider->ledger->id;
-		} else {
-			if($sender_type == "admin") {
+		} else if($sender_type == "admin") {
 				$request = Requests::find($this->request_id);
 				
 				if($request) {
 					$this->user = User::find($request->user_id);
 				}
+		}  else if($sender_type == "corp") {
+			$request = Requests::find($this->request_id);
+			if($request) {
+				$this->user = Institution::find($request->institution_id);
 			}
+			
+			if($this->user){
+				$ledger_id = $this->user->getLedger()->id;
+			}
+			
+		} else {
 			if($this->user){
 				$ledger_id = $this->user->ledger->id;
 			}

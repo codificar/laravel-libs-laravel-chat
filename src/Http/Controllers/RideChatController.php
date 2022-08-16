@@ -167,6 +167,14 @@ class RideChatController extends Controller
 		$ledger = null;
 		$ride = Requests::find($request_id);
 		$provider = $ride->confirmedProvider;
+		
+		$requestPoints = RequestPoint::whereRequestId($request_id)->get();
+
+		if(in_array($ride->user_id, Institution::getDefaultUsersIds())){
+			$institution = Institution::getByDefaultUserId($ride->user_id);
+		} else {
+			$institution = "";
+		}
 
 		if (!$provider)
 			abort(404);
@@ -192,12 +200,18 @@ class RideChatController extends Controller
 
 		if ($conversation)
 			$newConversation = null;
-        
-        return view('chat::direct_chat', [
+    
+		$mapsApiKey = Settings::getGoogleMapsApiKey();
+
+        return view('chat::chat', [
             'environment' => 'corp',
+			'request' => $ride,
+			'requestPoints' => $requestPoints,
             'user' => $user,
+			"institution" => $institution,
             'ledger_id' => $ledger ? $ledger->id : null,
 			'request_id' => $ride ? $ride->id : null,
+			"maps_api_key" => $mapsApiKey,
 			'new_conversation' => $newConversation,
 			'conversation_id' => $conversation ? $conversation->id : null
         ]);
