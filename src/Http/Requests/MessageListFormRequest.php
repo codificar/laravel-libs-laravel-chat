@@ -56,6 +56,17 @@ class MessageListFormRequest extends FormRequest {
 				$this->provider :
 				Provider::find($this->provider_id);
 			$ledger = Ledger::where('provider_id', $provider->id)->first();
+		} else if($sender_type == "corp") {
+			dd($this);
+			/*$request = Requests::find($this->request_id);
+			if($request) {
+				$this->user = Institution::find($request->institution_id);
+			}*/
+			
+			if($this->user){
+				$ledger = $this->user->getLedger();
+			}
+			
 		} else {
 			$user = $this->user ? 
 				$this->user : 
