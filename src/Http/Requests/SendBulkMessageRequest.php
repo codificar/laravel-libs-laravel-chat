@@ -41,14 +41,19 @@ class SendBulkMessageRequest extends FormRequest
      * @return void
      */
     protected function prepareForValidation() {
-        $senderType = $this->userType;
-
-        $senderLedger = Helper::getLedger($senderType, $this->userSystem->id);
-        
-		$this->merge([
-			"sender_type" => $senderType,
-            "sender_id" => $senderLedger ? $senderLedger->id : null
-		]);
+        try {
+            $senderType = $this->userType;
+    
+            $senderLedger = Helper::getLedger($senderType, $this->userSystem->id);
+            
+            $this->merge([
+                "sender_type" => $senderType,
+                "sender_id" => $senderLedger ? $senderLedger->id : null
+            ]);
+        } catch (\Exception $e) {
+            \Log::error($e);
+            \Log::info('SendBulkMessageRequest > prepareForValidation > error: ' . $e->getMessage());
+        }
     }
     
     /**

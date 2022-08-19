@@ -154,67 +154,72 @@ class RideChatController extends Controller
 	 * @return view
 	 */
 	public function corpRequestChat($request_id){
-		
-		$user = Auth::guard('web')->user();
+		try {
+			$user = Auth::guard('web')->user();
+	
+			if (!$user || !$user->AdminInstitution) {
+				$user = Auth::guard('web_corp')->user();
+	
+				if (!$user)
+					return \Redirect::to("/corp/login");
+			}
+	
+			$ledger = null;
+			$ride = Requests::find($request_id);
+			$provider = $ride->confirmedProvider;
+	
+			$requestPoints = RequestPoint::whereRequestId($request_id)->get();
 
-		if (!$user || !$user->AdminInstitution) {
-            $user = Auth::guard('web_corp')->user();
+			if(in_array($ride->user_id, Institution::getDefaultUsersIds())){
+				$institution = Institution::getByDefaultUserId($ride->user_id);
+			} else {
+				$institution = "";
+			}
+	
+			if (!$provider)
+				abort(404);
+	
+			if ($user) {
+				$ledger = Helper::getLedger(
+					'corp', 
+					$user->AdminInstitution->Institution->default_user_id
+				);
+			}
 
-            if (!$user)
-                return \Redirect::to("/corp/login");
+			$newConversation = [
+				'full_name' => $provider->first_name . ' ' . $provider->last_name,
+				'picture' => $provider->picture,
+				'request_id' => $ride->id,
+				'conversation_id' => 0,
+				'last_message' => '',
+				'time' => '',
+				'messages' => []
+			];
+	
+			$conversation = Conversation::where('request_id', $ride->id)->first();
+	
+			if ($conversation)
+				$newConversation = null;
+			
+			$mapsApiKey = Settings::getGoogleMapsApiKey();
+
+			return view('chat::chat', [
+				'environment' => 'corp',
+				'request' => $ride,
+				'requestPoints' => $requestPoints,
+				'user' => $user,
+				"institution" => $institution,
+				'ledger_id' => $ledger ? $ledger->id : null,
+				'request_id' => $ride ? $ride->id : null,
+				"maps_api_key" => $mapsApiKey,
+				'new_conversation' => $newConversation,
+				'conversation_id' => $conversation ? $conversation->id : null
+			]);
+		}  catch (\Exception $e) {
+			\Log::error($e);
+            \Log::info('RideChatController > corpRequestChat > error: ' . $e->getMessage());
+            return new \Exception($e->getMessage());
         }
-
-		$ledger = null;
-		$ride = Requests::find($request_id);
-		$provider = $ride->confirmedProvider;
-		
-		$requestPoints = RequestPoint::whereRequestId($request_id)->get();
-
-		if(in_array($ride->user_id, Institution::getDefaultUsersIds())){
-			$institution = Institution::getByDefaultUserId($ride->user_id);
-		} else {
-			$institution = "";
-		}
-
-		if (!$provider)
-			abort(404);
-
-        if ($user) {
-            $ledger = Helper::getLedger(
-                'corp', 
-                $user->AdminInstitution->Institution->default_user_id
-            );
-		}
-		
-		$newConversation = [
-			'full_name' => $provider->first_name . ' ' . $provider->last_name,
-			'picture' => $provider->picture,
-			'request_id' => $ride->id,
-			'conversation_id' => 0,
-			'last_message' => '',
-			'time' => '',
-			'messages' => []
-		];
-
-		$conversation = Conversation::where('request_id', $ride->id)->first();
-
-		if ($conversation)
-			$newConversation = null;
-    
-		$mapsApiKey = Settings::getGoogleMapsApiKey();
-
-        return view('chat::chat', [
-            'environment' => 'corp',
-			'request' => $ride,
-			'requestPoints' => $requestPoints,
-            'user' => $user,
-			"institution" => $institution,
-            'ledger_id' => $ledger ? $ledger->id : null,
-			'request_id' => $ride ? $ride->id : null,
-			"maps_api_key" => $mapsApiKey,
-			'new_conversation' => $newConversation,
-			'conversation_id' => $conversation ? $conversation->id : null
-        ]);
 	}
 	
     /**

@@ -16,9 +16,15 @@ class Helper {
      */
     public static function getLedger($type, $id)
     {
-        if ($type == 'corp')
-            $type = 'user';
+        if(!isset($id)|| $id <= 0) {
+            \Log::error("CHAT getLedger > Invalid Ledger ID: " . $type . "_id: " . $id);
+            return new \Exception('Invalid  ' . $type . '_id: ', 400);
+        }
 
+        if ($type == 'corp') {
+            $type = 'user';
+        }
+        
         $type = $type . '_id';
         return self::getOrCreateLedger($type, $id);
     }

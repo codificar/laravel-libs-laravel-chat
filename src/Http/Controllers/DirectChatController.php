@@ -32,29 +32,35 @@ class DirectChatController extends Controller
      */
     public function renderDirectChat($id = null)
     {
-        $user = Auth::guard('web_corp')->user();
-        $ledger = null;
-
-        if (!$user || !$user->AdminInstitution) {
+        try {
             $user = Auth::guard('web_corp')->user();
-
-            if (!$user)
-                return \Redirect::to("/corp/login");
+            $ledger = null;
+    
+            if (!$user || !$user->AdminInstitution) {
+                $user = Auth::guard('web_corp')->user();
+    
+                if (!$user)
+                    return \Redirect::to("/corp/login");
+            }
+    
+            $ledger = Helper::getLedger(
+                'corp', 
+                $user->AdminInstitution->Institution->default_user_id
+            );
+            
+            return view('chat::direct_chat', [
+                'environment' => 'corp',
+                'user' => $user,
+                'ledger_id' => $ledger ? $ledger->id : null,
+                'user_id' => $id,
+                'new_conversation' => null,
+                'conversation_id' => $id
+            ]);
+        } catch (\Exception $e) {
+            \Log::error($e);
+            \Log::info('DirectChatController > renderDirectChat > error: ' . $e->getMessage());
+            return new \Exception($e->getMessage());
         }
-
-        $ledger = Helper::getLedger(
-            'corp', 
-            $user->AdminInstitution->Institution->default_user_id
-        );
-        
-        return view('chat::direct_chat', [
-            'environment' => 'corp',
-            'user' => $user,
-            'ledger_id' => $ledger ? $ledger->id : null,
-            'user_id' => $id,
-            'new_conversation' => null,
-            'conversation_id' => $id
-        ]);
     }
 
     /**

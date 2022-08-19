@@ -31,48 +31,54 @@ class RequestHelpController extends Controller
      */
     public function adminHelpChat($help_id)
     {
-        $admin = Admin::find(Auth::guard('web')->user()->id);
-		if (!$admin) {
-			return Redirect::to("/admin/home");
-		}
-		if ($admin->profile_id == 6){
-			abort(404);
+        try {
+            $admin = Admin::find(Auth::guard('web')->user()->id);
+            if (!$admin) {
+                return Redirect::to("/admin/home");
+            }
+            if ($admin->profile_id == 6){
+                abort(404);
+            }
+            
+            $conversation = Conversation::whereHelpId($help_id)->first();
+    
+            if (!$conversation) {
+                return Redirect::to("/admin/report_help");
+            }
+            
+            $adminLedger = Helper::getLedger('admin', $admin->id);
+            $conversation->user_two = $adminLedger->id;
+            $conversation->save();
+    
+            $userHelped = Helper::getUserTypeInstance($conversation->user_one);
+            
+            return view('chat::help_chat', [
+                "environment" => "admin",
+                'requestPoints' => [],
+                'user' => [
+                    'id' => $userHelped->ledger_id,
+                    'user_id' => $userHelped->id,
+                    'token' => $userHelped->token,
+                    'name' => $userHelped->full_name,
+                    'image' => $userHelped->picture
+                ],
+                "maps_api_key" => Settings::getGoogleMapsApiKey(),
+                'request' => Requests::find($conversation->request_id),
+                'messages' => $conversation->messages->toArray(),
+                'admin' => [
+                    'id' => $adminLedger->id,
+                    'user_id' => $admin->id,
+                    'token' => $admin->remember_token,
+                    'name' => $admin->profile->name,
+                    'image' => \Theme::getLogoUrl()
+                ],
+                'convId' => $conversation->id
+            ]);
+        } catch (\Exception $e) {
+            \Log::error($e);
+            \Log::info('RequestHelpController > adminHelpChat > error: ' . $e->getMessage());
+            return new \Exception($e->getMessage());
         }
-        
-        $conversation = Conversation::whereHelpId($help_id)->first();
-
-        if (!$conversation) {
-            return Redirect::to("/admin/report_help");
-        }
-        
-        $adminLedger = Helper::getLedger('admin', $admin->id);
-        $conversation->user_two = $adminLedger->id;
-        $conversation->save();
-
-        $userHelped = Helper::getUserTypeInstance($conversation->user_one);
-        
-        return view('chat::help_chat', [
-            "environment" => "admin",
-            'requestPoints' => [],
-            'user' => [
-                'id' => $userHelped->ledger_id,
-                'user_id' => $userHelped->id,
-                'token' => $userHelped->token,
-                'name' => $userHelped->full_name,
-                'image' => $userHelped->picture
-            ],
-            "maps_api_key" => Settings::getGoogleMapsApiKey(),
-            'request' => Requests::find($conversation->request_id),
-            'messages' => $conversation->messages->toArray(),
-            'admin' => [
-                'id' => $adminLedger->id,
-                'user_id' => $admin->id,
-                'token' => $admin->remember_token,
-                'name' => $admin->profile->name,
-                'image' => \Theme::getLogoUrl()
-            ],
-            'convId' => $conversation->id
-        ]);
     }
 
     /**

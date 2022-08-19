@@ -52,21 +52,27 @@ class AdminChatController extends Controller
      */
     public function renderAdminChat()
     {
-        $user = Auth::guard('web')->user($id = null);
-
-        if (!$user)
-            return \Redirect::to("/admin/login");
-
-        $ledger = Helper::getLedger('admin', $user->id);
-
-        return view('chat::direct_chat', [
-            'environment' => 'admin',
-            'user' => $user,
-            'ledger_id' => $ledger ? $ledger->id : null,
-            'user_id' => $id,
-            'new_conversation' => null,
-            'conversation_id' => $id
-        ]);
+        try {
+            $user = Auth::guard('web')->user($id = null);
+    
+            if (!$user)
+                return \Redirect::to("/admin/login");
+    
+            $ledger = Helper::getLedger('admin', $user->id);
+    
+            return view('chat::direct_chat', [
+                'environment' => 'admin',
+                'user' => $user,
+                'ledger_id' => $ledger ? $ledger->id : null,
+                'user_id' => $id,
+                'new_conversation' => null,
+                'conversation_id' => $id
+            ]);
+        } catch (\Exception $e) {
+            \Log::error($e);
+            \Log::info('AdminChatController > renderAdminChat > error: ' . $e->getMessage());
+            return new \Exception($e->getMessage());
+        }
     }
 
     /**

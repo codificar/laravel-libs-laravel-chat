@@ -39,21 +39,26 @@ class GetDirectRequest extends FormRequest
      * @return void
      */
     protected function prepareForValidation() {
-        $senderType = strtolower(
-            get_class($this->userSystem)
-        );
-
-        $senderLedger = Helper::getLedger($senderType, $this->userSystem->id);
-        $receiver = null;
-        $receiverLedger = null;
-        $receiverType = 'user';
-
-        $receiverLedger = Ledger::find($this->receiver);
-        
-		$this->merge([
-			"sender_type" => $senderType,
-            "sender_id" => $senderLedger ? $senderLedger->id : null,
-            "receiver_id" => $receiverLedger ? $receiverLedger->id : null
-		]);
+        try {
+            $senderType = strtolower(
+                get_class($this->userSystem)
+            );
+    
+            $senderLedger = Helper::getLedger($senderType, $this->userSystem->id);
+            $receiver = null;
+            $receiverLedger = null;
+            $receiverType = 'user';
+    
+            $receiverLedger = Ledger::find($this->receiver);
+            
+            $this->merge([
+                "sender_type" => $senderType,
+                "sender_id" => $senderLedger ? $senderLedger->id : null,
+                "receiver_id" => $receiverLedger ? $receiverLedger->id : null
+            ]);
+        } catch (\Exception $e) {
+            \Log::error($e);
+            \Log::info('GetDirectRequest > prepareForValidation > error: ' . $e->getMessage());
+        }
 	}
 }

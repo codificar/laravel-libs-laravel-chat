@@ -41,45 +41,50 @@ class SendMessageRequest extends FormRequest
      * @return void
      */
     protected function prepareForValidation() {
-		$sender_type = request()->segments()[2];
-
-		if($this->userType) {
-			$sender_type = $this->userType;
-		}
-		$this->is_admin = 0;
-		$ride = Requests::find($this->request_id);
-
-		if ($ride) {
+		try {
+			$sender_type = request()->segments()[2];
 	
-			if ($sender_type == "provider") {
-
-				$ledgerSender = Helper::getLedger($sender_type, $this->provider->id);
-				$ledgerReceiver = Helper::getLedger('user', $ride->user_id);
-				$sender_id = $ledgerSender->id;
-				$user = $ledgerReceiver->id;
-				$provider = $sender_id;
-			} else {
-
-				$ledgerSender = Helper::getLedger('user', $ride->user_id);
-				$ledgerReceiver = Helper::getLedger('provider', $ride->confirmed_provider);
-				$sender_id = $ledgerSender->id;
-				$user = $sender_id;
-				$provider = $ledgerReceiver->id;
+			if($this->userType) {
+				$sender_type = $this->userType;
 			}
-
-			\Talk::setAuthUserId($sender_id);
-
-			$this->merge([
-				"ride" => $ride,
-				"sender_type" => $sender_type,
-				"sender_id" => $sender_id,
-				"user_id" => $user,
-				"provider_id" => $provider,
-				"ledger_receiver" => $ledgerReceiver,
-				"receiver_id" => $ledgerReceiver->id,
-				'is_admin' => $this->is_admin
-			]);
-		}
+			$this->is_admin = 0;
+			$ride = Requests::find($this->request_id);
+	
+			if ($ride) {
+		
+				if ($sender_type == "provider") {
+	
+					$ledgerSender = Helper::getLedger($sender_type, $this->provider->id);
+					$ledgerReceiver = Helper::getLedger('user', $ride->user_id);
+					$sender_id = $ledgerSender->id;
+					$user = $ledgerReceiver->id;
+					$provider = $sender_id;
+				} else {
+	
+					$ledgerSender = Helper::getLedger('user', $ride->user_id);
+					$ledgerReceiver = Helper::getLedger('provider', $ride->confirmed_provider);
+					$sender_id = $ledgerSender->id;
+					$user = $sender_id;
+					$provider = $ledgerReceiver->id;
+				}
+	
+				\Talk::setAuthUserId($sender_id);
+	
+				$this->merge([
+					"ride" => $ride,
+					"sender_type" => $sender_type,
+					"sender_id" => $sender_id,
+					"user_id" => $user,
+					"provider_id" => $provider,
+					"ledger_receiver" => $ledgerReceiver,
+					"receiver_id" => $ledgerReceiver->id,
+					'is_admin' => $this->is_admin
+				]);
+			}
+		} catch (\Exception $e) {
+			\Log::error($e);
+            \Log::info('SendMessageRequest > prepareForValidation > error: ' . $e->getMessage());
+        }
 			
 	}
 }
