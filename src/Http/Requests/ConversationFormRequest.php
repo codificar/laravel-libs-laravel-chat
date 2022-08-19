@@ -46,15 +46,15 @@ class ConversationFormRequest extends FormRequest
 		if($sender_type == "provider") {
 			$ledger_id = $this->provider->ledger->id;
 		} else if($sender_type == "admin") {
-				$request = Requests::find($this->request_id);
+				$request = \Requests::find($this->request_id);
 				
 				if($request) {
-					$this->user = User::find($request->user_id);
+					$this->user = \User::find($request->user_id);
 				}
 		}  else if($sender_type == "corp") {
-			$request = Requests::find($this->request_id);
+			$request = \Requests::find($this->request_id);
 			if($request) {
-				$this->user = Institution::find($request->institution_id);
+				$this->user = \User::find($request->user_id);
 			}
 			
 			if($this->user){

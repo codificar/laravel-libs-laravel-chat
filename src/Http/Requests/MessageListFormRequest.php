@@ -2,11 +2,13 @@
 
 namespace Codificar\Chat\Http\Requests;
 
+use App\Models\Institution;
 use Illuminate\Foundation\Http\FormRequest;
 use Nahid\Talk\Conversations\Conversation;
 use Provider, User, Ledger;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
+use Requests;
 
 class MessageListFormRequest extends FormRequest {
 	
@@ -51,22 +53,28 @@ class MessageListFormRequest extends FormRequest {
 			$sender_type = $this->userType;
 		}
 
+		$conversation = Conversation::find($this->conversation_id);
+
 		if($sender_type == "provider") {
 			$provider = $this->provider ? 
 				$this->provider :
 				Provider::find($this->provider_id);
 			$ledger = Ledger::where('provider_id', $provider->id)->first();
+		
 		} else if($sender_type == "corp") {
-			dd($this);
-			/*$request = Requests::find($this->request_id);
+			$request = Requests::find($this->request_id);
+			
 			if($request) {
 				$this->user = Institution::find($request->institution_id);
-			}*/
-			
-			if($this->user){
-				$ledger = $this->user->getLedger();
+				$provider = $this->provider ? 
+					$this->provider :
+					Provider::find($this->provider_id);
+				$ledger = Ledger::where('provider_id', $provider->id)->first();
+				
+				$conversation = Conversation::where('request_id', $this->request_id)->first();
+				$this->conversation_id = $conversation->id;
 			}
-			
+
 		} else {
 			$user = $this->user ? 
 				$this->user : 
@@ -74,8 +82,6 @@ class MessageListFormRequest extends FormRequest {
 
 			$ledger = Ledger::where('user_id', $user->id)->first();
         }
-        
-		$conversation = Conversation::find($this->conversation_id);
         
 		if($ledger and $conversation and ($conversation->user_one == $ledger->id or $conversation->user_two == $ledger->id)) {
 			$this->merge([ "conversation" => $conversation ]);

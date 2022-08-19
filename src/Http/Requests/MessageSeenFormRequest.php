@@ -42,17 +42,34 @@ class MessageSeenFormRequest extends FormRequest
      */
 	protected function prepareForValidation()
 	{
+		$sender_type = request()->segments()[2];
+
+		if($this->userType) {
+			$sender_type = $this->userType;
+		}
 		$message = Message::find($this->message_id);
 		$ledger = null;
+
+		// TODO: verificar como o coorp vai se comportar ao vizualizar uma mensagem
+		/*if($sender_type =='corp') {
+			$cRequest = ConversationRequest::getByConversationId($message->conversation_id);
+			
+			$this->merge([
+				'message' => $message,
+				'u_id' => null,
+				'request_id' => $cRequest->request_id
+			]);
+			return;
+		}*/
 
 		if(isset($this->provider)) {
 			$ledger = Ledger::where('provider_id', $this->provider->id)->first();
 			$id = $ledger->id;
-		} else if($this->user_id) {
+		} else if(isset($this->user_id)) {
 			$ledger = Ledger::where('user_id', $this->user_id)->first();
 			$id = $ledger->id;
 		} else {
-			$ledger = Ledger::where('user_id', $this->user->id)->first();
+			$ledger = Ledger::where('user_id', $this->user_id)->first();
 			$id = $ledger->id;
 		}
 
