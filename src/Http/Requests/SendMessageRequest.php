@@ -51,6 +51,7 @@ class SendMessageRequest extends FormRequest
 			}
 			$this->is_admin = 0;
 			$ride = Requests::find($this->request_id);
+			$isProvider = false;
 	
 			if ($ride) {
 				if ($sender_type == "provider") {
@@ -59,6 +60,7 @@ class SendMessageRequest extends FormRequest
 					$sender_id = $ledgerSender->id;
 					$user = $ledgerReceiver->id;
 					$provider = $sender_id;
+					$isProvider = true;
 				} elseif ($sender_type == "corp") {
 					$this->is_admin = 1;
 					$ledgerSender = Helper::getLedger('user', $ride->user_id);
@@ -85,7 +87,8 @@ class SendMessageRequest extends FormRequest
 					"provider_id" => $provider,
 					"ledger_receiver" => $ledgerReceiver,
 					"receiver_id" => $ledgerReceiver->id,
-					'is_admin' => $this->is_admin
+					'is_admin' => $this->is_admin,
+					'is_provider' => $isProvider
 				]);
 			
 			}

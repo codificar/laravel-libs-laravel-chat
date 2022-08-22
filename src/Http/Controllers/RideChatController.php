@@ -249,6 +249,16 @@ class RideChatController extends Controller
 					$message->save();
 				}
 			}
+
+			if($request->is_provider) {
+				try {
+					$message->is_provider = true;
+					$message->save();
+				} catch (\Exception $e) {
+					\Log::error($e);
+					\Log::info('RideChatController > sendMessage > error: ' . $e->getMessage());
+				}
+			}
 			
             event(new EventConversation($message->id));
             
