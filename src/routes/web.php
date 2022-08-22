@@ -55,7 +55,7 @@ Route::group(array('namespace' => 'Codificar\Chat\Http\Controllers'), function (
 
         Route::group(['prefix' => 'corp/chat'], function () {
 
-            //Route::post('send', 'RideChatController@sendMessage');
+            Route::post('send', 'RideChatController@sendMessage');
             Route::get('conversation', "RideChatController@getConversation");
             Route::get('messages', "RideChatController@getMessages");
             Route::post('seen', "RideChatController@setMessagesSeen");

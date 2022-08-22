@@ -31,7 +31,9 @@ class SendMessageRequest extends FormRequest
 			"message"		=> "string".($this->type == "text"?"|required":""),
 			"bid"			=> "numeric".($this->type == "bid"?"|required":""),
 			"type"			=> "in:text,bid",
-			"ride"			=> "required"
+			"ride"			=> $this->userType == "admin" || $this->userType == "corp"  
+				? "|required" 
+				: ""
 		];
     }
     
@@ -44,32 +46,37 @@ class SendMessageRequest extends FormRequest
 		try {
 			$sender_type = request()->segments()[2];
 	
-			if($this->userType) {
+			if ($this->userType) {
 				$sender_type = $this->userType;
 			}
 			$this->is_admin = 0;
 			$ride = Requests::find($this->request_id);
 	
 			if ($ride) {
-		
 				if ($sender_type == "provider") {
-	
 					$ledgerSender = Helper::getLedger($sender_type, $this->provider->id);
 					$ledgerReceiver = Helper::getLedger('user', $ride->user_id);
 					$sender_id = $ledgerSender->id;
 					$user = $ledgerReceiver->id;
 					$provider = $sender_id;
+				} elseif ($sender_type == "corp") {
+					$this->is_admin = 1;
+					$ledgerSender = Helper::getLedger('user', $ride->user_id);
+					$ledgerReceiver = Helper::getLedger('provider', $ride->confirmed_provider);
+					$sender_id = $ledgerSender->id;
+					$user = $sender_id;
+					$provider = $ledgerReceiver->id;
+
 				} else {
-	
 					$ledgerSender = Helper::getLedger('user', $ride->user_id);
 					$ledgerReceiver = Helper::getLedger('provider', $ride->confirmed_provider);
 					$sender_id = $ledgerSender->id;
 					$user = $sender_id;
 					$provider = $ledgerReceiver->id;
 				}
-	
+
 				\Talk::setAuthUserId($sender_id);
-	
+
 				$this->merge([
 					"ride" => $ride,
 					"sender_type" => $sender_type,
@@ -80,6 +87,7 @@ class SendMessageRequest extends FormRequest
 					"receiver_id" => $ledgerReceiver->id,
 					'is_admin' => $this->is_admin
 				]);
+			
 			}
 		} catch (\Exception $e) {
 			\Log::error($e);
