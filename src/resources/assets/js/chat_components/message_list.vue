@@ -12,18 +12,41 @@
 			},
 			admin: {
 				type: Object
+			},
+			isNewMessage: {
+				type: Boolean
+			},
+			readMessages: {
+				type: Function
 			}
 		},
-		created() {
-			console.log('Message List', this);
+		async created() {
+			await this.showNewMessage();
+			const self = this;
+			$(document).ready(function() { 
+				var chat = $('#message-list');
+				chat.on('scroll', function(event) {
+					const positionScroll = $(this)[0].clientHeight + $(this).scrollTop(); 
+					const endScroll = $(this)[0].scrollHeight - 100;
+					if(positionScroll >= endScroll) {
+						self.readMessages();
+					}
+				});
+			});
 		},
 		watch: {
 			conversation: async function() {
 				await this.$nextTick();
 				var chat = $('#message-list');
-				chat.scrollTop(chat.prop("scrollHeight"));
 			}
-		}
+		},
+		methods: {
+			showNewMessage: async function() {
+				var chat = $('#message-list');
+				chat.scrollTop(chat.prop("scrollHeight"));
+				this.readMessages();
+			}
+		},
 	};
 </script>
 <template>
@@ -128,9 +151,21 @@
 						</div>
 					</div>
 				</div>
+				
 			</li>
 			<!--chat Row -->
 		</ul>
+
+ 		<transition name="fade">
+			<div class="container-new-message"
+				v-if="isNewMessage"
+				@click="showNewMessage()">
+				<div class="button-new-message">
+					<p class="text-new-message">Nova mensagem</p>
+					<i class="fa fa-angle-down icon-new-message"></i>
+				</div>
+			</div>
+		</transition>
 	</div>
 </template>
 <style>
@@ -171,5 +206,41 @@
     flex: 1;
     justify-content: center;
     align-items: end;
+}
+.container-new-message {
+	display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    bottom: 45px;
+	transform-origin: bottom; /* changed to bottom */
+  	transition: transform .3s ease-in-out;
+	overflow: hidden;
+}
+.button-new-message {
+	display: flex;
+	flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: #27850f;
+    padding: 10px 10px 7px 10px;
+    border-radius: 15px;
+    height: 30px;
+    cursor: pointer;
+}
+.text-new-message, .icon-new-message {
+	color: #fff;
+	font-weight: bold;
+	font-size: 12px;
+	margin: 0px;
+}
+
+.icon-new-message {
+	position: relative;
+    top: -3px;
+}
+
+.slide-enter, .slide-leave-to{
+  transition: scaleY(0);
 }
 </style>

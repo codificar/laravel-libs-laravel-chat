@@ -26,6 +26,7 @@ export default {
             conversationArray: [],
             messages: [],
             adminUser: {},
+            isNewMessage: false
         };
     },
     components: {
@@ -55,9 +56,18 @@ export default {
             });
         },
         subscribeToChannel(conversationId) {
-            if (conversationId == 0) return;
             var vm = this;
-            window.Echo.channel('conversation.' + conversationId)
+            
+            if (conversationId == 0) return;
+
+            if(!window.Echo) {
+                console.error("Error window.Echo notFound!!");
+                return;
+            }
+
+            // sai da conversa antes para não ficar criando novas coneões de socket e novas requisições
+            window.Echo.leave(`conversation.${conversationId}`);
+            window.Echo.channel(`conversation.${conversationId}`)
                 .listen('.readMessage', (e) => {
                     if (
                         e.message.conversation_id == vm.conversation_active.id
@@ -66,6 +76,9 @@ export default {
                     }
                 })
                 .listen('.newMessage', (e) => {
+                    vm.isNewMessage = false;
+                    
+
                     vm.getConversations();
                     if (
                         e.message.conversation_id == vm.conversation_active.id
@@ -74,19 +87,43 @@ export default {
                             vm.messages.every(
                                 (message) => message.id != e.message.id
                             )
-                        )
+                        ) {
                             vm.messages.push(e.message);
+                            const isAdmin = e.message.admin_id;
+                            const isUser = !isAdmin && !e.message.is_provider;
+                            const isProvider = !isUser && e.message.is_provider;
+                            
+                            if(e.message.is_seen == 0 && (isProvider || isUser) ) {
+                                //Alert new message
+                                vm.isNewMessage = true;
+                            }
+                        }
                     }
+                })
+                .error((error) =>{
+                    console.error('Error Tryng connect/listen socket:', error);
                 });
         },
         subscribeToChannelRequest(requestId) {
             var vm = this;
-            window.Echo.channel('request.' + requestId).listen(
+
+            if (requestId == 0) return;
+
+            if(!window.Echo) {
+                console.error("Error window.Echo notFound!!");
+                return;
+            }
+            // sai da conversa antes para não ficar criando novas coneões de socket e novas requisições
+            window.Echo.leave(`request.${requestId}`);
+            window.Echo.channel(`request.${requestId}`)
+            .listen(
                 '.newConversation',
                 (e) => {
                     vm.getConversations();
                 }
-            );
+            ).error((error) =>{
+                console.error('Error Tryng connect/listen socket:', error);
+            });
         },
         getConversations() {
             var vm = this;
@@ -165,6 +202,14 @@ export default {
                 return !e.is_seen && e.user_id != this.User.id;
             });
         },
+        readMessages() {
+            this.isNewMessage = false;
+            this.messages.map((e) => {
+                if(!e.is_seen && e.user_id != this.User.id) {
+                    this.setAsSeen(e.id);
+                }
+            })
+        },
         errorImage(obj) {
             obj.src = this.logo;
         },
@@ -215,6 +260,8 @@ export default {
                 :admin="adminUser"
                 ref="messageList"
                 :logo="logo"
+                :isNewMessage="isNewMessage"
+                :readMessages="readMessages"
             />
             <UserInput
                 @userInputMessage="sendMessage"
