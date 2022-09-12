@@ -17,8 +17,10 @@ Route::group(array('namespace' => 'Codificar\Chat\Http\Controllers'), function (
         'uses' => 'RideChatController@corpRequestChat'
     ])->middleware(['talk:web', 'auth.corp_admin']);
 
-    Route::get('/provider/libs/chat/{request_id}', 'RideChatController@providerRequestChat')
-        ->middleware(['auth.provider', 'talk:providers']);
+    Route::get('/provider/libs/chat/{request_id}', [
+        'as' => 'providerRequestChat',
+        'uses' => 'RideChatController@providerRequestChat'
+    ])->middleware(['auth.provider', 'talk:providers']);
 
     ///Route chatbot
     Route::get('/user/libs/chat/{request_id}', [
