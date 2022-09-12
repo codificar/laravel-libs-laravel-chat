@@ -72,7 +72,9 @@ class MessageListFormRequest extends FormRequest {
 				$ledger = Ledger::where('provider_id', $provider->id)->first();
 				
 				$conversation = Conversation::where('request_id', $this->request_id)->first();
-				$this->conversation_id = $conversation->id;
+				$this->conversation_id = isset($conversation->id) && !empty($conversation->id) 
+					? $conversation->id
+					: null;
 			}
 
 		} else {
