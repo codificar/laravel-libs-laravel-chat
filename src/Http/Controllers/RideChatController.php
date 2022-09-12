@@ -341,7 +341,10 @@ class RideChatController extends Controller
 		return new ChatMessagesResource([
 			"messages" => $messages,
 			"request_id" => $request_id,
-			"user_id" => $request->ledger->id
+			"user_id" => $request->ledger->id,
+			"converstaion_id" => isset($request->conversation_id) && !empty($request->conversation_id) 
+				? $request->conversation_id
+				: null
 		]);
     }
     

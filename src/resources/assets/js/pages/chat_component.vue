@@ -14,7 +14,8 @@ export default {
         'environment',
         'channel',
         'logo',
-        'admin'
+        'admin',
+        'conversationId'
     ],
     data() {
         return {
@@ -138,9 +139,13 @@ export default {
                 })
                 .then((response) => {
                     vm.conversationArray = response.data.conversations;
-                    vm.conversationArray.forEach((e) => {
-                        vm.subscribeToChannel(e.id);
-                    });
+                    if (
+                        vm.conversationArray.length > 0
+                    ) {
+                        vm.conversationArray.forEach((e) => {
+                            vm.subscribeToChannel(e.id);
+                        });
+                    }
                     if (
                         vm.conversation_active.id == 0 &&
                         vm.conversationArray.length > 0
@@ -186,6 +191,8 @@ export default {
                 .then((response) => {
                     if (response.data.messages)
                         vm.messages = response.data.messages;
+                    if(response.data.converstaion_id)
+                        vm.subscribeToChannel(response.data.converstaion_id);
                 });
         },
         setAsSeen(messageId) {

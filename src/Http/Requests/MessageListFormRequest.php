@@ -53,7 +53,42 @@ class MessageListFormRequest extends FormRequest {
 			$sender_type = $this->userType;
 		}
 
-		$conversation = Conversation::find($this->conversation_id);
+		$convId = $this->conversation_id;
+		if(!$this->conversation_id && $this->request_id) {
+			$convRequest = \ConversationRequest::where(['request_id' => $this->request_id])->first();
+			if(isset($convRequest->conversation_id) && !empty($convRequest->conversation_id)) {
+				$convId = $convRequest->conversation_id;
+			}
+		}
+		
+		$conversation = Conversation::find($convId);
+		if ($this->request_id && !$conversation) {
+			try {
+				$request = Requests::find($this->request_id);
+				$userOne = Ledger::where(['user_id' => $request->user_id])->first()->id;
+				$userTwo = Ledger::where(['provider_id' => $request->current_provider])->first()->id;
+
+				$conversation = new Conversation();
+				$conversation->user_one = $userOne;
+				$conversation->user_two = $userTwo;
+				$conversation->request_id = $request->id;
+				$conversation->help_id = null;
+				$conversation->status = 1;
+				$conversation->save();
+
+				$convRequest = new \ConversationRequest();
+				$convRequest->conversation_id = $conversation->id;
+				$convRequest->request_id = $request->id;
+				$convRequest->provider_accepted = isset($request->current_provider) && !empty($request->current_provider) 
+					? 1
+					: 0;
+				$convRequest->user_accepted = 0;
+				$convRequest->save();
+			} catch (\Exception $e) {
+				\Log::error($e->getMessage());
+			}
+
+		}
 
 		if($sender_type == "provider") {
 			$provider = $this->provider ? 
@@ -70,8 +105,7 @@ class MessageListFormRequest extends FormRequest {
 					$this->provider :
 					Provider::find($this->provider_id);
 				$ledger = Ledger::where('provider_id', $provider->id)->first();
-				
-				$conversation = Conversation::where('request_id', $this->request_id)->first();
+
 				$this->conversation_id = isset($conversation->id) && !empty($conversation->id) 
 					? $conversation->id
 					: null;
