@@ -66,29 +66,34 @@ export default {
                 return;
             }
 
-            // sai da conversa antes para não ficar criando novas coneões de socket e novas requisições
+            // sai da conversa antes para não ficar criando novas conexões de socket e novas requisições
             window.Echo.leave(`conversation.${conversationId}`);
             window.Echo.channel(`conversation.${conversationId}`)
-                .listen('.readMessage', (e) => {
-                    if (
-                        e.message.conversation_id == vm.conversation_active.id
-                    ) {
-                        vm.getMessages(e.message.conversation_id);
-                    }
+                .listen('.readMessage', async (e) => {
+
+                    const isActiveConversation = e.message.conversation_id == vm.conversation_active.id
+                    let existMessage = false; 
+                
+                    // pesquisa no array se tem a mensagem e ela não foi lida e atualiza
+                    vm.messages = await vm.messages.map(m => {
+                        if(m.id == e.message.id && 
+                            e.message.is_seen == 1 &&  
+                            m.is_seen == 0) {
+                                existMessage = true;
+                                m = e.message;
+                        }
+                        return m;
+                    });
                 })
                 .listen('.newMessage', (e) => {
                     vm.isNewMessage = false;
-                    
-
                     vm.getConversations();
-                    if (
-                        e.message.conversation_id == vm.conversation_active.id
-                    ) {
-                        if (
-                            vm.messages.every(
-                                (message) => message.id != e.message.id
-                            )
-                        ) {
+                    
+                    const isActiveConversation = e.message.conversation_id == vm.conversation_active.id
+                    if (isActiveConversation) {
+                        const existMessage = vm.messages.some(m => m.id == e.message.id);
+                    
+                        if (!existMessage) {
                             vm.messages.push(e.message);
                             const isAdmin = e.message.admin_id;
                             const isUser = !isAdmin && !e.message.is_provider;
@@ -139,22 +144,21 @@ export default {
                 })
                 .then((response) => {
                     vm.conversationArray = response.data.conversations;
-                    if (
-                        vm.conversationArray.length > 0
-                    ) {
+                    
+                    if (vm.conversationArray.length > 0) {
+                        // inscrever no canal de cada conversation
                         vm.conversationArray.forEach((e) => {
                             vm.subscribeToChannel(e.id);
                         });
-                    }
-                    if (
-                        vm.conversation_active.id == 0 &&
-                        vm.conversationArray.length > 0
-                    ) {
-                        if (vm.conversationArray[0].id == 0) {
-                            vm.subscribeToChannelRequest(vm.channel);
+                    
+                        if (vm.conversation_active.id == 0) {
+                            if (vm.conversationArray[0].id == 0) {
+                                vm.subscribeToChannelRequest(vm.channel);
+                            }
+                            vm.userSelected(vm.conversationArray[0]);
                         }
-                        vm.userSelected(vm.conversationArray[0]);
                     }
+
                 });
         },
         getMessages(conversationId) {
@@ -195,14 +199,21 @@ export default {
                         vm.subscribeToChannel(response.data.converstaion_id);
                 });
         },
-        setAsSeen(messageId) {
+        async setAsSeen(messageId) {
             var vm = this;
-            axios.post(`/api/libs/${vm.environment}/chat/seen`, {
-                token: vm.User.token,
-                user_id: vm.User.user_id,
-                provider_id: vm.User.provider_id,
-                message_id: messageId,
-            });
+            //só faz a solicitação se a mensagem não foi lida
+            const isUnread = await vm.messages.findIndex(m => m.id == messageId && m.is_seen == 0);
+            
+            if(isUnread != -1) {
+                // atualiza a mensagem do array como lida para não refazer a solicitação
+                vm.messages[isUnread].is_seen = 1;
+                await axios.post(`/api/libs/${vm.environment}/chat/seen`, {
+                    token: vm.User.token,
+                    user_id: vm.User.user_id,
+                    provider_id: vm.User.provider_id,
+                    message_id: messageId,
+                });
+            }
         },
         hasUnseen() {
             return this.messages.some((e) => {

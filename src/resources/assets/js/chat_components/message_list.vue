@@ -205,7 +205,7 @@
     flex-direction: column;
     flex: 1;
     justify-content: center;
-    align-items: end;
+    align-items: flex-end;
 }
 .container-new-message {
 	display: flex;
