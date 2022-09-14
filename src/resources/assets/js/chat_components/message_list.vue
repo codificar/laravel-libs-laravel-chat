@@ -25,6 +25,7 @@
 			const self = this;
 			$(document).ready(function() { 
 				var chat = $('#message-list');
+				chat.scrollTop(chat.prop("scrollHeight"));
 				chat.on('scroll', function(event) {
 					const positionScroll = $(this)[0].clientHeight + $(this).scrollTop(); 
 					const endScroll = $(this)[0].scrollHeight - 100;
