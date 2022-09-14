@@ -55,49 +55,28 @@ export default {
 		},
 		async subscribeToChannel(conversationId) {
 			var vm = this;
-			
-			if(conversationId == 0) return;
 
-            if(!window.Echo) {
-                console.error("Error window.Echo notFound!!");
-                return;
-            }
+			if(conversationId == 0) return;
 
 			await window.Echo.leave('conversation.' + conversationId );
 			await window.Echo.channel('conversation.' + conversationId )
-				.listen('.readMessage', async e => {
+				.listen('.readMessage', e => {
 					vm.isConnectedChat = true;
-                    
-                    const isActiveConversation = e.message.conversation_id == vm.conversation_active.id
-                    let existMessage = false; 
-                
-                    // pesquisa no array se tem a mensagem e ela não foi lida e atualiza
-                    vm.messages = await vm.messages.map(m => {
-                        if(m.id == e.message.id && 
-                            e.message.is_seen == 1 &&  
-                            m.is_seen == 0) {
-                                existMessage = true;
-                                m = e.message;
-                        }
-                        return m;
-                    });
-                    
-                    if (!existMessage && isActiveConversation) {
-                        await vm.getMessages(e.message.conversation_id);
-                    }
+					const isActiveConversation = e.message.conversation_id == vm.conversation_active.id
+					if(isActiveConversation) {
+						vm.getMessages(e.message.conversation_id);
+					}
 				})
 				.listen('.newMessage', e => {
-
 					vm.isConnectedChat = true;
                     vm.isNewMessage = false;
-                    vm.getConversations();
-                    
-                    const isActiveConversation = e.message.conversation_id == vm.conversation_active.id
-                    if (isActiveConversation) {
+					vm.getConversations();
+					
+					const isActiveConversation = e.message.conversation_id == vm.conversation_active.id
+					if(isActiveConversation) {
                         const existMessage = vm.messages.some(m => m.id == e.message.id);
-                    
-                        if (!existMessage) {
-                            vm.messages.push(e.message);
+						if(!existMessage) {
+							vm.messages.push(e.message);
                             const isAdmin = e.message.admin_id;
                             const isUser = !isAdmin && !e.message.is_provider;
                             const isProvider = !isUser && e.message.is_provider;
@@ -106,28 +85,22 @@ export default {
                                 //Alert new message
                                 vm.isNewMessage = true;
                             }
-                        }
-                    }
+						}
+					}
+				}).error((error) =>{
+					console.error('Error Tryng connect/listen socket:', error);
 				});
 		},
-		async subscribeToChannelRequest(requestId) {
+		subscribeToChannelRequest(requestId) {
 			var vm = this;
-            
+
             if (requestId == 0) return;
 
-            if(!window.Echo) {
-                console.error("Error window.Echo notFound!!");
-                return;
-            }
-            // sai da conversa antes para não ficar criando novas coneões de socket e novas requisições
-            await window.Echo.leave(`request.${requestId}`);
-            await window.Echo.channel(`request.${requestId}`)
-            .listen(
-                '.newConversation',
-                (e) => {
-                    vm.getConversations();
-                }
-            ).error((error) =>{
+			window.Echo.leave('request.' + requestId);
+			window.Echo.channel('request.' + requestId)
+				.listen('.newConversation', e => {
+					vm.getConversations();
+				}).error((error) =>{
                 console.error('Error Tryng connect/listen socket:', error);
             });
 		},
@@ -185,6 +158,8 @@ export default {
 			}).then(response => {
 				if(response.data.messages)
 					vm.messages = response.data.messages;
+				if(response.data.converstaion_id)
+					vm.subscribeToChannel(response.data.converstaion_id);
 			});
 		},
 		readMessages() {
