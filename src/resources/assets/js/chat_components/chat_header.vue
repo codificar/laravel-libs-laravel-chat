@@ -19,7 +19,10 @@
 				<span v-if="user.car_brand" class="box-title">{{user.car_brand + " " + user.car_model}}</span>
 			</div>
 			<div class="chat-connected-div">
-				<div :alt="`${isConnectedChat  ? "Conectado ao chat" : "Desconectado do chat"}`" :class="`chat-status ${isConnectedChat  ? "connected" : "disconnected"}`"></div>
+				<span 
+					:alt="`${isConnectedChat  ? 'Conectado ao chat' : 'Desconectado do chat'}`" 
+					:class="`chat-status ${isConnectedChat  ? 'connected' : 'disconnected'}`">
+				</span>
 			</div>
 		</div>
 		<div v-else>

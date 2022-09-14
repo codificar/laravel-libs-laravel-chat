@@ -59,8 +59,6 @@ export default {
         },
         subscribeToChannel(conversationId) {
             var vm = this;
-
-            console.log('Subscribe to socket conversation: ' + conversationId);
             
             if (conversationId == 0) return;
 
@@ -74,7 +72,6 @@ export default {
             window.Echo.channel(`conversation.${conversationId}`)
                 .listen('.readMessage', async (e) => {
                     vm.isConnectedChat = true;
-                    console.log('read Message: ' + e);
                     
                     const isActiveConversation = e.message.conversation_id == vm.conversation_active.id
                     let existMessage = false; 
@@ -98,8 +95,6 @@ export default {
                     vm.isConnectedChat = true;
                     vm.isNewMessage = false;
                     vm.getConversations();
-
-                    console.log('New Message: ' + e);
                     
                     const isActiveConversation = e.message.conversation_id == vm.conversation_active.id
                     if (isActiveConversation) {
@@ -125,7 +120,6 @@ export default {
         },
         subscribeToChannelRequest(requestId) {
             var vm = this;
-            console.log('Subscribe to socket request: ' + requestId);
             
             if (requestId == 0) return;
 
