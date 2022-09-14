@@ -70,6 +70,8 @@ export default {
             //window.Echo.leave(`conversation.${parseInt(conversationId)}`);
             window.Echo.channel(`conversation.${parseInt(conversationId)}`)
                 .listen('.readMessage', (e) => {
+
+                    console.log('read Message: ' + e);
                     const isActiveConversation = e.message.conversation_id == vm.conversation_active.id
                     if (isActiveConversation) {
                         vm.getMessages(e.message.conversation_id);
@@ -78,6 +80,8 @@ export default {
                 .listen('.newMessage', (e) => {
                     vm.isNewMessage = false;
                     vm.getConversations();
+
+                    console.log('New Message: ' + e);
                     
                     const isActiveConversation = e.message.conversation_id == vm.conversation_active.id
                     if (isActiveConversation) {
@@ -191,19 +195,12 @@ export default {
         },
         async setAsSeen(messageId) {
             var vm = this;
-            //só faz a solicitação se a mensagem não foi lida
-            const isUnread = await vm.messages.findIndex(m => m.id == messageId && m.is_seen == 0);
-            
-            if(isUnread != -1) {
-                // atualiza a mensagem do array como lida para não refazer a solicitação
-                vm.messages[isUnread].is_seen = 1;
-                await axios.post(`/api/libs/${vm.environment}/chat/seen`, {
-                    token: vm.User.token,
-                    user_id: vm.User.user_id,
-                    provider_id: vm.User.provider_id,
-                    message_id: messageId,
-                });
-            }
+            await axios.post(`/api/libs/${vm.environment}/chat/seen`, {
+                token: vm.User.token,
+                user_id: vm.User.user_id,
+                provider_id: vm.User.provider_id,
+                message_id: messageId,
+            });
         },
         hasUnseen() {
             return this.messages.some((e) => {
