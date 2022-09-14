@@ -27,7 +27,8 @@ export default {
             conversationArray: [],
             messages: [],
             adminUser: {},
-            isNewMessage: false
+            isNewMessage: false,
+            isConnectedChat: false
         };
     },
     components: {
@@ -72,7 +73,7 @@ export default {
             //window.Echo.leave(`conversation.${parseInt(conversationId)}`);
             window.Echo.channel(`conversation.${conversationId}`)
                 .listen('.readMessage', (e) => {
-
+                    vm.isConnectedChat = true;
                     console.log('read Message: ' + e);
                     const isActiveConversation = e.message.conversation_id == vm.conversation_active.id
                     if (isActiveConversation) {
@@ -80,6 +81,7 @@ export default {
                     }
                 })
                 .listen('.newMessage', (e) => {
+                    vm.isConnectedChat = true;
                     vm.isNewMessage = false;
                     vm.getConversations();
 
@@ -103,6 +105,7 @@ export default {
                     }
                 })
                 .error((error) =>{
+                    vm.isConnectedChat = false;
                     console.error('Error Tryng connect/listen socket:', error);
                 });
         },
@@ -259,6 +262,7 @@ export default {
                 @errorImage="errorImage"
                 :user="conversation_active.user"
                 :info="conversation_active.request.product"
+                :isConnectedChat="isConnectedChat"
             />
             <MessageList
                 @errorImage="errorImage"

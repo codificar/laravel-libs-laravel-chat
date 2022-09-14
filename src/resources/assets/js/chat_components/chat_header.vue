@@ -2,7 +2,8 @@
 	export default {
 		props: [
 			"user",
-			"info"
+			"info",
+			"isConnectedChat"
 		]
 	};
 </script>
@@ -16,6 +17,9 @@
 				<h3 class="box-title">{{user.name}}</h3>
 				<br>
 				<span v-if="user.car_brand" class="box-title">{{user.car_brand + " " + user.car_model}}</span>
+			</div>
+			<div class="chat-connected-div">
+				<h3 class="box-title">{{isConnectedChat}}</h3>
 			</div>
 		</div>
 		<div v-else>
@@ -50,5 +54,12 @@
 	width: 50px;
 	height: 50px;
 	border-radius: 50px;
+}
+
+.chat-connected-div {
+	align-items: center;
+    display: flex;
+	flex: 1;
+    justify-content: flex-end;
 }
 </style>
