@@ -3,6 +3,7 @@
 namespace Codificar\Chat\Http\Requests;
 
 use App\Models\Institution;
+use Codificar\Chat\Models\ConversationRequest;
 use Illuminate\Foundation\Http\FormRequest;
 use Nahid\Talk\Conversations\Conversation;
 use Provider, User, Ledger;
@@ -78,7 +79,7 @@ class MessageListFormRequest extends FormRequest {
 			$ledger = Ledger::where('user_id', $user->id)->first();
         }
 
-		$conversation = \ConversationRequest::getOrCreateConversationChat($this->request_id, $this->conversation_id);
+		$conversation = ConversationRequest::getOrCreateConversationChat($this->request_id, $this->conversation_id);
         
 		if($ledger and $conversation and ($conversation->user_one == $ledger->id or $conversation->user_two == $ledger->id)) {
 			$this->merge([ "conversation" => $conversation ]);
