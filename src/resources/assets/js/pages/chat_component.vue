@@ -8,12 +8,14 @@ import axios from 'axios';
 
 export default {
 	props: [
-		"User",
-		"laravel_echo_port",
-		"environment",
-		"channel",
-		"logo",
-		"admin"
+        'User',
+        'laravel_echo_port',
+        'request',
+        'environment',
+        'channel',
+        'logo',
+        'admin',
+        'conversationId'
 	],
 	data() {
 		return {
@@ -153,13 +155,32 @@ export default {
 		},
 		getMessages(conversationId) {
 			var vm = this;
+            let token = vm.User.token;
+            let userId = null;
+            let providerId = null;
+            
+            if(vm.request.user_id) {
+                userId = vm.request.user_id;
+            } else if(vm.User.user_id) {
+                userId = vm.User.user_id;
+            } else if(vm.User.id) {
+                userId = vm.User.id;
+            }
+
+            if(vm.request.confirmed_provider) {
+                providerId = vm.request.confirmed_provider.id;
+            } else if(vm.User.provider_id) {
+                providerId = vm.User.provider_id;
+            }
+
 			axios.get(`/api/libs/${vm.environment}/chat/messages`, {
 				params: {
-					token: vm.User.token,
-					user_id: vm.User.user_id,
-					provider_id: vm.User.provider_id,
+					token: token,
+					user_id: userId,
+					provider_id: providerId,
 					conversation_id: conversationId,
-					limit: 10
+					request_id: vm.channel,
+					limit: 10,
 				}
 			}).then(response => {
 				if(response.data.messages)
