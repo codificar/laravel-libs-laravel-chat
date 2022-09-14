@@ -62,7 +62,7 @@ class ConversationFormRequest extends FormRequest
 				$userOne = \Ledger::where(['user_id' => $request->user_id])->first()->id;
 				$userTwo = \Ledger::where(['provider_id' => $request->current_provider])->first()->id;
 
-				$conversation = new \Conversation();
+				$conversation = new Conversation();
 				$conversation->user_one = $userOne;
 				$conversation->user_two = $userTwo;
 				$conversation->request_id = $request->id;
