@@ -313,7 +313,6 @@ class RideChatController extends Controller
     public function getConversation(ConversationFormRequest $request)
 	{
 		if($request->request_id) {
-			ConversationRequest::findConversation($request->request_id, $request->provider_id);
 			$conversationArray = ConversationRequest::getConversations($request->request_id, $request->ledger_id);
 		} else {
 			$conversationArray = ConversationRequest::getInbox($request->ledger_id);
@@ -343,7 +342,7 @@ class RideChatController extends Controller
 			"messages" => $messages,
 			"request_id" => $request_id,
 			"user_id" => $request->ledger->id,
-			"converstation_id" => isset($request->conversation_id) && !empty($request->conversation_id) 
+			"conversation_id" => isset($request->conversation_id) && !empty($request->conversation_id) 
 				? intval($request->conversation_id)
 				: null
 		]);

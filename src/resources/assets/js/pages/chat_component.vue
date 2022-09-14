@@ -51,7 +51,12 @@ export default {
 				type: type,
 				message: type == 'text'?data.input_value:'',
 				bid: type == 'text'?'':data.input_value
-			})
+			}).then(response => {
+				const data = response.data
+				if(data.success && data.conversation_id) {
+					vm.subscribeToChannel(data.conversation_id);
+				}
+			});
 		},
 		async subscribeToChannel(conversationId) {
 			var vm = this;
@@ -158,8 +163,8 @@ export default {
 			}).then(response => {
 				if(response.data.messages)
 					vm.messages = response.data.messages;
-				if(response.data.converstaion_id)
-					vm.subscribeToChannel(response.data.converstaion_id);
+				if(response.data.conversation_id)
+					vm.subscribeToChannel(response.data.conversation_id);
 			});
 		},
 		readMessages() {
