@@ -40,7 +40,6 @@ export default {
 		},
 		sendMessage(data){
 			var vm = this, type = data.input_type == 'number'?'bid':'text';
-			vm.
 			axios.post(`/api/libs/${vm.environment}/chat/send`, {
 				token: vm.User.token,
 				user_id: vm.User.user_id,
@@ -114,9 +113,9 @@ export default {
 		},
 		readMessages() {
 			var vm = this;
-			vm.messages.forEach(async message =>{
+			vm.messages.forEach(async (message, key) =>{
 				if(message.is_seen == 0) {
-					console.log('marcar como lida:', message);
+					vm.messages[key].is_seen = 1;
 					await vm.setAsSeen(message.id);
 				}
 			});
