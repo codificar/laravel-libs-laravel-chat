@@ -57,7 +57,7 @@ export default {
                 bid: type == 'text' ? '' : data.input_value,
             });
         },
-        subscribeToChannel(conversationId) {
+        async subscribeToChannel(conversationId) {
             var vm = this;
             
             if (conversationId == 0) return;
@@ -68,8 +68,8 @@ export default {
             }
 
             // sai da conversa antes para não ficar criando novas conexões de socket e novas requisições
-            window.Echo.leave(`conversation.${parseInt(conversationId)}`);
-            window.Echo.channel(`conversation.${conversationId}`)
+            await window.Echo.leave(`conversation.${parseInt(conversationId)}`);
+            await window.Echo.channel(`conversation.${conversationId}`)
                 .listen('.readMessage', async (e) => {
                     vm.isConnectedChat = true;
                     const isActiveConversation = e.message.conversation_id == vm.conversation_active.id; 
@@ -109,7 +109,7 @@ export default {
                     console.error('Error Tryng connect/listen socket:', error);
                 });
         },
-        subscribeToChannelRequest(requestId) {
+        async subscribeToChannelRequest(requestId) {
             var vm = this;
             
             if (requestId == 0) return;
@@ -119,8 +119,8 @@ export default {
                 return;
             }
             // sai da conversa antes para não ficar criando novas coneões de socket e novas requisições
-            window.Echo.leave(`request.${requestId}`);
-            window.Echo.channel(`request.${requestId}`)
+            await window.Echo.leave(`request.${requestId}`);
+            await window.Echo.channel(`request.${requestId}`)
             .listen(
                 '.newConversation',
                 (e) => {
