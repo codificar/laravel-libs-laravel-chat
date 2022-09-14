@@ -69,23 +69,9 @@ export default {
             // sai da conversa antes para não ficar criando novas conexões de socket e novas requisições
             window.Echo.leave(`conversation.${parseInt(conversationId)}`);
             window.Echo.channel(`conversation.${parseInt(conversationId)}`)
-                .listen('.readMessage', async (e) => {
-
+                .listen('.readMessage', (e) => {
                     const isActiveConversation = e.message.conversation_id == vm.conversation_active.id
-                    let existMessage = false; 
-                
-                    // pesquisa no array se tem a mensagem e ela não foi lida e atualiza
-                    vm.messages = await vm.messages.map(m => {
-                        if(m.id == e.message.id && 
-                            e.message.is_seen == 1 &&  
-                            m.is_seen == 0) {
-                                existMessage = true;
-                                m = e.message;
-                        }
-                        return m;
-                    });
-
-                    if (isActiveConversation && !existMessage) {
+                    if (isActiveConversation) {
                         vm.getMessages(e.message.conversation_id);
                     }
                 })
