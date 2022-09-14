@@ -27,11 +27,12 @@ class SendMessageRequest extends FormRequest
 	public function rules()
 	{
 		return [
-			"receiver_id"	=> "required|integer",
-			"message"		=> "string".($this->type == "text"?"|required":""),
-			"bid"			=> "numeric".($this->type == "bid"?"|required":""),
-			"type"			=> "in:text,bid",
-			"ride"			=> $this->userType == "admin" || $this->userType == "corp"  
+			"receiver_id"		=> "required|integer",
+			"conversation_id"	=> "integer",
+			"message"			=> "string".($this->type == "text"?"|required":""),
+			"bid"				=> "numeric".($this->type == "bid"?"|required":""),
+			"type"				=> "in:text,bid",
+			"ride"				=> $this->userType == "admin" || $this->userType == "corp"  
 				? "|required" 
 				: ""
 		];
@@ -88,7 +89,8 @@ class SendMessageRequest extends FormRequest
 					"ledger_receiver" => $ledgerReceiver,
 					"receiver_id" => $ledgerReceiver->id,
 					'is_admin' => $this->is_admin,
-					'is_provider' => $isProvider
+					'is_provider' => $isProvider,
+					'conversation_id' => $this->conversation_id ? $this->conversation_id : null
 				]);
 			
 			}

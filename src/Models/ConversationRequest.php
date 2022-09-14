@@ -45,10 +45,14 @@ class ConversationRequest extends \Eloquent
 	 * @param int $userId
 	 * @return ConversationRequest
 	 */
-	public static function findConversation($requestId, $userId) {
+	public static function findConversation($requestId, $userId, $conversationId = null) {
 		
 		$query = self::getQueryUser($userId);
-		$query->where('conversation_request.request_id', $requestId);
+		if($conversationId) {
+			$query->where('conversation_request.conversation_id', $conversationId);
+		} else {
+			$query->where('conversation_request.request_id', $requestId);
+		}
 
 		$convRequest = $query->first();
 		
