@@ -40,7 +40,7 @@ export default {
 		},
 		sendMessage(data){
 			var vm = this, type = data.input_type == 'number'?'bid':'text';
-
+			vm.
 			axios.post(`/api/libs/${vm.environment}/chat/send`, {
 				token: vm.User.token,
 				user_id: vm.User.user_id,
@@ -112,6 +112,15 @@ export default {
 					vm.messages = response.data.messages;
 			});
 		},
+		readMessages() {
+			var vm = this;
+			vm.messages.forEach(async message =>{
+				if(message.is_seen == 0) {
+					console.log('marcar como lida:', message);
+					await vm.setAsSeen(message.id);
+				}
+			});
+		},
 		setAsSeen(messageId) {
 			var vm = this;
 			axios.post(`/api/libs/${vm.environment}/chat/seen`, {
@@ -172,6 +181,7 @@ export default {
 				:user-one="User"
 				:user-two="conversation_active.user"
 				:admin="adminUser"
+				:readMessages="readMessages"
 				ref="messageList"
 				:logo="logo"
 			/>

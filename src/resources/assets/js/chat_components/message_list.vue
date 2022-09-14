@@ -16,6 +16,9 @@
 			isNewMessage: {
 				type: Boolean
 			},
+			isSend: {
+				type: Boolean
+			},
 			readMessages: {
 				type: Function
 			}
