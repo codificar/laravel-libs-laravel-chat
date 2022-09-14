@@ -51,28 +51,35 @@ export default {
 				bid: type == 'text'?'':data.input_value
 			})
 		},
-		subscribeToChannel(conversationId) {
+		async subscribeToChannel(conversationId) {
 			if(conversationId == 0) return;
 			var vm = this;
-			window.Echo.channel('conversation.' + conversationId )
-			.listen('.readMessage', e => {
-				if(e.message.conversation_id == vm.conversation_active.id) {
-					vm.getMessages(e.message.conversation_id);
-				}
-			})
-			.listen('.newMessage', e => {
-				vm.getConversations();
-				if(e.message.conversation_id == vm.conversation_active.id) {
-					if(vm.messages.every(message => message.id != e.message.id))
-						vm.messages.push(e.message);
-				}
-			});
+
+			await window.Echo.leave('conversation.' + conversationId );
+			await window.Echo.channel('conversation.' + conversationId )
+				.listen('.readMessage', e => {
+					console.log('.readMessage', e);
+					if(e.message.conversation_id == vm.conversation_active.id) {
+						vm.getMessages(e.message.conversation_id);
+					}
+				})
+				.listen('.newMessage', e => {
+					console.log('.newMessage', e);
+					vm.getConversations();
+					if(e.message.conversation_id == vm.conversation_active.id) {
+						if(vm.messages.every(message => message.id != e.message.id))
+							vm.messages.push(e.message);
+					}
+				});
 		},
-		subscribeToChannelRequest(requestId) {
+		async subscribeToChannelRequest(requestId) {
 			var vm = this;
-			window.Echo.channel('request.' + requestId).listen('.newConversation', e => {
-				vm.getConversations();
-			});
+
+			await window.Echo.leave('request.' + requestId);
+			await window.Echo.channel('request.' + requestId)
+				.listen('.newConversation', e => {
+					vm.getConversations();
+				});
 		},
 		getConversations() {
 			var vm = this;
