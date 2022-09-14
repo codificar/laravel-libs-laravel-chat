@@ -72,10 +72,6 @@ export default {
             // sai da conversa antes para não ficar criando novas conexões de socket e novas requisições
             window.Echo.leave(`conversation.${parseInt(conversationId)}`);
             window.Echo.channel(`conversation.${conversationId}`)
-                .then((response) => {
-                    console.log('response: ', response);
-                    vm.isConnectedChat = true;
-                })
                 .listen('.readMessage', async (e) => {
                     vm.isConnectedChat = true;
                     console.log('read Message: ' + e);
