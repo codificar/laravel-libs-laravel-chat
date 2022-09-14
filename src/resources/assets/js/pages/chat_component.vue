@@ -58,6 +58,8 @@ export default {
         },
         subscribeToChannel(conversationId) {
             var vm = this;
+
+            console.log('Subscribe to socket conversation: ' + conversationId);
             
             if (conversationId == 0) return;
 
@@ -106,7 +108,8 @@ export default {
         },
         subscribeToChannelRequest(requestId) {
             var vm = this;
-
+            console.log('Subscribe to socket request: ' + requestId);
+            
             if (requestId == 0) return;
 
             if(!window.Echo) {
