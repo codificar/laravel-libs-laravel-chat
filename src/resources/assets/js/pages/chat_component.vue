@@ -68,7 +68,7 @@ export default {
 
             // sai da conversa antes para não ficar criando novas conexões de socket e novas requisições
             //window.Echo.leave(`conversation.${parseInt(conversationId)}`);
-            window.Echo.channel(`conversation.${parseInt(conversationId)}`)
+            window.Echo.channel(`conversation.${conversationId}`)
                 .listen('.readMessage', (e) => {
 
                     console.log('read Message: ' + e);
