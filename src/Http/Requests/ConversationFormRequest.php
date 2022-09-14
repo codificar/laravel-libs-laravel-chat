@@ -4,6 +4,7 @@ namespace Codificar\Chat\Http\Requests;
 
 use App\Models\Institution;
 use Illuminate\Foundation\Http\FormRequest;
+use Nahid\Talk\Conversations\Conversation;
 use Requests, User;
 
 class ConversationFormRequest extends FormRequest
@@ -54,7 +55,7 @@ class ConversationFormRequest extends FormRequest
 		
 		//verifica se tem uma conversation criada, caso não, 
 		// cria uma para se inscrever no socket da conversação de forma correta
-		$conversation = \Conversation::find($convId);
+		$conversation = Conversation::find($convId);
 		if ($this->request_id && !$conversation) {
 			try {
 				$request = \Requests::find($this->request_id);
