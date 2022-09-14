@@ -342,7 +342,7 @@ class RideChatController extends Controller
 			"messages" => $messages,
 			"request_id" => $request_id,
 			"user_id" => $request->ledger->id,
-			"converstaion_id" => isset($request->conversation_id) && !empty($request->conversation_id) 
+			"converstation_id" => isset($request->conversation_id) && !empty($request->conversation_id) 
 				? $request->conversation_id
 				: null
 		]);

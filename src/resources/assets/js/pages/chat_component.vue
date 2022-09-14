@@ -67,8 +67,8 @@ export default {
             }
 
             // sai da conversa antes para não ficar criando novas conexões de socket e novas requisições
-            window.Echo.leave(`conversation.${conversationId}`);
-            window.Echo.channel(`conversation.${conversationId}`)
+            window.Echo.leave(`conversation.${parseInt(conversationId)}`);
+            window.Echo.channel(`conversation.${parseInt(conversationId)}`)
                 .listen('.readMessage', async (e) => {
 
                     const isActiveConversation = e.message.conversation_id == vm.conversation_active.id
@@ -195,8 +195,8 @@ export default {
                 .then((response) => {
                     if (response.data.messages)
                         vm.messages = response.data.messages;
-                    if(response.data.converstaion_id)
-                        vm.subscribeToChannel(response.data.converstaion_id);
+                    if(response.data.converstation_id)
+                        vm.subscribeToChannel(response.data.converstation_id);
                 });
         },
         async setAsSeen(messageId) {
