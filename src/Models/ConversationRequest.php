@@ -64,8 +64,8 @@ class ConversationRequest extends \Eloquent
 	private static function getQueryUser($user_id) {
 		return self::select('conversation_request.*')
 				  ->where(function ($q) use ($user_id) {
-				$q->where('c.user_two', $user_id)
-				  ->orWhere('c.user_one', $user_id);
+						$q->where('c.user_two', $user_id)
+				  		->orWhere('c.user_one', $user_id);
 			})
 			->join('conversations as c', 'c.id', 'conversation_request.conversation_id');
 	}
