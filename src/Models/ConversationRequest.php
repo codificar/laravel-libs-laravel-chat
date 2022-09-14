@@ -2,6 +2,7 @@
 
 namespace Codificar\Chat\Models;
 
+use Nahid\Talk\Conversations\Conversation;
 use Requests;
 
 class ConversationRequest extends \Eloquent
@@ -186,5 +187,50 @@ class ConversationRequest extends \Eloquent
 			->where('id', '<=', $message->id)
 			->where('user_id', '<>', $userId)
 			->update(['is_seen' => true]);
+	}
+
+	/**
+	 * get os create e context chat request
+	 * @return Conversation
+	 */
+	public static function getOrCreateConversationChat($requestId, $conversationId = null)
+	{
+		// verifica se tem uma conversation para a request 
+		$convId = $conversationId;
+		$request = \Requests::find($requestId);
+		if($request && !$convId) {
+			$convRequest = ConversationRequest::where(['request_id' => $requestId])->first();
+			if(isset($convRequest->conversation_id) && !empty($convRequest->conversation_id)) {
+				$convId = $convRequest->request_id;
+			}
+		}
+		
+		//verifica se tem uma conversation criada, caso não, 
+		// cria uma para se inscrever no socket da conversação de forma correta
+		$conversation = Conversation::find($convId);
+		if ($request && !$conversation) {
+			try {
+				$userOne = \Ledger::where(['user_id' => $request->user_id])->first()->id;
+				$userTwo = \Ledger::where(['provider_id' => $request->current_provider])->first()->id;
+
+				$conversation = new Conversation();
+				$conversation->user_one = $userOne;
+				$conversation->user_two = $userTwo;
+				$conversation->request_id = $request->id;
+				$conversation->help_id = null;
+				$conversation->status = 1;
+				$conversation->save();
+
+				$convRequest = new ConversationRequest();
+				$convRequest->conversation_id = $conversation->id;
+				$convRequest->request_id = $request->id;
+				$convRequest->save();
+			} catch (\Exception $e) {
+				\Log::error($e->getMessage());
+				\Log::info('ConversationRequest > getOrCreateChat(): ' . $e->getMessage());
+			}
+		}
+
+		return $conversation;
 	}
 }

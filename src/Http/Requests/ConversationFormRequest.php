@@ -3,7 +3,9 @@
 namespace Codificar\Chat\Http\Requests;
 
 use App\Models\Institution;
+use Codificar\Chat\Models\ConversationRequest;
 use Illuminate\Foundation\Http\FormRequest;
+use Nahid\Talk\Conversations\Conversation;
 use Requests, User;
 
 class ConversationFormRequest extends FormRequest
@@ -42,6 +44,8 @@ class ConversationFormRequest extends FormRequest
 		if($this->userType) {
 			$sender_type = $this->userType;
 		}
+
+		ConversationRequest::getOrCreateConversationChat($this->request_id);
 
 		if($sender_type == "provider") {
 			$ledger_id = $this->provider->ledger->id;

@@ -78,16 +78,7 @@ class MessageListFormRequest extends FormRequest {
 			$ledger = Ledger::where('user_id', $user->id)->first();
         }
 
-		$convId = $this->conversation_id;
-		// verifica se na conversation request já existe um chat aberto para aquela request
-		if((!isset($this->conversation_id) || empty($this->conversation_id)) && $this->request_id) {
-			$convRequest = \ConversationRequest::where(['request_id' => $this->request_id])->first();
-			if(isset($convRequest->conversation_id) && !empty($convRequest->conversation_id)) {
-				$convId = $convRequest->conversation_id;
-			}
-		}
-		
-		$conversation = Conversation::find($convId);
+		$conversation = \ConversationRequest::getOrCreateConversationChat($this->request_id, $this->conversation_id);
         
 		if($ledger and $conversation and ($conversation->user_one == $ledger->id or $conversation->user_two == $ledger->id)) {
 			$this->merge([ "conversation" => $conversation ]);
