@@ -84,6 +84,10 @@ export default {
                         }
                         return m;
                     });
+
+                    if (isActiveConversation && !existMessage) {
+                        vm.getMessages(e.message.conversation_id);
+                    }
                 })
                 .listen('.newMessage', (e) => {
                     vm.isNewMessage = false;
