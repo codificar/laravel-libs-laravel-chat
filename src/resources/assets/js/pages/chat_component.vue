@@ -26,7 +26,8 @@ export default {
 			search_contact: "",
 			conversationArray: [],
 			messages: [],
-			adminUser: {}
+			adminUser: {},
+			isConnectedChat: true
 		};
 	},
 	components: {
@@ -229,6 +230,7 @@ export default {
 				@errorImage="errorImage" 
 				:user="conversation_active.user" 
 				:info="conversation_active.request.product"
+				:isConnectedChat="isConnectedChat"
 			/>
 			<MessageList
 				@errorImage="errorImage"
