@@ -71,7 +71,7 @@ class ConversationRequest extends \Eloquent
 	}
 
     /**
-	 * Find or create a conversation request
+	 * Find a conversation request
 	 * @param int $request_id
 	 * @param int $sender
 	 * @return array 

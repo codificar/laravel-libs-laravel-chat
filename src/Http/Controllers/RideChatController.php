@@ -313,6 +313,7 @@ class RideChatController extends Controller
     public function getConversation(ConversationFormRequest $request)
 	{
 		if($request->request_id) {
+			ConversationRequest::findConversation($request->request_id, $request->provider_id);
 			$conversationArray = ConversationRequest::getConversations($request->request_id, $request->ledger_id);
 		} else {
 			$conversationArray = ConversationRequest::getInbox($request->ledger_id);
