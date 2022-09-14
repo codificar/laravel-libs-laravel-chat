@@ -67,7 +67,7 @@ export default {
             }
 
             // sai da conversa antes para não ficar criando novas conexões de socket e novas requisições
-            window.Echo.leave(`conversation.${parseInt(conversationId)}`);
+            //window.Echo.leave(`conversation.${parseInt(conversationId)}`);
             window.Echo.channel(`conversation.${parseInt(conversationId)}`)
                 .listen('.readMessage', (e) => {
                     const isActiveConversation = e.message.conversation_id == vm.conversation_active.id
@@ -110,7 +110,7 @@ export default {
                 return;
             }
             // sai da conversa antes para não ficar criando novas coneões de socket e novas requisições
-            window.Echo.leave(`request.${requestId}`);
+            //window.Echo.leave(`request.${requestId}`);
             window.Echo.channel(`request.${requestId}`)
             .listen(
                 '.newConversation',
