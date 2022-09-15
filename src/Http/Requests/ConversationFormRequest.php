@@ -45,11 +45,6 @@ class ConversationFormRequest extends FormRequest
 			$sender_type = $this->userType;
 		}
 
-		$conversation = ConversationRequest::getOrCreateConversationChat($this->request_id);
-		$this->conversation_id = isset($conversation->id) 
-			? $conversation->id
-			: 0;
-
 		if($sender_type == "provider") {
 			$ledger_id = $this->provider->ledger->id;
 		} else if($sender_type == "admin") {
@@ -68,7 +63,7 @@ class ConversationFormRequest extends FormRequest
 			if($this->user){
 				$ledger_id = $this->user->getLedger()->id;
 			}
-			
+
 		} else {
 			if($this->user){
 				$ledger_id = $this->user->ledger->id;

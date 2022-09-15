@@ -231,15 +231,8 @@ class RideChatController extends Controller
      */
     public function sendMessage(SendMessageRequest $request) {
 		try {
-			$conversationId = 0;
 			
-			if(isset($this->conversation_id) && !empty($this->conversation_id)) {
-				$conversationId = $this->conversation_id;
-			} else if(isset($request->conversation_id) && !empty($request->conversation_id)) {
-				$conversationId = $request->conversation_id;
-			}
-			
-			$convRequest = ConversationRequest::findConversation($request->request_id, $request->provider_id, $conversationId) ;
+			$convRequest = ConversationRequest::findConversation($request->request_id, $request->provider_id) ;
 
 			$ride = Requests::find($request->request_id);
 			$isNewConversation = $convRequest->conversation_id == 0;

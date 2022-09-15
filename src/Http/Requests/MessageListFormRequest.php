@@ -79,12 +79,7 @@ class MessageListFormRequest extends FormRequest {
 			$ledger = Ledger::where('user_id', $user->id)->first();
         }
 
-		$conversation = ConversationRequest::getOrCreateConversationChat($this->request_id, $this->conversation_id);
-        
-		$this->conversation_id = isset($conversation->id) 
-			? $conversation->id
-			: 0;
-
+		$conversation = Conversation::find($this->conversation_id);
 		if($ledger and $conversation and ($conversation->user_one == $ledger->id or $conversation->user_two == $ledger->id)) {
 			$this->merge([ "conversation" => $conversation ]);
         }
