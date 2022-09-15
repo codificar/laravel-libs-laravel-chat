@@ -3,6 +3,7 @@
 namespace Codificar\Chat\Http\Requests;
 
 use Codificar\Chat\Http\Utils\Helper;
+use Codificar\Chat\Models\ConversationRequest;
 use Illuminate\Foundation\Http\FormRequest;
 use Requests;
 
@@ -52,6 +53,8 @@ class SendMessageRequest extends FormRequest
 			$this->is_admin = 0;
 			$ride = Requests::find($this->request_id);
 			$isProvider = false;
+			
+			ConversationRequest::getOrCreateConversationChat($this->request_id);
 	
 			if ($ride) {
 				if ($sender_type == "provider") {

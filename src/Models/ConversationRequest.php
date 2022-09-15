@@ -30,8 +30,8 @@ class ConversationRequest extends \Eloquent
 	 * @param string $message
 	 * @return Message
 	 */
-    public function sendMessage($receiverId, $message) {
-		$message = \Talk::sendMessageByUserId($receiverId, $message, $this->request_id);
+    public function sendMessage($receiverId, $message, $requestId = null) {
+		$message = \Talk::sendMessageByUserId($receiverId, $message, $requestId);
 		if(!$this->conversation_id) {
 			$this->conversation_id = $message->conversation_id;
 			$this->save();
@@ -53,7 +53,6 @@ class ConversationRequest extends \Eloquent
 		} else {
 			$query->where('conversation_request.request_id', $requestId);
 		}
-		
 		$convRequest = $query->first();
 		
 		if(!$convRequest) {
