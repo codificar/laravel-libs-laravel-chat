@@ -102,7 +102,7 @@ export default {
 				}).error((error) =>{
 					console.error('Error Tryng connect/listen socket:', error);
 				});
-				await vm.getMessages(data.conversation_id);
+				await vm.getMessages(conversationId);
 		},
 		subscribeToChannelRequest(requestId) {
 			var vm = this;
@@ -137,7 +137,7 @@ export default {
 						vm.subscribeToChannelRequest(vm.channel);
 						const messageWelcome =  {
 							input_type: 'text',
-							input_value: 'Olá caso tenha alguma dúvida envie uma mensagem'
+							input_value: 'init_message'
 						};
 						vm.sendMessage(messageWelcome);
 					}

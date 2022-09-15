@@ -63,6 +63,7 @@
 			<li 
 				v-for="message in conversation" 
 				:key="message.id" 
+				v-if="message.message !== 'init_message'"
 				v-bind:class="{'reverse' : message.user_id == userOne.id}"
 			>
 				<div 
