@@ -88,8 +88,7 @@ class SendMessageRequest extends FormRequest
 					"ledger_receiver" => $ledgerReceiver,
 					"receiver_id" => $ledgerReceiver->id,
 					'is_admin' => $this->is_admin,
-					'is_provider' => $isProvider,
-					'conversation_id' => $this->conversation_id ? $this->conversation_id : null
+					'is_provider' => $isProvider
 				]);
 			
 			}
