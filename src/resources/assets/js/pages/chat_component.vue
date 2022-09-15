@@ -102,7 +102,6 @@ export default {
 				}).error((error) =>{
 					console.error('Error Tryng connect/listen socket:', error);
 				});
-				await vm.getMessages(conversationId);
 		},
 		subscribeToChannelRequest(requestId) {
 			var vm = this;
