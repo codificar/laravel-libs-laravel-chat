@@ -236,6 +236,7 @@ class RideChatController extends Controller
 				$conversationId = $request->conversation_id;
 			}
 			
+			dd($request, $conversationId);
 			$convRequest = ConversationRequest::findConversation($request->request_id, $request->provider_id, $conversationId) ;
 
 			$ride = Requests::find($request->request_id);
