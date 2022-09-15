@@ -53,8 +53,9 @@ class ConversationRequest extends \Eloquent
 		} else {
 			$query->where('conversation_request.request_id', $requestId);
 		}
-
+		
 		$convRequest = $query->first();
+		dd($conversationId, isset($conversationId) && !empty($conversationId), $convRequest);
 		
 		if(!$convRequest) {
 			$convRequest = new ConversationRequest;
