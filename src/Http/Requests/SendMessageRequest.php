@@ -28,7 +28,6 @@ class SendMessageRequest extends FormRequest
 	{
 		return [
 			"receiver_id"		=> "required|integer",
-			"conversation_id"	=> "integer",
 			"message"			=> "string".($this->type == "text"?"|required":""),
 			"bid"				=> "numeric".($this->type == "bid"?"|required":""),
 			"type"				=> "in:text,bid",

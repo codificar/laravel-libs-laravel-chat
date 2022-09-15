@@ -48,7 +48,7 @@ class ConversationRequest extends \Eloquent
 	public static function findConversation($requestId, $userId, $conversationId = null) {
 		
 		$query = self::getQueryUser($userId);
-		if($conversationId) {
+		if(isset($conversationId) && !empty($conversationId)) {
 			$query->where('conversation_request.conversation_id', $conversationId);
 		} else {
 			$query->where('conversation_request.request_id', $requestId);
@@ -202,10 +202,11 @@ class ConversationRequest extends \Eloquent
 		// verifica se tem uma conversation para a request 
 		$convId = $conversationId;
 		$request = \Requests::find($requestId);
+		
 		if($request && !$convId) {
 			$convRequest = ConversationRequest::where(['request_id' => $requestId])->first();
 			if(isset($convRequest->conversation_id) && !empty($convRequest->conversation_id)) {
-				$convId = $convRequest->request_id;
+				$convId = $convRequest->conversation_id;
 			}
 		}
 		

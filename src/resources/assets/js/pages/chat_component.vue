@@ -20,7 +20,7 @@ export default {
 	data() {
 		return {
 			conversation_active: {
-				id: 0,
+				id: this.conversationId || 0,
 				request: {}
 			},
 			search_contact: "",
@@ -43,6 +43,12 @@ export default {
 		},
 		sendMessage(data){
 			var vm = this, type = data.input_type == 'number'?'bid':'text';
+
+			let conversationId = 0;
+			if(vm.conversation_active.id != 0) {
+			 	conversationId = vm.conversation_active.id;
+			}
+
 			axios.post(`/api/libs/${vm.environment}/chat/send`, {
 				token: vm.User.token,
 				user_id: vm.User.user_id,
@@ -50,6 +56,7 @@ export default {
 				request_id: vm.channel,
 				receiver_id: vm.conversation_active.user.id,
 				type: type,
+				conversation_id: conversationId,
 				message: type == 'text'?data.input_value:'',
 				bid: type == 'text'?'':data.input_value
 			}).then(response => {
@@ -125,6 +132,12 @@ export default {
 					vm.subscribeToChannel(e.id);
 				});
 				if(vm.conversation_active.id == 0 && vm.conversationArray.length > 0) {
+					const isCorp = vm.environment == 'corp';
+					const isValidId = vm.conversationArray[0].id != 0; 
+					if(isCorp && isValidId) {
+						vm.conversation_active.id = vm.conversationArray[0].id;
+					}
+
 					if(vm.conversationArray[0].id == 0) {
 						vm.subscribeToChannelRequest(vm.channel);
 					}
