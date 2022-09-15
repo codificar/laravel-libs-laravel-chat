@@ -54,7 +54,10 @@ class SendMessageRequest extends FormRequest
 			$ride = Requests::find($this->request_id);
 			$isProvider = false;
 			
-			ConversationRequest::getOrCreateConversationChat($this->request_id);
+			$conversation = ConversationRequest::getOrCreateConversationChat($this->request_id);
+			$this->conversation_id = isset($conversation->id) 
+				? $conversation->id
+				: 0;		
 	
 			if ($ride) {
 				if ($sender_type == "provider") {

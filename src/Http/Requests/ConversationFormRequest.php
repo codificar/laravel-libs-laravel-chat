@@ -45,7 +45,10 @@ class ConversationFormRequest extends FormRequest
 			$sender_type = $this->userType;
 		}
 
-		ConversationRequest::getOrCreateConversationChat($this->request_id);
+		$conversation = ConversationRequest::getOrCreateConversationChat($this->request_id);
+		$this->conversation_id = isset($conversation->id) 
+			? $conversation->id
+			: 0;
 
 		if($sender_type == "provider") {
 			$ledger_id = $this->provider->ledger->id;

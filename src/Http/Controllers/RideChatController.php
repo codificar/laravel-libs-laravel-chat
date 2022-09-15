@@ -232,7 +232,10 @@ class RideChatController extends Controller
     public function sendMessage(SendMessageRequest $request) {
 		try {
 			$conversationId = 0;
-			if(isset($request->conversation_id) && !empty($request->conversation_id)) {
+			
+			if(isset($this->conversation_id) && !empty($this->conversation_id)) {
+				$conversationId = $this->conversation_id;
+			} else if(isset($request->conversation_id) && !empty($request->conversation_id)) {
 				$conversationId = $request->conversation_id;
 			}
 			

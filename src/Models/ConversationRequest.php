@@ -200,7 +200,7 @@ class ConversationRequest extends \Eloquent
 	{
 		// verifica se tem uma conversation para a request 
 		$convId = $conversationId;
-		$request = \Requests::find($requestId);
+		$request = Requests::where(['id' => $requestId])->first();
 		
 		if($request && !$convId) {
 			$convRequest = ConversationRequest::where(['request_id' => $requestId])->first();
@@ -211,7 +211,8 @@ class ConversationRequest extends \Eloquent
 		
 		//verifica se tem uma conversation criada, caso não, 
 		// cria uma para se inscrever no socket da conversação de forma correta
-		$conversation = Conversation::find($convId);
+		$conversation = Conversation::find(['id' => $convId])->first();
+
 		if ($request && !$conversation) {
 			try {
 				$userOne = \Ledger::where(['user_id' => $request->user_id])->first()->id;
