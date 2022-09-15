@@ -59,10 +59,9 @@ export default {
 				conversation_id: conversationId,
 				message: type == 'text'?data.input_value:'',
 				bid: type == 'text'?'':data.input_value
-			}).then(response => {
-				const data = response.data
-				if(data.success && data.conversation_id) {
-					vm.subscribeToChannel(data.conversation_id);
+			}).then(async response => {
+				if(response.data.success && response.data.conversation_id) {
+					vm.subscribeToChannel(response.data.conversation_id);
 				}
 			});
 		},
@@ -103,6 +102,7 @@ export default {
 				}).error((error) =>{
 					console.error('Error Tryng connect/listen socket:', error);
 				});
+				await vm.getMessages(data.conversation_id);
 		},
 		subscribeToChannelRequest(requestId) {
 			var vm = this;
@@ -132,14 +132,14 @@ export default {
 					vm.subscribeToChannel(e.id);
 				});
 				if(vm.conversation_active.id == 0 && vm.conversationArray.length > 0) {
-					const isCorp = vm.environment == 'corp';
-					const isValidId = vm.conversationArray[0].id != 0; 
-					if(isCorp && isValidId) {
-						vm.conversation_active.id = vm.conversationArray[0].id;
-					}
-
-					if(vm.conversationArray[0].id == 0) {
+					vm.conversation_active = vm.conversationArray[0];
+					if(vm.conversation_active.id == 0) {
 						vm.subscribeToChannelRequest(vm.channel);
+						const messageWelcome =  {
+							input_type: 'text',
+							input_value: 'Olá caso tenha alguma dúvida envie uma mensagem'
+						};
+						vm.sendMessage(messageWelcome);
 					}
 					vm.userSelected(vm.conversationArray[0]);
 				}
