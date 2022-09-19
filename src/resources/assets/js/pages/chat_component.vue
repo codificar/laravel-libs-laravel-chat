@@ -27,7 +27,11 @@ export default {
 			conversationArray: [],
 			messages: [],
 			adminUser: {},
-			isConnectedChat: true
+			isConnectedChat: true,
+			isConversation: true,
+			isLoadingChat: true,
+			scrollToMessage: false,
+			intervalConversation: null,
 		};
 	},
 	components: {
@@ -37,12 +41,21 @@ export default {
 		UserInput
 	},
 	methods: {
-		userSelected(conversation){
+		async userSelected(conversation){
 			this.conversation_active = conversation;
-			this.getMessages(conversation.id);
+			if(conversation && conversation.id != 0) {
+				await this.getMessages(conversation.id);
+			}
+			this.scrollToMessage = true;
 		},
-		sendMessage(data){
+		hideAlertNewMessage() {
+			this.scrollToMessage = false;
+			this.isNewMessage = false;
+		},
+		sendMessage(data) {
 			var vm = this, type = data.input_type == 'number'?'bid':'text';
+			vm.scrollToMessage = true;
+			vm.isConversation = true;
 
 			let conversationId = 0;
 			if(vm.conversation_active.id != 0) {
@@ -81,8 +94,9 @@ export default {
 				})
 				.listen('.newMessage', e => {
 					vm.isConnectedChat = true;
+					vm.isLoadingChat = false;
                     vm.isNewMessage = false;
-					vm.getConversations();
+                    vm.getConversations();
 					
 					const isActiveConversation = e.message.conversation_id == vm.conversation_active.id
 					if(isActiveConversation) {
@@ -90,13 +104,17 @@ export default {
 						if(!existMessage) {
 							vm.messages.push(e.message);
                             const isAdmin = e.message.admin_id;
-                            const isUser = !isAdmin && !e.message.is_provider;
-                            const isProvider = !isUser && e.message.is_provider;
+                            const isUser = !isAdmin && !e.message.is_provider == 1;
+                            const isProvider = !isUser && e.message.is_provider == 1;
                             
-                            if(e.message.is_seen == 0 && (isProvider || isUser) ) {
+							if(e.message.is_seen == 0 && (isProvider || isUser) ) {
                                 //Alert new message
                                 vm.isNewMessage = true;
                             }
+
+							if(isAdmin) {
+								vm.scrollToMessage = true;
+							}
 						}
 					}
 				}).error((error) =>{
@@ -130,18 +148,19 @@ export default {
 				vm.conversationArray.forEach(e => {
 					vm.subscribeToChannel(e.id);
 				});
-				if(vm.conversation_active.id == 0 && vm.conversationArray.length > 0) {
-					vm.conversation_active = vm.conversationArray[0];
-					if(vm.conversation_active.id == 0) {
-						vm.subscribeToChannelRequest(vm.channel);
-						const messageWelcome =  {
-							input_type: 'text',
-							input_value: 'init_message'
-						};
-						vm.sendMessage(messageWelcome);
+
+				if(vm.conversation_active.id == 0) {
+					if(vm.conversationArray.length > 0) {
+						vm.isConversation = true;
+						vm.isLoadingChat = false;
+						vm.conversation_active = vm.conversationArray[0];
+						if(vm.conversation_active.id == 0) {
+							vm.subscribeToChannelRequest(vm.channel);
+						}
+						vm.userSelected(vm.conversationArray[0]);
 					}
-					vm.userSelected(vm.conversationArray[0]);
 				}
+
 			});
 		},
 		getMessages(conversationId) {
@@ -174,16 +193,21 @@ export default {
 					limit: 10,
 				}
 			}).then(response => {
-				if(response.data.messages)
+				if(response.data.messages && response.data.messages.length > 0) {
+					vm.isConversation = true;
+					vm.isLoadingChat = false;
 					vm.messages = response.data.messages;
-				if(response.data.conversation_id)
+				}
+				if(response.data.conversation_id) {
 					vm.subscribeToChannel(response.data.conversation_id);
+				}
 			});
 		},
 		readMessages() {
 			var vm = this;
+			vm.isNewMessage = false;
 			vm.messages.forEach(async (message, key) =>{
-				if(message.is_seen == 0) {
+				if(message.is_seen == 0 && message.is_provider == 1) {
 					vm.messages[key].is_seen = 1;
 					await vm.setAsSeen(message.id);
 				}
@@ -199,7 +223,7 @@ export default {
 			});
 		},
 		hasUnseen(){
-			return this.messages.some(e => { return !e.is_seen && e.user_id != this.User.id });
+			return this.messages.some(e => { return !e.is_seen && e.is_provider });
 		},
 		errorImage(obj) {
 			obj.src = this.logo;
@@ -209,11 +233,25 @@ export default {
 		messages: function () {
 			if(this.hasUnseen()){
 				var lastMessage = this.messages[this.messages.length-1];
-				this.setAsSeen(lastMessage.id);
+				//this.setAsSeen(lastMessage.id);
+			}
+		},
+		conversation_active: function() {
+			const vm = this;
+			const isConversationId = vm.conversation_active 
+				&& parseInt(vm.conversation_active.id) !== 0;
+
+			if(isConversationId) {
+				vm.isConversation = true;
+				vm.isLoadingChat = false;
+				clearInterval(vm.intervalConversation);
+			} else {
+				vm.isConversation = false;
 			}
 		}
 	},
 	mounted() {
+		const vm = this;
 		window.Echo = new Echo({
 			broadcaster: 'socket.io',
 			client: require('socket.io-client'),
@@ -227,6 +265,15 @@ export default {
 		}
 		//Obtém as conversas
 		this.getConversations();
+
+		// inicia o interval para pegar o conversation id
+		vm.intervalConversation = setInterval(() => {
+			const isConversationId = vm.conversation_active 
+				&& parseInt(vm.conversation_active.id) !== 0;
+			if(!isConversationId) {
+				this.getConversations();
+			}
+		}, 5000);
 	},
 	created() {
 		if (this.admin) {
@@ -253,6 +300,11 @@ export default {
 				:readMessages="readMessages"
 				ref="messageList"
 				:logo="logo"
+				:isNewMessage="isNewMessage"
+				:isConversation="isConversation"
+				:isLoadingChat="isLoadingChat"
+				:scrollToMessage="scrollToMessage"
+				:hideAlertNewMessage="hideAlertNewMessage"
 			/>
 			<UserInput 
 				@userInputMessage="sendMessage" 

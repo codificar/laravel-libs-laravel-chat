@@ -43,4 +43,9 @@ return [
     'save' => 'Salvar',
     'code' => 'Código',
     "request_delivery_package" => "Olá prestador, o cliente :name está com o pacote de entregas nº :id disponível para você.",
+    "init_chat" => "Chat ainda não iniciado. Envie uma mensagem para iniciar.",
+    "new_message" => "Nova Mensagem",
+    "loading_chat" => "Carregando chat...",
+    "name_not_found" => "Nome não encontrado"
+
 ];

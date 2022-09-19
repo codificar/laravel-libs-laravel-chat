@@ -14,24 +14,40 @@
 				type: Object
 			},
 			isNewMessage: {
-				type: Boolean
+				type: Boolean,
+				required: false,
+				default: false
 			},
 			isSend: {
 				type: Boolean
 			},
+			isConversation: {
+				type: Boolean,
+				default: false
+			},
+			isLoadingChat: {
+				type: Boolean,
+				default: true
+			},
 			readMessages: {
 				type: Function
-			}
+			},
+			scrollToMessage: {
+				type: Boolean
+			},
+			hideAlertNewMessage: {
+				type: Function
+			},
 		},
 		async created() {
 			await this.showNewMessage();
 			const self = this;
 			$(document).ready(function() { 
 				var chat = $('#message-list');
-				chat.scrollTop(chat.prop("scrollHeight"));
 				chat.on('scroll', function(event) {
 					const positionScroll = $(this)[0].clientHeight + $(this).scrollTop(); 
 					const endScroll = $(this)[0].scrollHeight - 100;
+					console.log('scroll: ' + positionScroll + ' end: ' + endScroll)
 					if(positionScroll >= endScroll) {
 						self.readMessages();
 					}
@@ -39,31 +55,57 @@
 			});
 		},
 		watch: {
+			scrollToMessage: async function() {
+				const vm = this;
+				if(this.scrollToMessage) {
+					await this.$nextTick();
+					var chat = $('#message-list');
+					chat.scrollTop(chat.prop("scrollHeight"));
+					vm.hideAlertNewMessage();
+				}
+			},
 			conversation: async function() {
 				await this.$nextTick();
-				var chat = $('#message-list');
-			}
+			},
 		},
 		methods: {
 			showNewMessage: async function() {
 				var chat = $('#message-list');
 				chat.scrollTop(chat.prop("scrollHeight"));
+				this.hideAlertNewMessage();
 				this.readMessages();
-			}
+			},
 		},
 	};
 </script>
 <template>
 	<div class="chat-rbox">
-		<ul 
+		<div v-if="isLoadingChat" class="chat-list-img">
+			<p class="text-loading">{{ trans('laravelchat.loading_chat') }}</p>
+		</div>
+		<ul
+			v-else 
 			class="chat-list p-3"
 			id="message-list"
 		>
-			<!--chat Row -->
+			<!-- init Message Row -->
 			<li 
+				v-if="!isConversation"
+				class="reverse">
+				<div class="chat-list-row center-message text-center">
+					<div class="chat-content center-message text-center" >
+						<div class="box bg-light-info">
+							{{ trans('laravelchat.init_chat') }}
+						</div>
+					</div>
+				</div>
+			</li>
+			
+			<!-- Chat Row -->
+			<li
+				v-else
 				v-for="message in conversation" 
-				:key="message.id" 
-				v-if="message.message !== 'init_message'"
+				:key="message.id"
 				v-bind:class="{'reverse' : message.user_id == userOne.id}"
 			>
 				<div 
@@ -97,7 +139,7 @@
 						<h5 v-else-if="message.admin_id && userOne.admin_institution && userOne.admin_institution.institution" >
 							{{ userOne.admin_institution.institution.name }}
 						</h5>
-						<h5 v-else>Nome não encontrado</h5>
+						<h5 v-else>{{ trans('laravelchat.name_not_found') }}</h5>
 
 						<div class="box bg-light-info">
 							{{message.message}}
@@ -166,7 +208,7 @@
 				v-if="isNewMessage"
 				@click="showNewMessage()">
 				<div class="button-new-message">
-					<p class="text-new-message">Nova mensagem</p>
+					<p class="text-new-message">{{ trans('laravelchat.new_message') }}</p>
 					<i class="fa fa-angle-down icon-new-message"></i>
 				</div>
 			</div>
@@ -247,5 +289,14 @@
 
 .slide-enter, .slide-leave-to{
   transition: scaleY(0);
+}
+
+.center-message {
+	justify-content: center;
+}
+
+.text-loading {
+	margin-top: 5px;
+	font-size:18px;
 }
 </style>
