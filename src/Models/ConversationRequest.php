@@ -129,45 +129,6 @@ class ConversationRequest extends \Eloquent
 		if ($limit and $messages) {
 			$messages = $messages->take(-$limit);
 		}
-
-		$requestId = self::where('conversation_id', $conversationId)
-			->first()
-			->request_id;		
-			
-		if($requestId) {
-			$request = Requests::find($requestId);
-			// verificar se as fotos e o username estão ok
-			foreach($messages as $message) {
-				if (!$message['picture'] && $message['user_id']) {
-					$providerId = $request->confirmed_provider;
-					$userId = $request->user_id;
-
-					$isProvider = filter_var($message['is_provider'], FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
-
-					if($message['admin_id'] && !$isProvider) {
-						$institution = \AdminInstitution::getUserByAdminId($message['admin_id']);
-						$picture = $institution->picture;
-						$username = $institution->first_name . ($institution->last_name ? " " . $institution->last_name : '');
-					} else if($message['user_id'] && !$isProvider) {
-						$user = \User::find($userId);
-						$picture = $user->picture;
-						$username = $user->first_name . ($user->last_name ? " " . $user->last_name : '');
-					} else if($message['user_id'] && $isProvider) {
-						$provider = \Provider::find($providerId);
-						$picture = $provider->picture;
-						$username = $provider->first_name . ($provider->last_name ? " " . $provider->last_name : '');
-					} else {
-						$provider = \Provider::find($providerId);
-						$picture = $provider->picture;
-						$username = $provider->first_name . ($provider->last_name ? " " . $provider->last_name : '');
-					}
-					
-					$message['user_picture'] = $picture;
-					$message['user_name'] = $username;
-				}
-			}
-		}
-
 		return $messages;
 	}
 
