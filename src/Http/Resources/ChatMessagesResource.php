@@ -21,7 +21,9 @@ class ChatMessagesResource extends JsonResource
 			'messages' => $messages,
 			'request_id' => $this["request_id"],
 			'user_ledger_id' => $this["user_id"],
-			'conversation_id' => $this["conversation_id"]
+			'conversation_id' => isset($this["conversation_id"]) && !empty($this["conversation_id"]) 
+				? $this["conversation_id"] 
+				: 0
 		];
 	}
 }
