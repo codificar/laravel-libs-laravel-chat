@@ -44,7 +44,7 @@ class ConversationRequest extends \Eloquent
 	 * @param int $userId
 	 * @return ConversationRequest
 	 */
-	public static function findConversation($requestId, $userId) {
+	public static function findConversation($requestId, $userId, $is_customer_chat = 0) {
 		
 		$query = self::getQueryUser($userId);
 		$query->where('conversation_request.request_id', $requestId);
@@ -55,6 +55,11 @@ class ConversationRequest extends \Eloquent
 			$convRequest = new ConversationRequest;
 			$convRequest->request_id = $requestId;
 		}
+
+		if ($is_customer_chat) {
+			$convRequest->is_customer_chat = $is_customer_chat;
+		}
+
 		return $convRequest;
     }
     
