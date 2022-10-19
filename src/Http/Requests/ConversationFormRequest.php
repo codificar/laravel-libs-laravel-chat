@@ -2,14 +2,15 @@
 
 namespace Codificar\Chat\Http\Requests;
 
-use App\Models\Institution;
-use Codificar\Chat\Models\ConversationRequest;
 use Illuminate\Foundation\Http\FormRequest;
-use Nahid\Talk\Conversations\Conversation;
-use Requests, User;
 
 class ConversationFormRequest extends FormRequest
 {
+	private const SEGMENT_API 			= 1;
+	private const SEGMENT_LIBS 			= 2;
+	private const SEGMENT_ADMIN 		= 3;
+	private const SEGMENT_CHAT 			= 4;
+	private const SEGMENT_CONVERSATION 	= 5;
 	/**
      * Determine if the user is authorized to make this request.
      *
@@ -38,41 +39,41 @@ class ConversationFormRequest extends FormRequest
      * @return void
      */
 	protected function prepareForValidation() {
-
-		$sender_type = request()->segments()[2];
-		
+		// get sender type admin
+		$senderType = request()->segment(self::SEGMENT_ADMIN);
 		if($this->userType) {
-			$sender_type = $this->userType;
+			$senderType = $this->userType;
 		}
 
-		if($sender_type == "provider") {
-			$ledger_id = $this->provider->ledger->id;
-		} else if($sender_type == "admin") {
-
-			$request = \Requests::find($this->request_id);			
-			if($request) {
-				$this->user = \User::find($request->user_id);
-				$ledger_id = $this->user->ledger->id;
-			}
-		}  else if($sender_type == "corp") {
-			$request = \Requests::find($this->request_id);
-			if($request) {
-				$this->user = \User::find($request->user_id);
-			}
-			
-			if($this->user){
-				$ledger_id = $this->user->getLedger()->id;
-			}
-
-		} else {
-			if($this->user){
-				$ledger_id = $this->user->ledger->id;
-			}
-		}
 		$this->merge([
-			"sender_type" => $sender_type,
-			'ledger_id' => $ledger_id,
+			"sender_type" => $senderType,
+			'ledger_id' => $this->getLedgerId($senderType),
 			'user' => $this->user
 		]);
+	}
+
+	private function getLedgerId($senderType)
+	{
+		$ledgerId = null;
+		
+		switch ($senderType) {
+			case 'provider':
+				$ledgerId = $this->provider->ledger->id;
+				break;
+			case 'admin':
+			case 'corp':
+				$ride = \Requests::find($this->request_id);			
+				if($ride) {
+					$this->user = $ride->user;
+					$ledgerId = $this->user->ledger->id;
+				}
+				break;
+			default:
+				if($this->user){
+					$ledgerId = $this->user->ledger->id;
+				}
+				break;
+		}
+		return $ledgerId;
 	}
 }

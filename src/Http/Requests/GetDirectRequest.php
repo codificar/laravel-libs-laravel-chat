@@ -57,8 +57,7 @@ class GetDirectRequest extends FormRequest
                 "receiver_id" => $receiverLedger ? $receiverLedger->id : null
             ]);
         } catch (\Exception $e) {
-            \Log::error($e);
-            \Log::info('GetDirectRequest > prepareForValidation > error: ' . $e->getMessage());
+            \Log::info('GetDirectRequest > prepareForValidation > error: ' . $e->getMessage() . $e->getTraceAsString());
         }
 	}
 }

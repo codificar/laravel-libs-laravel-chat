@@ -29,18 +29,11 @@ class RequestHelpController extends Controller
     /**
      * Render admin help chat blade
      */
-    public function adminHelpChat($help_id)
+    public function adminHelpChat(Request $request, $helpId)
     {
         try {
-            $admin = Admin::find(Auth::guard('web')->user()->id);
-            if (!$admin) {
-                return Redirect::to("/admin/home");
-            }
-            if ($admin->profile_id == 6){
-                abort(404);
-            }
-            
-            $conversation = Conversation::whereHelpId($help_id)->first();
+            $admin = $request->user;
+            $conversation = Conversation::whereHelpId($helpId)->first();
     
             if (!$conversation) {
                 return Redirect::to("/admin/report_help");
@@ -72,11 +65,10 @@ class RequestHelpController extends Controller
                     'name' => $admin->profile->name,
                     'image' => \Theme::getLogoUrl()
                 ],
-                'convId' => $conversation->id
+                'conversation_id' => $conversation->id
             ]);
         } catch (\Exception $e) {
-            \Log::error($e);
-            \Log::info('RequestHelpController > adminHelpChat > error: ' . $e->getMessage());
+            \Log::info('RequestHelpController > adminHelpChat > error: ' . $e->getMessage() . $e->getTraceAsString() );
             return new \Exception($e->getMessage());
         }
     }

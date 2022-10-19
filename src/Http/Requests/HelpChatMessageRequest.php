@@ -45,8 +45,7 @@ class HelpChatMessageRequest extends FormRequest
                 'ride' => Requests::find($this->request_id)
             ]);
         } catch (\Exception $e) {
-            \Log::error($e);
-            \Log::info('HelpChatMessageRequest > prepareForValidation > error: ' . $e->getMessage());
+            \Log::info('HelpChatMessageRequest > prepareForValidation > error: ' . $e->getMessage() . $e->getTraceAsString());
         }
 	}
 }

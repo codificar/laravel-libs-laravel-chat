@@ -16,7 +16,7 @@
 			help="true"
 			message="{{ json_encode($messages) }}"
 			admin="{{ json_encode($admin) }}"
-			conversation-id="{{ $convId }}"
+			conversation-id="{{ $conversation_id ? $conversation_id : null }}"
 			>
 		</chat>
 		

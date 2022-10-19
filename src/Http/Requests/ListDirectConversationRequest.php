@@ -51,8 +51,7 @@ class ListDirectConversationRequest  extends FormRequest
                 "name" => $name
             ]);
         } catch (\Exception $e) {
-            \Log::error($e);
-            \Log::info('ListDirectConversationRequest > prepareForValidation > error: ' . $e->getMessage());
+            \Log::info('ListDirectConversationRequest > prepareForValidation > error: ' . $e->getMessage() . $e->getTraceAsString());
         }
 	}
 }

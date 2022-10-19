@@ -219,7 +219,7 @@ class Helper {
                 $message->save(); 
 			}
         } catch (\Throwable $th) {
-            \Log::error($th->getMessage());
+            \Log::error($th->getMessage() . $th->getTraceAsString());
         }
     }
 

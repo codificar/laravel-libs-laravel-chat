@@ -68,11 +68,11 @@ Route::group(array('namespace' => 'Codificar\Chat\Http\Controllers'), function (
         'uses' => 'RequestHelpController@renderReportPage'
     ])->middleware(['auth.admin']);
 
-    Route::group(array('middleware' => 'auth.admin'), function () {
+    Route::group(array('middleware' => 'chat.auth.admin'), function () {
 
         Route::get('/admin/libs/help_report', 'RequestHelpController@renderReportPage');
         Route::get('/api/libs/help_list', 'RequestHelpController@fetch');
-        Route::get('/admin/libs/help/{help_id}', 'RequestHelpController@adminHelpChat');
+        Route::get('/admin/libs/help/{helpId}', 'RequestHelpController@adminHelpChat');
     });
 
     Route::group(array('middleware' => 'chatapp'), function () {
@@ -95,17 +95,20 @@ Route::group(array('namespace' => 'Codificar\Chat\Http\Controllers'), function (
         Route::get('/api/libs/filter_conversations', 'DirectChatController@filterConversations');
     });
 
-    Route::get('/corp/lib/chat/{id?}', 'DirectChatController@renderDirectChat');
+    Route::get('/corp/lib/chat/{id?}', 'DirectChatController@renderDirectChat')
+        ->middleware('chat.auth.corp');
 
     //'middleware' => 'auth.admin',
     Route::group(['prefix' => '/admin/lib'], function() {
-        Route::get('/chat', 'AdminChatController@renderAdminChat');
+        Route::get('/chat', 'AdminChatController@renderAdminChat')
+            ->middleware('chat.auth.admin');
         Route::get('/canonical_messages', 'CanonicalMessagesController@renderCanonicalMessages');
     
         Route::get('/api/canonical_messages', 'CanonicalMessagesController@getMessages');
         Route::post('/api/save_canonical', 'CanonicalMessagesController@saveMessage');
         Route::get('/api/get_user', 'AdminChatController@getUserForChat');
-        Route::get('/chat_settings', 'AdminChatController@renderChatSettings');
+        Route::get('/chat_settings', 'AdminChatController@renderChatSettings')
+            ->middleware('chat.auth.admin');
         Route::post('/api/set_default_admin', 'AdminChatController@saveDefaultAdminSetting');
     });
 });

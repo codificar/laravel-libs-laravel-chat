@@ -51,8 +51,7 @@ class SendBulkMessageRequest extends FormRequest
                 "sender_id" => $senderLedger ? $senderLedger->id : null
             ]);
         } catch (\Exception $e) {
-            \Log::error($e);
-            \Log::info('SendBulkMessageRequest > prepareForValidation > error: ' . $e->getMessage());
+            \Log::info('SendBulkMessageRequest > prepareForValidation > error: ' . $e->getMessage() . $e->getTraceAsString());
         }
     }
     

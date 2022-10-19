@@ -22,6 +22,7 @@ use Admin, Auth;
 use Codificar\Chat\Http\Resources\FilterConversationsResource;
 use Codificar\Chat\Http\Resources\ListConversationsForPanelResource;
 use Codificar\Chat\Http\Utils\Helper;
+use \Illuminate\Http\Request;
 use Location;
 
 class DirectChatController extends Controller
@@ -30,22 +31,15 @@ class DirectChatController extends Controller
      * Render chat screen
      * @return view
      */
-    public function renderDirectChat($id = null)
+    public function renderDirectChat(Request $request, $id = null)
     {
         try {
-            $user = Auth::guard('web_corp')->user();
-            $ledger = null;
-    
-            if (!$user || !$user->AdminInstitution) {
-                $user = Auth::guard('web_corp')->user();
-    
-                if (!$user)
-                    return \Redirect::to("/corp/login");
-            }
+            $user = $request->user;
+            $adminInstitution = $request->adminInstitution;
     
             $ledger = Helper::getLedger(
                 'corp', 
-                $user->AdminInstitution->Institution->default_user_id
+                $adminInstitution->Institution->default_user_id
             );
             
             return view('chat::direct_chat', [
@@ -57,8 +51,7 @@ class DirectChatController extends Controller
                 'conversation_id' => $id
             ]);
         } catch (\Exception $e) {
-            \Log::error($e);
-            \Log::info('DirectChatController > renderDirectChat > error: ' . $e->getMessage());
+            \Log::info('DirectChatController > renderDirectChat > error: ' . $e->getMessage() . $e->getTraceAsString());
             return new \Exception($e->getMessage());
         }
     }

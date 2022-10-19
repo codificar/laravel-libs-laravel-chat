@@ -73,8 +73,7 @@ class SendBulkMessageJob implements ShouldQueue
 
 			SendBulkNotificationJob::dispatch($this->parseDeviceTokens($this->data), $this->message);
 		} catch (Exception $e) {
-			\Log::error($e);
-			\Log::error('SendBulkMessageJob > handle > error: ' . $e->getMessage());
+			\Log::error('SendBulkMessageJob > handle > error: ' . $e->getMessage() . $e->getTraceAsString());
 		}
 	}
 

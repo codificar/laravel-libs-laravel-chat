@@ -70,8 +70,7 @@ class SendDirectRequest extends FormRequest
                 "receiver_picture" => $receiverPicture
             ]);
         } catch (\Exception $e) {
-            \Log::error($e);
-            \Log::info('SendDirectRequest > prepareForValidation > error: ' . $e->getMessage());
+            \Log::info('SendDirectRequest > prepareForValidation > error: ' . $e->getMessage() . $e->getTraceAsString());
         }
     }
     

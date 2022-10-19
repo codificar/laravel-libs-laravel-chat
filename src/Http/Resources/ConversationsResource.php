@@ -28,7 +28,12 @@ class ConversationsResource extends JsonResource
 					Helper::getLedger('provider', $ride->confirmed_provider);
 	
 				if ($ledger) {
-					$user = $this["sender_type"] == 'provider' ? $ledger->user : $ledger->provider;
+					if($this["sender_type"] == 'provider') {
+						$user =  $ledger->provider ? $ledger->provider : null;
+					} else {
+						$user =  $ledger->user ? $ledger->user : null;
+					}
+					
 					return [
 						"success" => true,
 						'ledger_id' => $this["ledger_id"]  ,
@@ -85,8 +90,7 @@ class ConversationsResource extends JsonResource
 				'conversations' => $conversations 
 			];
 		} catch (\Exception $e) {
-			\Log::error($e);
-			\Log::info('ConversationResource > toArray > error: ' . $e->getMessage());
+			\Log::info('ConversationResource > toArray > error: ' . $e->getMessage() . $e->getTraceAsString());
 			return [
 				'success' => false,
 				'errors' => $e->getMessage(),

@@ -19,7 +19,6 @@ use Codificar\Chat\Events\EventNotifyPanel;
 use Codificar\Chat\Events\EventReadMessage;
 use Codificar\Chat\Http\Utils\Helper;
 use Requests, Admin, Auth, User, Provider;
-use Log;
 use Nahid\Talk\Messages\Message;
 use Settings;
 use Nahid\Talk\Conversations\Conversation;
@@ -216,8 +215,7 @@ class RideChatController extends Controller
 				'conversation_id' => $conversation ? $conversation->id : null
 			]);
 		}  catch (\Exception $e) {
-			\Log::error($e);
-            \Log::info('RideChatController > corpRequestChat > error: ' . $e->getMessage());
+            \Log::info('RideChatController > corpRequestChat > error: ' . $e->getMessage() . $e->getTraceAsString());
             return new \Exception($e->getMessage());
         }
 	}
@@ -256,8 +254,7 @@ class RideChatController extends Controller
 					$message->is_provider = true;
 					$message->save();
 				} catch (\Exception $e) {
-					\Log::error($e);
-					\Log::info('RideChatController > sendMessage > error: ' . $e->getMessage());
+					\Log::info('RideChatController > sendMessage > error: ' . $e->getMessage() . $e->getTraceAsString());
 				}
 			}
 			
@@ -274,7 +271,7 @@ class RideChatController extends Controller
 			}
 
 		} catch(\Exception $ex) {
-			Log::error($ex->getMessage().$ex->getTraceAsString());
+			\Log::error($ex->getMessage().$ex->getTraceAsString());
 		}
 
 		return response()->json([
@@ -359,7 +356,7 @@ class RideChatController extends Controller
     public function setMessagesSeen(MessageSeenFormRequest $request)
 	{
 		$message = Message::find($request->message_id);
-		ConversationRequest::setMessagesAsSeen($message, $request->u_id);
+		ConversationRequest::setMessagesAsSeen($message, $request->user_id);
 
 		event(new EventReadMessage($message->id));
 
@@ -406,7 +403,7 @@ class RideChatController extends Controller
 			]);
 		}
 		catch (\Throwable $th) {
-			Log::error($th->getMessage().$th->getTraceAsString());
+			\Log::error($th->getMessage().$th->getTraceAsString());
 			return response()->json([
 				'success' => false,
 				'message' => $th->getMessage(),

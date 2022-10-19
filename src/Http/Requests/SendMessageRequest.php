@@ -94,8 +94,7 @@ class SendMessageRequest extends FormRequest
 			
 			}
 		} catch (\Exception $e) {
-			\Log::error($e);
-            \Log::info('SendMessageRequest > prepareForValidation > error: ' . $e->getMessage());
+            \Log::info('SendMessageRequest > prepareForValidation > error: ' . $e->getMessage() . $e->getTraceAsString());
         }
 			
 	}

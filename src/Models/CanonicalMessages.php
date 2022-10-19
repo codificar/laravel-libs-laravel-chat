@@ -23,7 +23,7 @@ class CanonicalMessages extends Model
             
             return true;
         } catch (\Throwable $th) {
-            \Log::error($th->getMessage());
+            \Log::error($th->getMessage() . $th->getTraceAsString());
             return true;
         }
     }
