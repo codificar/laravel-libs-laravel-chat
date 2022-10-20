@@ -223,17 +223,12 @@ class RideChatController extends Controller
     {
         try {
             $is_customer_chat = isset($request->is_customer_chat) ? $request->is_customer_chat : 0;
-            $convRequest = ConversationRequest::findConversation($request->request_id, $request->provider_id);
+            $convRequest = ConversationRequest::findConversation($request->request_id, $request->provider_id, $is_customer_chat);
 
             $ride = Requests::find($request->request_id);
             $isNewConversation = $convRequest->conversation_id == 0;
 
             $message = $convRequest->sendMessage($request->receiver_id, $request->message);
-
-            if ($is_customer_chat) {
-                $convRequest->is_customer_chat = $is_customer_chat;
-                $convRequest->save();
-            }
 
             if ($isNewConversation) {
                 event(new EventNewConversation($ride->id, $message->conversation_id, $request->receiver_id));
@@ -304,8 +299,9 @@ class RideChatController extends Controller
      */
     public function getConversation(ConversationFormRequest $request)
     {
+        $is_customer_chat = isset($request->is_customer_chat) ? $request->is_customer_chat : 0;
         if ($request->request_id) {
-            $conversationArray = ConversationRequest::getConversations($request->request_id, $request->ledger_id);
+            $conversationArray = ConversationRequest::getConversations($request->request_id, $request->ledger_id, $is_customer_chat);
         } else {
             $conversationArray = ConversationRequest::getInbox($request->ledger_id);
         }
