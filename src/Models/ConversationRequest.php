@@ -44,17 +44,20 @@ class ConversationRequest extends \Eloquent
 	 * @param int $userId
 	 * @return ConversationRequest
 	 */
-	public static function findConversation($requestId, $userId) {
+	public static function findConversation($requestId, $userId, $is_customer_chat = 0) {
 		
 		$query = self::getQueryUser($userId);
 		$query->where('conversation_request.request_id', $requestId);
+		$query->where('conversation_request.is_customer_chat', $is_customer_chat);
 
 		$convRequest = $query->first();
 		
 		if(!$convRequest) {
 			$convRequest = new ConversationRequest;
 			$convRequest->request_id = $requestId;
+			$convRequest->is_customer_chat = $is_customer_chat;
 		}
+
 		return $convRequest;
     }
     
@@ -76,10 +79,11 @@ class ConversationRequest extends \Eloquent
 	 * @param int $sender
 	 * @return array 
 	 */
-	public static function getConversations($request_id, $sender) {
+	public static function getConversations($request_id, $sender, $is_customer_chat = 0) {
 		$query = self::getQueryUser($sender);		
 		self::loadData($query);
 		$query->where('conversation_request.request_id', $request_id);
+		$query->where('conversation_request.is_customer_chat', $is_customer_chat);
 		return $query->get();
 	}
 
