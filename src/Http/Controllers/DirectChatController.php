@@ -128,7 +128,8 @@ class DirectChatController extends Controller
 			$message = array(
 				'success' => true,
 				'conversation_id' => $conversation_id,
-				'message' => $contents
+				'message' => $contents,
+                'payload' => $payload,
 			);
 			//envia notificação push
 			send_notifications($model_id, $type, $title, $message,null,$payload);
