@@ -76,7 +76,9 @@ class DirectChatController extends Controller
 
         $payload = [
             'request_id' => $conversation->request_id,
-            'is_direct_message' => true
+            'is_direct_message' => true,
+            'receiver' => $request->receiver_id
+            
         ];
 
         if ($request->ledger_receiver->admin_id)
@@ -129,8 +131,8 @@ class DirectChatController extends Controller
 				'message' => $contents
 			);
 			//envia notificação push
-			send_notifications($model_id, $type, $title, $message, $payload);
-		} catch (\Exception $ex) {
+			send_notifications($model_id, $type, $title, $message,null,$payload);
+		} catch (\Exception $ex) { 
 			return $ex->getMessage().$ex->getTraceAsString();
 		}
 	}
