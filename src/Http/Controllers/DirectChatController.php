@@ -77,8 +77,8 @@ class DirectChatController extends Controller
         $payload = [
             'request_id' => $conversation->request_id,
             'is_direct_message' => true,
-            'receiver' => $request->receiver_id
-            
+            'receiver' => $request->receiver_id,
+            "ledger_id" => $request->sender_id,
         ];
 
         if ($request->ledger_receiver->admin_id)
