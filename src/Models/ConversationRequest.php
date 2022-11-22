@@ -30,7 +30,7 @@ class ConversationRequest extends \Eloquent
 	 * @return Message
 	 */
     public function sendMessage($receiverId, $message) {
-		$message = \Talk::sendMessageByUserId($receiverId, $message, $this->request_id);
+		$message = \Talk::sendMessageByUserId($receiverId, $message, $this->request_id, $this->is_customer_chat);
 		if(!$this->conversation_id) {
 			$this->conversation_id = $message->conversation_id;
 			$this->save();
