@@ -246,6 +246,7 @@ class RideChatController extends Controller
 
             if ($request->sender_type == 'provider') {
                 event(new EventNotifyPanel($request->receiver_id));
+                event(new \App\Events\RequestUpdate($ride->id));
                 // notifica user
                 $this->sendNotificationMessageReceived(trans('laravelchat::laravelchat.new_message'), $message->conversation_id, $message->message, $request->ledger_receiver->user_id, 'user');
             } else {
