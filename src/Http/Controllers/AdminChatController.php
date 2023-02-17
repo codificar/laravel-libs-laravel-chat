@@ -8,10 +8,12 @@ use Codificar\Chat\Http\Requests\AdminGetUserForChatRequest;
 use Codificar\Chat\Http\Requests\SendBulkMessageRequest;
 use Codificar\Chat\Http\Utils\Helper;
 use Codificar\Chat\Jobs\SendBulkMessageJob;
+use Codificar\Chat\Models\RequestHelp;
 use Error;
 use Log;
 use Provider, DB, Auth, User, Settings, Admin, Profile;
 use stdClass;
+use URL;
 
 class AdminChatController extends Controller 
 {
@@ -188,5 +190,40 @@ class AdminChatController extends Controller
             return $admin->id;
         }
         else return null;
+    }
+
+    /**
+     * Get all help messages notification
+     * 
+     * @return Json
+     */
+    public function getHelpMessagesNotification() {
+        $helpMessages = RequestHelp::getAllMessagesHelpUnread();
+        $totalUnread = $helpMessages['total_unread'] > 99
+            ? '99+' 
+            : $helpMessages['total_unread'];
+
+        return response()->json([
+            'success' => true,
+            'help_messages' => $this->handleHelpMessage($helpMessages['messages']),
+            'total_unread' =>  $totalUnread
+        ]);
+    }
+
+    /**
+     * Handle help message model
+     * @param RequestHelp $helpMessages
+     * @return RequestHelp 
+     */
+    private function handleHelpMessage($helpMessages)
+    {
+        foreach($helpMessages as &$helpMessage) {
+            $helpMessage->link = URL::Route('libHelpReportId', ['helpId' => $helpMessage->id]);
+            $helpMessage->username = $helpMessage->provider_fullname;
+            if($helpMessage->author == 'user') {
+                $helpMessage->username = $helpMessage->user_fullname;
+            }
+        };
+        return $helpMessages;
     }
 }

@@ -70,9 +70,9 @@ Route::group(array('namespace' => 'Codificar\Chat\Http\Controllers'), function (
 
     Route::group(array('middleware' => 'chat.auth.admin'), function () {
 
-        Route::get('/admin/libs/help_report', 'RequestHelpController@renderReportPage');
+        Route::get('/admin/libs/help_report', 'RequestHelpController@renderReportPage')->name('libHelpReport');
         Route::get('/api/libs/help_list', 'RequestHelpController@fetch');
-        Route::get('/admin/libs/help/{helpId}', 'RequestHelpController@adminHelpChat');
+        Route::get('/admin/libs/help/{helpId}', 'RequestHelpController@adminHelpChat')->name('libHelpReportId');
     });
 
     Route::group(array('middleware' => 'chatapp'), function () {
@@ -110,6 +110,8 @@ Route::group(array('namespace' => 'Codificar\Chat\Http\Controllers'), function (
         Route::get('/chat_settings', 'AdminChatController@renderChatSettings')
             ->middleware('chat.auth.admin');
         Route::post('/api/set_default_admin', 'AdminChatController@saveDefaultAdminSetting');
+        
+        Route::get('/messages-notification', 'AdminChatController@getHelpMessagesNotification')->name('libAdminHelpMessagesNotifications');
     });
 });
 
