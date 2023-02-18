@@ -43,19 +43,26 @@ class MessageSeenFormRequest extends FormRequest
 	{
 		$message = Message::find($this->message_id);
 		$ledgerId = null;
+		$provider= null;
+		$user= null;
 
 		if(isset($this->provider)) {
 			$ledger = Ledger::where('provider_id', $this->provider->id)->first();
 			$ledgerId = $ledger->id;
+			$provider = $ledger->provider;
 		} else {
 			$ledger = Ledger::where('user_id', $this->user_id)->first();
 			$ledgerId = $ledger->id;
+			$user = $ledger->user;
 		}
 
 		if($message and $ledgerId and ($message->conversation->user_one == $ledgerId or $message->conversation->user_two == $ledgerId)) {
 			$cRequest = ConversationRequest::getByConversationId($message->conversation_id);
 			$this->merge([
 				'message' => $message,
+				'ledger' => $ledger,
+				'provider' => $provider,
+				'user' => $user,
 				'user_id' => $ledgerId,
 				'request_id' => $cRequest->request_id
 			]);

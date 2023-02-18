@@ -48,6 +48,7 @@ class SendBulkMessageRequest extends FormRequest
             
             $this->merge([
                 "sender_type" => $senderType,
+                "senderLedger" => $senderLedger,
                 "sender_id" => $senderLedger ? $senderLedger->id : null
             ]);
         } catch (\Exception $e) {
