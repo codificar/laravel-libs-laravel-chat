@@ -81,6 +81,7 @@ import Toasted from 'vue-toasted';
 Vue.use(Toasted);
 
 import ChatMessageNotification from './pages/ChatMessageNotification.vue';
+import ChatPanicNotification from './pages/ChatPanicNotification.vue';
 
 new Vue({
     el: '.chat_lib',
@@ -89,7 +90,8 @@ new Vue({
         chat,
         reporthelp,
         chatpanelicon,
-        buttonMessageNotification: ChatMessageNotification
+        buttonMessageNotification: ChatMessageNotification,
+        buttonPanicNotification: ChatPanicNotification
     },
 });
 

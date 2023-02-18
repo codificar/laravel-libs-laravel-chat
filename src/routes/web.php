@@ -112,6 +112,7 @@ Route::group(array('namespace' => 'Codificar\Chat\Http\Controllers'), function (
         Route::post('/api/set_default_admin', 'AdminChatController@saveDefaultAdminSetting');
         
         Route::get('/messages-notification', 'AdminChatController@getHelpMessagesNotification')->name('libAdminHelpMessagesNotifications');
+        Route::get('/panic-notification', 'AdminChatController@getPanicMessagesNotification')->name('libAdminPanicMessagesNotifications');
     });
 });
 

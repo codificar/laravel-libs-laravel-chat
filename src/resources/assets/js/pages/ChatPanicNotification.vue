@@ -5,22 +5,22 @@
 			data-toggle='dropdown' 
 			aria-haspopup='true' 
 			aria-expanded='false'>
-			<i class='mdi mdi-24px mdi-message-text'></i>
-			<span v-if="totalUnread" class='badge badge-danger help-message-notification'>
+			<i class='mdi mdi-24px mdi-message-alert'></i>
+			<span v-if="totalUnread" class='badge badge-danger help-panic-notification'>
 				{{ totalUnread }}
 			</span>
 		</a>
-		<div class='dropdown-menu dropdown-menu-right dropdown-help-message animated flipInY'>
-			<ul class='dropdown-user dropdown-help-notification'>
+		<div class='dropdown-menu dropdown-menu-right dropdown-panic-message animated flipInY'>
+			<ul class='dropdown-user dropdown-panic-notification'>
 				<div class="empty-messages" v-if="messages.length == 0">
 					<p>{{emptyChat}}</p>
 				</div>
 				<div v-else>
 					<div v-for="message in messages">
 						<li class='text-left'>
-							<a :href='message.link'>
+							<a :href='linkToAllPanic'>
 								<div class='container-message'>
-									<i class='ti-help-alt text-warning'></i> 
+									<i class='ti-alert text-danger'></i> 
 									<p class='text-user-name'>{{`${message.username.substring(0, 10)}...`}}</p>
 									<p class='text-datetime'>{{message.datetime}}</p>	
 								</div> 
@@ -31,9 +31,9 @@
 					</div>
 				</div>
 				<li class='text-center show-all-messages'>
-					<a :href='linkToAllHelp'> 
-						<i class='ti-help-alt text-warning'></i> 
-						{{ showAllHelpMessages }}
+					<a :href='linkToAllPanic'> 
+						<i class='ti-alert text-danger'></i> 
+						{{showAllPanicMessages}}
 					</a>
 				</li>
 			</ul>
@@ -49,15 +49,15 @@ export default {
 	props: [
 		'echoPort',
 		'echoHost',
-		'linkToAllHelp',
-		'urlGetHelpMessages'
+		'linkToAllPanic',
+		'urlGetPanicMessages'
 	],
 	data() {
 		return {
 			connected: false,
-			totalUnread: '',
 			emptyChat: this.trans('laravelchat.empty_chat'),
-			showAllHelpMessages: this.trans('laravelchat.show_all_help_messages'),
+			showAllPanicMessages: this.trans('laravelchat.show_all_panic_messages'),
+			totalUnread: '',
 			messages: []
 		}
 	},
@@ -82,14 +82,14 @@ export default {
 
 		window.io = client;
 		this.subscribeChatSocket();
-		this.getHelpMessagesNotifications();
+		this.getPanicMessagesNotifications();
 
 	},
 	methods: {
 		subscribeChatSocket() {
 			try {
 				var self = this;
-				window.Echo.channel('chatMessageAdmin')
+				window.Echo.channel('chatPanicMessageAdmin')
 					.listen('.newMessage', e => {
 						console.log('newMessage', e);
 						/*self.getConversations();
@@ -104,11 +104,11 @@ export default {
 			}
 		},
 
-		getHelpMessagesNotifications() {
-			axios.get(this.urlGetHelpMessages)
+		getPanicMessagesNotifications() {
+			axios.get(this.urlGetPanicMessages)
 				.then(response => {
 					if(response.data.success) {
-						this.messages = response.data.help_messages
+						this.messages = response.data.panic_messages
 						this.totalUnread =  response.data.total_unread;
 					}
 				})
@@ -132,7 +132,7 @@ export default {
 
 
 <style scoped>
-.help-message-notification {
+.help-panic-notification {
     position: absolute;
     background-color: red;
     display: flex;
@@ -149,7 +149,7 @@ export default {
     white-space: nowrap;
 }
 
-.dropdown-help-message {
+.dropdown-panic-message {
     position: absolute;
     right: 165px;
 }
@@ -194,7 +194,7 @@ export default {
     align-items: center;
 }
 
-.dropdown-help-notification {
+.dropdown-panic-notification {
     padding: 0px 5px;
     width: 100%;
 }
@@ -215,23 +215,23 @@ export default {
 }
 
 @media (max-width: 767px){
-    .dropdown-help-message {
+    .dropdown-panic-message {
         width: 50% !important;
         margin-top: 2px !important;
         right: 159px;
     }
-    .dropdown-help-notification {
+    .dropdown-panic-notification {
         padding: 0px 5px !important;
         width: 100% !important;
     }
 }
 @media (max-width: 359px){
-    .dropdown-help-message {
+    .dropdown-panic-message {
         width: 100% !important;
         margin-top: 0px !important;
         right: 0px;
     }
-    .dropdown-help-notification {
+    .dropdown-panic-notification {
         padding: 0px 5px !important;
         width: 100% !important;
     }

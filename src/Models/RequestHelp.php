@@ -164,29 +164,4 @@ class RequestHelp extends Model
         return $conv ? $conv->messages : [];
     }
 
-    public static function getAllMessagesHelpUnread() 
-    {
-        $query = self::select(
-            [
-                'request_help.id', 
-                'request_help.author',
-                \DB::raw('CONCAT(p.first_name, " ",  p.last_name) as provider_fullname'),
-                \DB::raw('CONCAT(u.first_name, " ",  u.last_name) as user_fullname'), 
-                \DB::raw('date_format(request_help.created_at, "%d/%m/%Y %h:%m:%s") AS datetime'), 
-                'm.message',
-            ])
-            ->leftJoin('conversations as c', 'request_help.id', '=', 'c.help_id')
-            ->leftJoin('messages as m', 'c.id', '=', 'm.conversation_id')
-            ->leftJoin('provider as p', 'p.id', '=', 'request_help.provider_id')
-            ->leftJoin('user as u', 'u.id', '=', 'request_help.user_id')
-            ->where(['m.is_seen' => 0])
-            ->groupBy('help_id')
-            ->orderBy('request_help.created_at', 'desc');
-
-        return array(
-            'total_unread' => $query->get()->count(),
-            'messages' => $query->limit(5)->get()
-        );
-    }
-
 }

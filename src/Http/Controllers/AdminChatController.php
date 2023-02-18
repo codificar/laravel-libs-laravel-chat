@@ -6,9 +6,12 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Codificar\Chat\Http\Requests\AdminGetUserForChatRequest;
 use Codificar\Chat\Http\Requests\SendBulkMessageRequest;
+use Codificar\Chat\Http\Resources\MessagesHelpUnreadResource;
+use Codificar\Chat\Http\Resources\MessagesPanicTodayResource;
 use Codificar\Chat\Http\Utils\Helper;
 use Codificar\Chat\Jobs\SendBulkMessageJob;
 use Codificar\Chat\Models\RequestHelp;
+use Codificar\Chat\Repositories\MessageRepository;
 use Error;
 use Log;
 use Provider, DB, Auth, User, Settings, Admin, Profile;
@@ -197,33 +200,16 @@ class AdminChatController extends Controller
      * 
      * @return Json
      */
-    public function getHelpMessagesNotification() {
-        $helpMessages = RequestHelp::getAllMessagesHelpUnread();
-        $totalUnread = $helpMessages['total_unread'] > 99
-            ? '99+' 
-            : $helpMessages['total_unread'];
-
-        return response()->json([
-            'success' => true,
-            'help_messages' => $this->handleHelpMessage($helpMessages['messages']),
-            'total_unread' =>  $totalUnread
-        ]);
+    public function getHelpMessagesNotification(MessageRepository $message) {
+        return new MessagesHelpUnreadResource($message->getAllMessagesHelpUnread());
     }
 
     /**
-     * Handle help message model
-     * @param RequestHelp $helpMessages
-     * @return RequestHelp 
+     * Get all panic messages notification
+     * 
+     * @return Json
      */
-    private function handleHelpMessage($helpMessages)
-    {
-        foreach($helpMessages as &$helpMessage) {
-            $helpMessage->link = URL::Route('libHelpReportId', ['helpId' => $helpMessage->id]);
-            $helpMessage->username = $helpMessage->provider_fullname;
-            if($helpMessage->author == 'user') {
-                $helpMessage->username = $helpMessage->user_fullname;
-            }
-        };
-        return $helpMessages;
+    public function getPanicMessagesNotification(MessageRepository $message) {
+        return new MessagesPanicTodayResource($message->getAllMessagesPanicToday());
     }
 }
