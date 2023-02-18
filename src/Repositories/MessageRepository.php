@@ -52,7 +52,7 @@ class MessageRepository implements MessageRepositoryInterface
             ])
             ->leftJoin('request as r', 'panic.request_id', '=', 'r.id')
             ->leftJoin('user as u', 'r.user_id', '=', 'u.id')            
-            ->where('panic.created_at', '<', Carbon::today()->toDateString())
+            ->where('panic.created_at', '=', Carbon::today()->toDateString())
             ->groupBy('id')
             ->orderBy('panic.created_at', 'desc');
 
