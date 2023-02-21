@@ -5,11 +5,11 @@ namespace Codificar\Chat\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Codificar\Chat\Events\EventConversation;
+use Codificar\Chat\Events\EventNewHelpMessageNotification;
 use Codificar\Chat\Http\Requests\HelpChatMessageRequest;
 use Codificar\Chat\Http\Resources\RequestHelpListResource;
 use Codificar\Chat\Models\RequestHelp;
-use Ledger, Admin, Auth, Redirect, Settings, Requests;
-use App\Models\RequestPoint;
+use Ledger, Redirect, Settings, Requests;
 use Codificar\Chat\Http\Requests\GetHelpChatMessageRequest;
 use Codificar\Chat\Http\Resources\ChatMessagesResource;
 use Codificar\Chat\Http\Utils\Helper;
@@ -118,6 +118,9 @@ class RequestHelpController extends Controller
         $message = \Talk::sendMessage($conversation->id, $request->message);
 
         event(new EventConversation($message->id));
+        if($conversation->help_id) {
+            event(new EventNewHelpMessageNotification($conversation->help_id));
+        }
 
         $receiver = Ledger::find($conversation->user_one);
 

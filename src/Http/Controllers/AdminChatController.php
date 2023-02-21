@@ -10,7 +10,6 @@ use Codificar\Chat\Http\Resources\MessagesHelpUnreadResource;
 use Codificar\Chat\Http\Resources\MessagesPanicTodayResource;
 use Codificar\Chat\Http\Utils\Helper;
 use Codificar\Chat\Jobs\SendBulkMessageJob;
-use Codificar\Chat\Models\RequestHelp;
 use Codificar\Chat\Repositories\MessageRepository;
 use Error;
 use Log;

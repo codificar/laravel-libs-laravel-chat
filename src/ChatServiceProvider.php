@@ -19,7 +19,7 @@ class ChatServiceProvider extends ServiceProvider
         $this->loadViewsFrom(__DIR__.'/resources/views', 'chat');
 
         // Load trans files
-        $this->loadTranslationsFrom(__DIR__.'/resources/lang', 'transChat');
+        $this->loadTranslationsFrom(__DIR__.'/resources/lang', 'laravelchat');
 
         // Load Migrations
         $this->loadMigrationsFrom(__DIR__.'/Database/migrations');

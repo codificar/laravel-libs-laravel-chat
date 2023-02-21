@@ -89,16 +89,10 @@ export default {
 		subscribeChatSocket() {
 			try {
 				var self = this;
-				window.Echo.channel('chatMessageAdmin')
-					.listen('.newMessage', e => {
-						console.log('newMessage', e);
-						/*self.getConversations();
-						if(e.message.conversation_id == vm.conversation_active.id) {
-							if(vm.messages.every(message => message.id != e.message.id))
-								vm.messages.push(e.message);
-						}*/
+				window.Echo.channel('chatHelpMessageAdminNotification')
+					.listen('.newHelpMessage', e => {
+						self.getHelpMessagesNotifications();
 					});
-				this.connected = true;
 			} catch(error) {
 				console.log('subscribeChatSocket', error);
 			}

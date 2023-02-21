@@ -17,6 +17,16 @@ class RequestHelp extends Model
     protected $table = 'request_help';
 
     /**
+	 * Finds one row in the Messages table associated with 'help_id'
+	 *
+	 * @return Messages object
+	 */
+	public function conversations()
+	{
+		return $this->hasOne(Conversations::class, 'help_id', 'id');
+	}
+
+    /**
      * Save a new request note help
      * @param object $request
      * @return boolean
