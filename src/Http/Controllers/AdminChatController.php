@@ -5,6 +5,7 @@ namespace Codificar\Chat\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Codificar\Chat\Http\Requests\AdminGetUserForChatRequest;
+use Codificar\Chat\Http\Requests\PanicSeenFormRequest;
 use Codificar\Chat\Http\Requests\SendBulkMessageRequest;
 use Codificar\Chat\Http\Resources\MessagesHelpUnreadResource;
 use Codificar\Chat\Http\Resources\MessagesPanicTodayResource;
@@ -199,7 +200,8 @@ class AdminChatController extends Controller
      * 
      * @return Json
      */
-    public function getHelpMessagesNotification(MessageRepository $message) {
+    public function getHelpMessagesNotification(MessageRepository $message) 
+    {
         return new MessagesHelpUnreadResource($message->getAllMessagesHelpUnread());
     }
 
@@ -208,7 +210,20 @@ class AdminChatController extends Controller
      * 
      * @return Json
      */
-    public function getPanicMessagesNotification(MessageRepository $message) {
+    public function getPanicMessagesNotification(MessageRepository $message) 
+    {
         return new MessagesPanicTodayResource($message->getAllMessagesPanicToday());
+    }
+
+    /**
+     * SEt panic message to is seen and redirect to report panic messages
+     * @return RedirectResponse
+     */
+    public function adminPanicSee(PanicSeenFormRequest $request)
+    {
+        $request->panic->setSeen();
+
+        return redirect()->route('libPanicReport');
+
     }
 }

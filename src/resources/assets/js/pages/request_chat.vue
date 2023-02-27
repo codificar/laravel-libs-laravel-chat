@@ -133,8 +133,8 @@ export default {
         <div class="col col-md-8 full-panel" v-if="!help">
             <ChatComponent
                 :laravel_echo_port="laravel_echo_port"
-                :request="request"
-                :user="user"
+                :request="Request"
+                :user="User"
                 :environment="environment"
                 :channel="request.id"
                 :logo="logo"

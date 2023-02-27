@@ -18,7 +18,7 @@
 				<div v-else>
 					<div v-for="message in messages">
 						<li class='text-left'>
-							<a :href='linkToAllPanic'>
+							<a :href='message.link'>
 								<div class='container-message'>
 									<i class='ti-alert text-danger'></i> 
 									<p class='text-user-name'>{{`${message.username.substring(0, 10)}...`}}</p>
@@ -74,13 +74,17 @@ export default {
 		const host = this.echoHost || window.location.hostname;
 		const port = this.echoPort || 6001
 		// Abre a conexão
-		window.Echo = new Echo({
-			broadcaster: broadcaster,
-			client: client,
-			host: `${host}:${port}`
-		});
+		if(!window.Echo) {
+			window.Echo = new Echo({
+				broadcaster: broadcaster,
+				client: client,
+				host: `${host}:${port}`
+			});
+		}
 
-		window.io = client;
+		if(window.io) {
+			window.io = client;
+		}
 		this.subscribeChatSocket();
 		this.getPanicMessagesNotifications();
 

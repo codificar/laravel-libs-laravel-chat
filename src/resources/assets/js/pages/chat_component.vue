@@ -163,7 +163,7 @@ export default {
 
 			});
 		},
-		getMessages(conversationId) {
+		async getMessages(conversationId) {
 			var vm = this;
             let token = vm.User.token;
             let userId = null;
@@ -183,7 +183,7 @@ export default {
                 providerId = vm.User.provider_id;
             }
 
-			axios.get(`/api/libs/${vm.environment}/chat/messages`, {
+			await axios.get(`/api/libs/${vm.environment}/chat/messages`, {
 				params: {
 					token: token,
 					user_id: userId,
@@ -252,13 +252,24 @@ export default {
 	},
 	mounted() {
 		const vm = this;
-		window.Echo = new Echo({
-			broadcaster: 'socket.io',
-			client: require('socket.io-client'),
-			host: window.location.hostname + ":" + this.laravel_echo_port
-		});
+		// Define o client e broadcaster
+		const client = require('socket.io-client');
+		const broadcaster = 'socket.io';
 
-		window.io = require('socket.io-client');
+		const host = this.echoHost || window.location.hostname;
+		const port = this.echoPort || 6001
+		// Abre a conexão
+		if(!window.Echo) {
+			window.Echo = new Echo({
+				broadcaster: broadcaster,
+				client: client,
+				host: `${host}:${port}`
+			});
+		}
+
+		if(window.io) {
+			window.io = client;
+		}
 		
 		if(this.environment != 'provider') {
 			this.subscribeToChannelRequest(this.channel);
@@ -297,14 +308,14 @@ export default {
 				:user-one="User"
 				:user-two="conversation_active.user"
 				:admin="adminUser"
-				:readMessages="readMessages"
+				:read-messages="readMessages"
 				ref="messageList"
 				:logo="logo"
-				:isNewMessage="isNewMessage"
-				:isConversation="isConversation"
-				:isLoadingChat="isLoadingChat"
-				:scrollToMessage="scrollToMessage"
-				:hideAlertNewMessage="hideAlertNewMessage"
+				:is-new-message="isNewMessage"
+				:is-conversation="isConversation"
+				:is-loading-chat="isLoadingChat"
+				:scroll-to-message="scrollToMessage"
+				:hide-alert-new-message="hideAlertNewMessage"
 			/>
 			<UserInput 
 				@userInputMessage="sendMessage" 
@@ -338,9 +349,6 @@ export default {
 .chat-img-title{
 	display: inline-block;
 	width: 65px;
-	img {
-		width: 60px;
-	}
 }
 .box-title{
 	display: inline-block;

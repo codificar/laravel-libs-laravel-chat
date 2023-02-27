@@ -74,13 +74,17 @@ export default {
 		const host = this.echoHost || window.location.hostname;
 		const port = this.echoPort || 6001
 		// Abre a conexão
-		window.Echo = new Echo({
-			broadcaster: broadcaster,
-			client: client,
-			host: `${host}:${port}`
-		});
+		if(!window.Echo) {
+			window.Echo = new Echo({
+				broadcaster: broadcaster,
+				client: client,
+				host: `${host}:${port}`
+			});
+		}
 
-		window.io = client;
+		if(window.io) {
+			window.io = client;
+		}
 		this.subscribeChatSocket();
 		this.getHelpMessagesNotifications();
 

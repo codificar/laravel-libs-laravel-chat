@@ -81,13 +81,14 @@ class MessageRepository implements MessageRepositoryInterface
                 \DB::raw('CONCAT(u.first_name, " ",  u.last_name) as username'), 
                 \DB::raw('date_format(panic.created_at, "%d/%m/%Y %h:%m:%s") AS datetime'), 
                 'panic.history as message',
+                'panic.request_id as request_id'
             ])
             ->leftJoin('request as r', 'panic.request_id', '=', 'r.id')
-            ->leftJoin('user as u', 'r.user_id', '=', 'u.id')            
-            ->where('panic.created_at', '=', Carbon::today()->toDateString())
+            ->leftJoin('user as u', 'r.user_id', '=', 'u.id')
+            ->where(['panic.is_seen' => false])            
+            ->whereBetween('panic.created_at', [Carbon::today()->toDateTimeString(), Carbon::tomorrow()->toDateTimeString()])
             ->groupBy('id')
             ->orderBy('panic.created_at', 'desc');
-
         return array(
             'total_unread' => $query->get()->count(),
             'messages' => $query->limit(5)->get()

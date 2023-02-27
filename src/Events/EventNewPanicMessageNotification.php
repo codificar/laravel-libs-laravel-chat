@@ -43,7 +43,7 @@ class EventNewPanicMessageNotification implements ShouldBroadcast {
 	 * @return string
 	 */
 	public function broadcastAs() {
-		return 'newHelpMessage';
+		return 'newPanicMessage';
 	}
 
 }

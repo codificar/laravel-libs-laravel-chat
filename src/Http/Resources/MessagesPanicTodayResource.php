@@ -20,8 +20,21 @@ class MessagesPanicTodayResource extends JsonResource
 
         return [
             'success' => true,
-            'panic_messages' => $this['messages'],
+            'panic_messages' => $this->handlePanicMessage($this['messages']),
             'total_unread' =>  $totalUnread
         ];
+    }
+
+    /**
+     * Handle help message model
+     * @param Array $panicMessages
+     * @return Array 
+     */
+    private function handlePanicMessage($panicMessages)
+    {
+        foreach($panicMessages as $key => &$panicMessage) {
+            $panicMessages[$key]['link'] = \URL::Route('libPanicSee', ['panicId' => $panicMessage->id]); 
+        };
+        return $panicMessages;
     }
 }
