@@ -42,7 +42,7 @@ class MessagesHelpUnreadResource extends JsonResource
             $outArray[$key]['author'] = $helpMessage->author;
             $outArray[$key]['provider_fullname'] = $helpMessage->provider_fullname;
             $outArray[$key]['user_fullname'] = $helpMessage->user_fullname;
-            $outArray[$key]['link'] = \URL::Route('libHelpReportId', ['helpId' => $message->id]);
+            $outArray[$key]['link'] = \URL::Route('libHelpReportId', ['helpId' => $helpMessage->id]);
             $outArray[$key]['message'] = $message->message;
             $datetime = new DateTime($message->created_at);
             $outArray[$key]['datetime'] = $datetime->format('d/m/Y H:i:s'); 

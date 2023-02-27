@@ -42,7 +42,7 @@ class RequestHelpController extends Controller
             $adminLedger = Helper::getLedger('admin', $admin->id);
             $conversation->user_two = $adminLedger->id;
             $conversation->save();
-    
+            
             $userHelped = Helper::getUserTypeInstance($conversation->user_one);
             
             return view('chat::help_chat', [
