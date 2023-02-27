@@ -31,7 +31,7 @@ class ConversationRequest extends \Eloquent
 	 * @return Message
 	 */
     public function sendMessage($receiverId, $message, $requestId = null) {
-		$message = \Talk::sendMessageByUserId($receiverId, $message, $requestId);
+		$message = \Talk::sendMessageByUserId($receiverId, $message, $requestId, $this->is_customer_chat);
 		if(!$this->conversation_id) {
 			$this->conversation_id = $message->conversation_id;
 			$this->save();
@@ -45,20 +45,24 @@ class ConversationRequest extends \Eloquent
 	 * @param int $userId
 	 * @return ConversationRequest
 	 */
-	public static function findConversation($requestId, $userId, $conversationId = null) {
+	public static function findConversation($requestId, $userId, $is_customer_chat = 0, $conversationId = null) {
 		
 		$query = self::getQueryUser($userId);
 		if(isset($conversationId) && !empty($conversationId)) {
 			$query->where('conversation_request.conversation_id', $conversationId);
 		} else {
-			$query->where('conversation_request.request_id', $requestId);
+			$query->where('conversation_request.request_id', $requestId)
+				->where('conversation_request.is_customer_chat', $is_customer_chat);
 		}
+
 		$convRequest = $query->first();
 		
 		if(!$convRequest) {
 			$convRequest = new ConversationRequest;
 			$convRequest->request_id = $requestId;
+			$convRequest->is_customer_chat = $is_customer_chat;
 		}
+
 		return $convRequest;
     }
     
@@ -80,10 +84,11 @@ class ConversationRequest extends \Eloquent
 	 * @param int $sender
 	 * @return array 
 	 */
-	public static function getConversations($request_id, $sender) {
+	public static function getConversations($request_id, $sender, $is_customer_chat = 0) {
 		$query = self::getQueryUser($sender);		
 		self::loadData($query);
 		$query->where('conversation_request.request_id', $request_id);
+		$query->where('conversation_request.is_customer_chat', $is_customer_chat);
 		return $query->get();
 	}
 

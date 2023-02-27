@@ -18,7 +18,12 @@ use Codificar\Chat\Events\EventNewConversation;
 use Codificar\Chat\Events\EventNotifyPanel;
 use Codificar\Chat\Events\EventReadMessage;
 use Codificar\Chat\Http\Utils\Helper;
-use Requests, Admin, Auth, User, Provider;
+use Requests;
+use Admin;
+use Auth;
+use User;
+use Provider;
+use Log;
 use Nahid\Talk\Messages\Message;
 use Settings;
 use Nahid\Talk\Conversations\Conversation;
@@ -30,7 +35,8 @@ class RideChatController extends Controller
 	 * Render admin chat page
 	 * @return View
 	 */
-	public function adminRequestChat($request_id){
+    public function adminRequestChat($request_id)
+    {
 		$admin = Admin::find(Auth::guard('web')->user()->id);
 		if (!$admin) {
 			return \Redirect::to("/admin/home");
@@ -41,7 +47,7 @@ class RideChatController extends Controller
 		//Esses dois campos estavam dando problema no json_encode e não são necessários no chat
 		unset($request->origin);
 		unset($request->destination);
-		if (!$request){
+        if (!$request) {
 			abort(404);
 		}
 
@@ -49,7 +55,7 @@ class RideChatController extends Controller
 
 		$user = User::getUserForChat($request->user_id);
 		
-		if(in_array($request->user_id, Institution::getDefaultUsersIds())){
+        if (in_array($request->user_id, Institution::getDefaultUsersIds())) {
 			$institution = Institution::getByDefaultUserId($request->user_id);
 		} else {
 			$institution = null;
@@ -77,8 +83,8 @@ class RideChatController extends Controller
 	 * Render user chat page
 	 * @return View
 	 */
-	public function userRequestChat($request_id){
-		
+    public function userRequestChat($request_id)
+    {
 		$user_id = Auth::guard("clients")->user()->id;
 
 		$request = Requests::find($request_id);
@@ -114,7 +120,8 @@ class RideChatController extends Controller
 	 * Render provider chat page
 	 * @return view
 	 */
-	public function providerRequestChat($request_id) {
+    public function providerRequestChat($request_id)
+    {
 		$provider = Provider::getProviderForChat([Auth::guard('providers')->user()->id]);
 
 		$ride = Requests::find($request_id);
@@ -122,13 +129,13 @@ class RideChatController extends Controller
 		//Esses dois campos estavam dando problema no json_encode e não são necessários no chat
 		unset($ride->origin);
 		unset($ride->destination);
-		if (!$ride){
+        if (!$ride) {
 			abort(404);
 		}
 
 		$requestPoints = RequestPoint::whereRequestId($ride->id)->get();
 
-		if(in_array($ride->user_id, Institution::getDefaultUsersIds())){
+        if (in_array($ride->user_id, Institution::getDefaultUsersIds())) {
 			$institution = Institution::getByDefaultUserId($ride->user_id);
 		} else {
 			$institution = "";
@@ -159,9 +166,10 @@ class RideChatController extends Controller
 			if (!$user || !$user->AdminInstitution) {
 				$user = Auth::guard('web_corp')->user();
 	
-				if (!$user)
+				if (!$user) {
 					return \Redirect::to("/corp/login");
-			}
+				}
+        	}
 	
 			$ledger = null;
 			$ride = Requests::find($request_id);
@@ -175,8 +183,9 @@ class RideChatController extends Controller
 				$institution = "";
 			}
 	
-			if (!$provider)
+			if (!$provider) {
 				abort(404);
+			}
 	
 			if ($user) {
 				$ledger = Helper::getLedger(
@@ -197,8 +206,9 @@ class RideChatController extends Controller
 	
 			$conversation = Conversation::where('request_id', $ride->id)->first();
 	
-			if ($conversation)
-				$newConversation = null;
+			if ($conversation) {
+					$newConversation = null;
+			}
 			
 			$mapsApiKey = Settings::getGoogleMapsApiKey();
 
@@ -227,10 +237,11 @@ class RideChatController extends Controller
      * @param SendMessageRequest $request
      * @return json
      */
-    public function sendMessage(SendMessageRequest $request) {
+    public function sendMessage(SendMessageRequest $request)
+    {
 		try {
-			
-			$convRequest = ConversationRequest::findConversation($request->request_id, $request->provider_id) ;
+            $is_customer_chat = isset($request->is_customer_chat) ? $request->is_customer_chat : 0;
+            $convRequest = ConversationRequest::findConversation($request->request_id, $request->provider_id, $is_customer_chat);
 
 			$ride = Requests::find($request->request_id);
 			$isNewConversation = $convRequest->conversation_id == 0;
@@ -262,10 +273,10 @@ class RideChatController extends Controller
             
 			if ($request->sender_type == 'provider') {
 				event(new EventNotifyPanel($request->receiver_id));
+                event(new \App\Events\RequestUpdate($ride->id));
 				// notifica user
 				$this->sendNotificationMessageReceived(trans('laravelchat::laravelchat.new_message'), $message->conversation_id, $message->message, $request->ledger_receiver->user_id, 'user');
-			}
-			else {
+            } else {
 				// notifica provider
 				$this->sendNotificationMessageReceived(trans('laravelchat::laravelchat.new_message'), $message->conversation_id, $message->message, $request->ledger_receiver->provider_id, 'provider');
 			}
@@ -286,7 +297,8 @@ class RideChatController extends Controller
 	 * 
 	 * @return
 	 */
-	public function sendNotificationMessageReceived($title, $conversation_id, $contents, $model_id, $type) {
+    public function sendNotificationMessageReceived($title, $conversation_id, $contents, $model_id, $type)
+    {
 		try {
 			// Send Notification
 			$message = array(
@@ -310,8 +322,9 @@ class RideChatController extends Controller
      */
     public function getConversation(ConversationFormRequest $request)
 	{
-		if($request->request_id) {
-			$conversationArray = ConversationRequest::getConversations($request->request_id, $request->ledger_id);
+        $is_customer_chat = isset($request->is_customer_chat) ? $request->is_customer_chat : 0;
+        if ($request->request_id) {
+            $conversationArray = ConversationRequest::getConversations($request->request_id, $request->ledger_id, $is_customer_chat);
 		} else {
 			$conversationArray = ConversationRequest::getInbox($request->ledger_id);
 		}
@@ -383,9 +396,9 @@ class RideChatController extends Controller
 			//criar listening
 			EventQuickReply::dispatch(json_encode($response_quick_reply));
 			//DeliveryPackage::where('id', $id)->update(['accepted_status' => $request->status]);
-			if(Message::where('conversation_id', $req['conversation'])
+            if (Message::where('conversation_id', $req['conversation'])
 				->whereJsonContains('response_quick_reply->delivery_package_id', $req['delivery_package_id'])
-				->update(['response_quick_reply' => json_encode($response_quick_reply)]))
+                ->update(['response_quick_reply' => json_encode($response_quick_reply)])) 
 			{
 				$message = new Message();
 				$message->create([
@@ -401,14 +414,12 @@ class RideChatController extends Controller
 			return response()->json([
 				'success' => true,
 			]);
-		}
-		catch (\Throwable $th) {
+		} catch (\Throwable $th) {
 			\Log::error($th->getMessage().$th->getTraceAsString());
 			return response()->json([
 				'success' => false,
 				'message' => $th->getMessage(),
 			]);
 		}
-		
     }
 }
