@@ -47,7 +47,6 @@
 				chat.on('scroll', function(event) {
 					const positionScroll = $(this)[0].clientHeight + $(this).scrollTop(); 
 					const endScroll = $(this)[0].scrollHeight - 100;
-					console.log('scroll: ' + positionScroll + ' end: ' + endScroll)
 					if(positionScroll >= endScroll) {
 						self.readMessages();
 					}

@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Codificar\Chat\Events\EventConversation;
 use Codificar\Chat\Events\EventNewHelpMessageNotification;
+use Codificar\Chat\Events\EventReadMessage;
 use Codificar\Chat\Http\Requests\HelpChatMessageRequest;
 use Codificar\Chat\Http\Resources\RequestHelpListResource;
 use Codificar\Chat\Models\RequestHelp;
@@ -13,7 +14,8 @@ use Ledger, Redirect, Settings, Requests;
 use Codificar\Chat\Http\Requests\GetHelpChatMessageRequest;
 use Codificar\Chat\Http\Resources\ChatMessagesResource;
 use Codificar\Chat\Http\Utils\Helper;
-use Nahid\Talk\Conversations\Conversation;
+use Codificar\Chat\Models\Conversations;
+use Codificar\Chat\Repositories\MessageRepository;
 
 class RequestHelpController extends Controller
 {
@@ -29,11 +31,11 @@ class RequestHelpController extends Controller
     /**
      * Render admin help chat blade
      */
-    public function adminHelpChat(Request $request, $helpId)
+    public function adminHelpChat(Request $request, $helpId, MessageRepository $messageRepository)
     {
         try {
             $admin = $request->user;
-            $conversation = Conversation::whereHelpId($helpId)->first();
+            $conversation = Conversations::whereHelpId($helpId)->first();
     
             if (!$conversation) {
                 return Redirect::to("/admin/report_help");
@@ -45,6 +47,13 @@ class RequestHelpController extends Controller
             
             $userHelped = Helper::getUserTypeInstance($conversation->user_one);
             
+            if($conversation->lastMessageUnread) {
+                $conversationId = $conversation->id;
+                $messageId = $conversation->lastMessageUnread->id;
+                $messageRepository->setMessagesAsSeen($conversationId, $messageId);
+                event(new EventReadMessage($messageId));
+            }
+
             return view('chat::help_chat', [
                 "environment" => "admin",
                 'requestPoints' => [],

@@ -5,6 +5,7 @@ namespace Codificar\Chat\Repositories;
 use Carbon\Carbon;
 use Codificar\Chat\Models\RequestHelp;
 use Codificar\Chat\Interfaces\MessageRepositoryInterface;
+use Codificar\Chat\Models\Messages;
 
 class MessageRepository implements MessageRepositoryInterface
 {
@@ -61,6 +62,7 @@ class MessageRepository implements MessageRepositoryInterface
             ->leftJoin('provider as p', 'p.id', '=', 'request_help.provider_id')
             ->leftJoin('user as u', 'u.id', '=', 'request_help.user_id')
             ->where(['request_help.id' => $requestHelpId])
+            ->where(['m.is_seen' => 0])
             ->orderBy('request_help.id', 'desc');
 
         return array(
@@ -85,7 +87,7 @@ class MessageRepository implements MessageRepositoryInterface
             ])
             ->leftJoin('request as r', 'panic.request_id', '=', 'r.id')
             ->leftJoin('user as u', 'r.user_id', '=', 'u.id')
-            ->where(['panic.is_seen' => false])            
+            ->where(['panic.is_seen' => 0])            
             ->whereBetween('panic.created_at', [Carbon::today()->toDateTimeString(), Carbon::tomorrow()->toDateTimeString()])
             ->groupBy('id')
             ->orderBy('panic.created_at', 'desc');
@@ -93,5 +95,23 @@ class MessageRepository implements MessageRepositoryInterface
             'total_unread' => $query->get()->count(),
             'messages' => $query->limit(5)->get()
         );
+    }
+
+    /**
+     * set al messages as read by conversation and/or user
+     * @param int $conversationId
+     * @param int $messageId
+     * @param int $userId - default null
+     * 
+     * @return void
+     */
+    public function setMessagesAsSeen(int $conversationId, int $messageId, int $userId = null): void
+    {
+        $messages = Messages::where('conversation_id', $conversationId)
+			->where('id', '<=', $messageId);
+        if($userId) {
+			$messages->where('user_id', '<>', $userId);
+        }
+			$messages->update(['is_seen' => true]);
     }
 }

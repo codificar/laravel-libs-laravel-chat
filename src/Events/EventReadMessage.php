@@ -18,8 +18,8 @@ class EventReadMessage implements ShouldBroadcast {
 	 *
 	 * @return void
 	 */
-	public function __construct($message_id) {
-		$this->message = Message::find($message_id);
+	public function __construct($messageId) {
+		$this->message = Message::find($messageId);
 	}
 
 	/**

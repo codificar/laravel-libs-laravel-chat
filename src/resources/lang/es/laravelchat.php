@@ -46,5 +46,6 @@ return [
     "init_chat" => "El chat aún no se ha iniciado. Envía un mensaje para comenzar.",
     "new_message" => "Nuevo mensaje",
     "loading_chat" => "Cargando charla...",
-    "name_not_found" => "nombre no encontrado"
+    "name_not_found" => "nombre no encontrado",
+    "total" => "total"
 ];

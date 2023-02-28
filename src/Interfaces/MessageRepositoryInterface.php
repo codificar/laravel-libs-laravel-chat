@@ -20,4 +20,14 @@ interface MessageRepositoryInterface
 	 * @return array
 	 */
 	public function getMessageHelpById(int $requestHelpId): array;
+
+    /**
+     * set al messages as read by conversation and/or user
+     * @param int $conversationId
+     * @param int $messageId
+     * @param int $userId - default null
+     * 
+     * @return void
+     */
+	public function setMessagesAsSeen(int $conversationId, int $messageId, int $userId = null): void;
 }

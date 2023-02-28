@@ -80,18 +80,13 @@ import chatsettings from './pages/chat_settings.vue';
 import Toasted from 'vue-toasted';
 Vue.use(Toasted);
 
-import ChatMessageNotification from './pages/ChatMessageNotification.vue';
-import ChatPanicNotification from './pages/ChatPanicNotification.vue';
-
 new Vue({
     el: '.chat_lib',
 
     components: {
         chat,
         reporthelp,
-        chatpanelicon,
-        buttonMessageNotification: ChatMessageNotification,
-        buttonPanicNotification: ChatPanicNotification
+        chatpanelicon
     },
 });
 

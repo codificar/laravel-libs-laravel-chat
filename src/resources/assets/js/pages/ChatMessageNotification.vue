@@ -7,7 +7,7 @@
 			aria-expanded='false'>
 			<i class='mdi mdi-24px mdi-message-text'></i>
 			<span v-if="totalUnread" class='badge badge-danger help-message-notification'>
-				{{ totalUnread }}
+				{{ totalUnreadFormated }}
 			</span>
 		</a>
 		<div class='dropdown-menu dropdown-menu-right dropdown-help-message animated flipInY'>
@@ -33,7 +33,10 @@
 				<li class='text-center show-all-messages'>
 					<a :href='linkToAllHelp'> 
 						<i class='ti-help-alt text-warning'></i> 
-						{{ showAllHelpMessages }}
+						{{ showAllHelpMessages }} 
+						<span v-if="totalUnread">
+							- {{totalText}}: ({{ totalUnread }})
+						</span>
 					</a>
 				</li>
 			</ul>
@@ -55,8 +58,10 @@ export default {
 	data() {
 		return {
 			connected: false,
+			totalUnreadFormated: '',
 			totalUnread: '',
 			emptyChat: this.trans('laravelchat.empty_chat'),
+			totalText: this.trans('laravelchat.total'),
 			showAllHelpMessages: this.trans('laravelchat.show_all_help_messages'),
 			messages: []
 		}
@@ -107,6 +112,7 @@ export default {
 				.then(response => {
 					if(response.data.success) {
 						this.messages = response.data.help_messages
+						this.totalUnreadFormated =  response.data.total_unread_formated;
 						this.totalUnread =  response.data.total_unread;
 					}
 				})

@@ -7,7 +7,7 @@
 			aria-expanded='false'>
 			<i class='mdi mdi-24px mdi-message-alert'></i>
 			<span v-if="totalUnread" class='badge badge-danger help-panic-notification'>
-				{{ totalUnread }}
+				{{ totalUnreadFormated }}
 			</span>
 		</a>
 		<div class='dropdown-menu dropdown-menu-right dropdown-panic-message animated flipInY'>
@@ -33,7 +33,10 @@
 				<li class='text-center show-all-messages'>
 					<a :href='linkToAllPanic'> 
 						<i class='ti-alert text-danger'></i> 
-						{{showAllPanicMessages}}
+						{{showAllPanicMessages}} 
+						<span v-if="totalUnread">
+							- {{totalText}}: ({{ totalUnread }})
+						</span>
 					</a>
 				</li>
 			</ul>
@@ -57,6 +60,7 @@ export default {
 			connected: false,
 			emptyChat: this.trans('laravelchat.empty_chat'),
 			showAllPanicMessages: this.trans('laravelchat.show_all_panic_messages'),
+			totalText: this.trans('laravelchat.total'),
 			totalUnread: '',
 			messages: []
 		}
@@ -107,6 +111,7 @@ export default {
 				.then(response => {
 					if(response.data.success) {
 						this.messages = response.data.panic_messages
+						this.totalUnreadFormated =  response.data.total_unread_formated;
 						this.totalUnread =  response.data.total_unread;
 					}
 				})

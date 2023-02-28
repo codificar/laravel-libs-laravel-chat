@@ -4,6 +4,7 @@ namespace Codificar\Chat\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Codificar\Chat\Events\EventNewPanicMessageNotification;
 use Codificar\Chat\Http\Requests\AdminGetUserForChatRequest;
 use Codificar\Chat\Http\Requests\PanicSeenFormRequest;
 use Codificar\Chat\Http\Requests\SendBulkMessageRequest;
@@ -13,10 +14,8 @@ use Codificar\Chat\Http\Utils\Helper;
 use Codificar\Chat\Jobs\SendBulkMessageJob;
 use Codificar\Chat\Repositories\MessageRepository;
 use Error;
-use Log;
-use Provider, DB, Auth, User, Settings, Admin, Profile;
+use Provider, DB, User, Settings, Admin, Profile;
 use stdClass;
-use URL;
 
 class AdminChatController extends Controller 
 {
@@ -216,13 +215,14 @@ class AdminChatController extends Controller
     }
 
     /**
-     * SEt panic message to is seen and redirect to report panic messages
+     * Set panic message to is seen and redirect to report panic messages
+     * @param PanicSeenFormRequest $request
      * @return RedirectResponse
      */
     public function adminPanicSee(PanicSeenFormRequest $request)
     {
         $request->panic->setSeen();
-
+        event(new EventNewPanicMessageNotification());
         return redirect()->route('libPanicReport');
 
     }

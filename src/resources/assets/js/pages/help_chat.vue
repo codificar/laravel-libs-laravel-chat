@@ -98,7 +98,7 @@ export default {
 		const broadcaster = 'socket.io';
 
 		const host = this.echoHost || window.location.hostname;
-		const port = this.echoPort || 6001
+		const port = this.laravel_echo_port || 6001
 		// Abre a conexão
 		if(!window.Echo) {
 			window.Echo = new Echo({
