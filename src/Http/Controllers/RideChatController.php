@@ -61,8 +61,6 @@ class RideChatController extends Controller
 			$institution = null;
 		}
 		
-		$mapsApiKey = Settings::getGoogleMapsApiKey();
-		
 		$viewData = [
 			"environment" => "admin",
 			"request" => $request,
@@ -73,7 +71,6 @@ class RideChatController extends Controller
 				'image' => \Theme::getLogoUrl()
 			],
 			"institution" => $institution,
-			"maps_api_key" => $mapsApiKey,
 		];
 
 		return view('chat::chat', $viewData);
@@ -102,15 +99,12 @@ class RideChatController extends Controller
 
 		$requestPoints = RequestPoint::whereRequestId($request->id)->get();
 
-		$mapsApiKey = Settings::getGoogleMapsApiKey();
-
 		$viewData = [
 			"environment" => "user",
 			"request" => $request,
 			"requestPoints" => $requestPoints,
 			"user" => $user,
 			"institution" => $institution,
-			"maps_api_key" => $mapsApiKey,
 		];
 
 		return view('chat::chat', $viewData);
@@ -140,8 +134,6 @@ class RideChatController extends Controller
 		} else {
 			$institution = "";
 		}
-
-		$mapsApiKey = Settings::getGoogleMapsApiKey();
 		
 		$viewData = [
 			"environment" => "provider",
@@ -149,7 +141,6 @@ class RideChatController extends Controller
 			"requestPoints" => $requestPoints,
 			"user" => $provider,
 			"institution" => $institution,
-			"maps_api_key" => $mapsApiKey,
 		];
 
 		return view('chat::chat', $viewData);
@@ -209,8 +200,6 @@ class RideChatController extends Controller
 			if ($conversation) {
 					$newConversation = null;
 			}
-			
-			$mapsApiKey = Settings::getGoogleMapsApiKey();
 
 			return view('chat::chat', [
 				'environment' => 'corp',
@@ -220,7 +209,6 @@ class RideChatController extends Controller
 				"institution" => $institution,
 				'ledger_id' => $ledger ? $ledger->id : null,
 				'request_id' => $ride ? $ride->id : null,
-				"maps_api_key" => $mapsApiKey,
 				'new_conversation' => $newConversation,
 				'conversation_id' => $conversation ? $conversation->id : null
 			]);

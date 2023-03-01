@@ -64,7 +64,6 @@ class RequestHelpController extends Controller
                     'name' => $userHelped->full_name,
                     'image' => $userHelped->picture
                 ],
-                "maps_api_key" => Settings::getGoogleMapsApiKey(),
                 'request' => Requests::find($conversation->request_id),
                 'messages' => $conversation->messages->toArray(),
                 'admin' => [

@@ -9,7 +9,6 @@
 			request = "{{ json_encode($request) }}"
 			request-points = "{{ json_encode($requestPoints) }}"
 			user = "{{ json_encode($user) }}"
-			maps-api-key="{{$maps_api_key}}"
 			laravel_echo_port = "{{ env('LARAVEL_ECHO_PORT', 6001) }}"
 			currency-symbol=""
 			logo = "{{Theme::getLogoUrl()}}"

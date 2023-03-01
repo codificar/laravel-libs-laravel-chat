@@ -9,7 +9,6 @@ export default {
         'RequestPoints',
         'User',
         'Institution',
-        'mapsApiKey',
         'logo',
         'currencySymbol',
         'help',
