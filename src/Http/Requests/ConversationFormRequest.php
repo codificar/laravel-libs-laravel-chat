@@ -11,6 +11,10 @@ class ConversationFormRequest extends FormRequest
 	private const SEGMENT_ADMIN 		= 3;
 	private const SEGMENT_CHAT 			= 4;
 	private const SEGMENT_CONVERSATION 	= 5;
+
+	private const ADMIN 	= 'admin';
+	private const CORP 		= 'corp';
+	private const PROVIDER 	= 'provider';
 	/**
      * Determine if the user is authorized to make this request.
      *
@@ -52,16 +56,21 @@ class ConversationFormRequest extends FormRequest
 		]);
 	}
 
+	/**
+	 * Get ledger id by provider, admin or corp
+	 * @param string $senderType
+	 * @return int|null $ledgerId
+	 */
 	private function getLedgerId($senderType)
 	{
 		$ledgerId = null;
 		
 		switch ($senderType) {
-			case 'provider':
+			case self::PROVIDER:
 				$ledgerId = $this->provider->ledger->id;
 				break;
-			case 'admin':
-			case 'corp':
+			case self::ADMIN:
+			case self::CORP:
 				$ride = \Requests::find($this->request_id);			
 				if($ride) {
 					$this->user = $ride->user;
