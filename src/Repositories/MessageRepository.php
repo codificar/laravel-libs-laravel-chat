@@ -2,9 +2,8 @@
 
 namespace Codificar\Chat\Repositories;
 
-use Carbon\Carbon;
-use Codificar\Chat\Models\RequestHelp;
 use Codificar\Chat\Interfaces\MessageRepositoryInterface;
+use Codificar\Chat\Models\RequestHelp;
 use Codificar\Chat\Models\Messages;
 
 class MessageRepository implements MessageRepositoryInterface
@@ -70,32 +69,6 @@ class MessageRepository implements MessageRepositoryInterface
             'messages' => $query->limit(5)->groupBy('id')->get()
         );
 	} 
-    
-    /**
-     * Get all messages panic todat
-     * @return array
-     */
-    public function getAllMessagesPanicToday(): array
-    {
-        $query = \Codificar\Panic\Models\Panic::select(
-            [
-                'panic.id', 
-                \DB::raw('CONCAT(u.first_name, " ",  u.last_name) as username'), 
-                \DB::raw('date_format(panic.created_at, "%d/%m/%Y %h:%m:%s") AS datetime'), 
-                'panic.history as message',
-                'panic.request_id as request_id'
-            ])
-            ->leftJoin('request as r', 'panic.request_id', '=', 'r.id')
-            ->leftJoin('user as u', 'r.user_id', '=', 'u.id')
-            ->where(['panic.is_seen' => 0])            
-            ->whereBetween('panic.created_at', [Carbon::today()->toDateTimeString(), Carbon::tomorrow()->toDateTimeString()])
-            ->groupBy('id')
-            ->orderBy('panic.created_at', 'desc');
-        return array(
-            'total_unread' => $query->get()->count(),
-            'messages' => $query->limit(5)->get()
-        );
-    }
 
     /**
      * set al messages as read by conversation and/or user

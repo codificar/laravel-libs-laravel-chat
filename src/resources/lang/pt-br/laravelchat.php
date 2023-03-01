@@ -48,7 +48,6 @@ return [
     "loading_chat" => "Carregando chat...",
     "name_not_found" => "Nome não encontrado",
     "empty_chat" => "Caixa de mensagens vazia!",
-    "show_all_panic_messages" => "Ver todas mensagens de pânico",
     "show_all_help_messages" => "Ver todos pedidos de ajuda",
     "total" => "total"
 

@@ -10,11 +10,6 @@ interface MessageRepositoryInterface
 	 */
 	public function getAllMessagesHelpUnread(): array;
 	/**
-	 * Get all messages panic today
-	 * @return array
-	 */
-	public function getAllMessagesPanicToday(): array;
-	/**
 	 * Get request help message by id 
 	 * @param int $requestHelpId
 	 * @return array
