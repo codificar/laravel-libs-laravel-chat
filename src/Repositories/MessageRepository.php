@@ -2,11 +2,10 @@
 
 namespace Codificar\Chat\Repositories;
 
-use Codificar\Chat\Interfaces\MessageRepositoryInterface;
 use Codificar\Chat\Models\RequestHelp;
 use Codificar\Chat\Models\Messages;
 
-class MessageRepository implements MessageRepositoryInterface
+class MessageRepository
 {
     /**
      * Get All messages help unread
