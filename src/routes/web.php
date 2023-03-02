@@ -1,19 +1,18 @@
 <?php
 
 Route::group(array('namespace' => 'Codificar\Chat\Http\Controllers'), function () {
-
     Route::get('/admin/libs/chat/{request_id}', [
-        'as' => 'adminRequestChat', 
+        'as' => 'adminRequestChat',
         'uses' => 'RideChatController@adminRequestChat'
     ])->middleware(['talk:web', 'auth.admin']);
 
     Route::get('/user/libs/chat/{request_id}', [
-        'as' => 'userRequestChat', 
+        'as' => 'userRequestChat',
         'uses' => 'RideChatController@userRequestChat'
     ])->middleware(['auth.user', 'talk:clients']);
 
     Route::get('/corp/requests/chat/{request_id}', [
-        'as' => 'corpRequestChat', 
+        'as' => 'corpRequestChat',
         'uses' => 'RideChatController@corpRequestChat'
     ])->middleware(['talk:web', 'auth.corp_admin']);
 
@@ -22,15 +21,13 @@ Route::group(array('namespace' => 'Codificar\Chat\Http\Controllers'), function (
 
     ///Route chatbot
     Route::get('/user/libs/chat/{request_id}', [
-        'as' => 'userRequestChatBot', 
+        'as' => 'userRequestChatBot',
         'uses' => 'RideChatController@userRequestChat'
     ])->middleware(['talk:clients']);
 
 
     Route::group(['prefix' => 'api/libs/'], function () {
-
         Route::group(['middleware' => 'auth.provider_api', 'prefix' => 'provider/chat'], function () {
-
             Route::post('send', 'RideChatController@sendMessage');
             Route::get('conversation', "RideChatController@getConversation");
             Route::get('messages', "RideChatController@getMessages");
@@ -38,7 +35,6 @@ Route::group(array('namespace' => 'Codificar\Chat\Http\Controllers'), function (
         });
 
         Route::group(['middleware' => 'auth.user_api', 'prefix' => 'user/chat'], function () {
-
             Route::post('send', 'RideChatController@sendMessage');
             Route::get('conversation', "RideChatController@getConversation");
             Route::get('messages', "RideChatController@getMessages");
@@ -46,7 +42,6 @@ Route::group(array('namespace' => 'Codificar\Chat\Http\Controllers'), function (
         });
 
         Route::group([ 'prefix' => 'admin/chat'], function () {
-
             Route::post('send', 'RideChatController@sendMessage');
             Route::get('conversation', "RideChatController@getConversation");
             Route::get('messages', "RideChatController@getMessages");
@@ -59,7 +54,6 @@ Route::group(array('namespace' => 'Codificar\Chat\Http\Controllers'), function (
     ])->middleware(['auth.admin']);
 
     Route::group(array('middleware' => 'auth.admin'), function () {
-
         Route::get('/admin/libs/help_report', 'RequestHelpController@renderReportPage');
         Route::get('/api/libs/help_list', 'RequestHelpController@fetch');
         Route::get('/admin/libs/help/{help_id}', 'RequestHelpController@adminHelpChat');
@@ -88,10 +82,10 @@ Route::group(array('namespace' => 'Codificar\Chat\Http\Controllers'), function (
     Route::get('/corp/lib/chat/{id?}', 'DirectChatController@renderDirectChat');
 
     //'middleware' => 'auth.admin',
-    Route::group(['prefix' => '/admin/lib'], function() {
+    Route::group(['prefix' => '/admin/lib'], function () {
         Route::get('/chat', 'AdminChatController@renderAdminChat');
         Route::get('/canonical_messages', 'CanonicalMessagesController@renderCanonicalMessages');
-    
+
         Route::get('/api/canonical_messages', 'CanonicalMessagesController@getMessages');
         Route::post('/api/save_canonical', 'CanonicalMessagesController@saveMessage');
         Route::get('/api/get_user', 'AdminChatController@getUserForChat');
@@ -104,7 +98,6 @@ Route::group(array('namespace' => 'Codificar\Chat\Http\Controllers'), function (
  * Rota para permitir utilizar arquivos de traducao do laravel (dessa lib) no vue js
  */
 Route::get('/chat/lang.trans/{file}', function () {
-    
     app('debugbar')->disable();
 
     $fileNames = explode(',', Request::segment(3));
@@ -121,6 +114,4 @@ Route::get('/chat/lang.trans/{file}', function () {
 
     return response('window.lang = ' . json_encode($strings) . ';')
             ->header('Content-Type', 'text/javascript');
-    
 });
-
