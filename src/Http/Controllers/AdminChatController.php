@@ -6,11 +6,12 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Codificar\Chat\Http\Requests\AdminGetUserForChatRequest;
 use Codificar\Chat\Http\Requests\SendBulkMessageRequest;
+use Codificar\Chat\Http\Resources\MessagesHelpUnreadResource;
 use Codificar\Chat\Http\Utils\Helper;
 use Codificar\Chat\Jobs\SendBulkMessageJob;
+use Codificar\Chat\Repositories\MessageRepository;
 use Error;
-use Log;
-use Provider, DB, Auth, User, Settings, Admin, Profile;
+use Provider, DB, User, Settings, Admin, Profile;
 use stdClass;
 
 class AdminChatController extends Controller 
@@ -50,23 +51,25 @@ class AdminChatController extends Controller
      * 
      * @return view
      */
-    public function renderAdminChat()
+    public function renderAdminChat(Request $request)
     {
-        $user = Auth::guard('web')->user($id = null);
-
-        if (!$user)
-            return \Redirect::to("/admin/login");
-
-        $ledger = Helper::getLedger('admin', $user->id);
-
-        return view('chat::direct_chat', [
-            'environment' => 'admin',
-            'user' => $user,
-            'ledger_id' => $ledger ? $ledger->id : null,
-            'user_id' => $id,
-            'new_conversation' => null,
-            'conversation_id' => $id
-        ]);
+        try {
+            $id = $request->id;
+            $user = $request->user;
+            $ledger = Helper::getLedger('admin', $user->id);
+    
+            return view('chat::direct_chat', [
+                'environment' => 'admin',
+                'user' => $user,
+                'ledger_id' => $ledger ? $ledger->id : null,
+                'user_id' => $id,
+                'new_conversation' => null,
+                'conversation_id' => $id
+            ]);
+        } catch (\Exception $e) {
+            \Log::info('AdminChatController > renderAdminChat > error: ' . $e->getMessage() . $e->getTraceAsString());
+            return new \Exception($e->getMessage());
+        }
     }
 
     /**
@@ -75,13 +78,8 @@ class AdminChatController extends Controller
      * @return view
      */
     public function renderChatSettings()
-    {
-        $user = Auth::guard('web')->user($id = null);
-        
-        if (!$user)
-            return \Redirect::to("/admin/login");
-        
-        $admins = Admin::whereType('admin')->select('id', 'username')->get();
+    {   
+        $admins = \Admin::whereType('admin')->select('id', 'username')->get();
         $defaultAdmin =  $this->getDefaultAdminChat();
 
         return view('chat::chat_settings', [
@@ -173,8 +171,7 @@ class AdminChatController extends Controller
             }
         } catch (Error $e) {
             $admin = null;
-            Log::error('Error while getting default admin chat');
-            Log::error($e->getMessage());
+            \Log::info('AdminChatController > getDefaultAdminChat > error: ' . $e->getMessage() . $e->getTraceAsString());
         }
 
         if (!$admin)
@@ -192,5 +189,15 @@ class AdminChatController extends Controller
             return $admin->id;
         }
         else return null;
+    }
+
+    /**
+     * Get all help messages notification
+     * 
+     * @return Json
+     */
+    public function getHelpMessagesNotification(MessageRepository $message) 
+    {
+        return new MessagesHelpUnreadResource($message->getAllMessagesHelpUnread());
     }
 }

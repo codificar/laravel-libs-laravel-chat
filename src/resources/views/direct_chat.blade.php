@@ -21,6 +21,7 @@
 @endswitch
 @extends('layout'.$layout)
 
+
 @section('content')
 	<div class='chat_lib2' style="width: 99%;">
 		<directchat
@@ -28,6 +29,7 @@
 			ledger="{{ $ledger_id }}"
 			:newconversation="{{ json_encode($new_conversation) }}"
 			conversationid="{{ $conversation_id }}"
+			request_id="{{ isset($request_id) ? $request_id : null}}"
 			:trans="{{ json_encode(trans('laravelchat::laravelchat')) }}"
 			environment="{{ $environment }}"
 			echoport="{{ env('LARAVEL_ECHO_PORT', 6001) }}"
@@ -36,8 +38,6 @@
 @stop
 
 @section('javascripts')
-	<script src="/chat/lang.trans/laravelchat"> </script>
-	@if ($environment != 'corp') 
-		<script src="{{ asset('vendor/codificar/chat/chat.vue.js') }}"> </script> 
-	@endif
+	<script src="/chat/lang.trans/laravelchat"></script>
+	<script src="{{ asset('vendor/codificar/chat/chat.vue.js') }}"></script> 
 @endsection

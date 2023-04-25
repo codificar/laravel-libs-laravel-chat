@@ -12,3 +12,4 @@ let mix = require('laravel-mix');
  */
 
 mix.js('src/resources/assets/js/chat.vue.js', 'public/js').vue();
+mix.js('src/resources/assets/js/notificationChat.vue.js', 'public/js').vue();

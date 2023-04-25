@@ -59,7 +59,7 @@ class SendMessageQuickReplyJob implements ShouldQueue
 
 			SendNotificationJob::dispatch($this->device_token, $this->message);
 		} catch (Exception $e) {
-			Log::error($e);
+			Log::error($e->getMessage() . $e->getTraceAsString());
 		}
 	}
 
@@ -69,18 +69,12 @@ class SendMessageQuickReplyJob implements ShouldQueue
 	public function insertConversationId($quickReply, $conversation_id)
 	{
 		try {
-			
 			foreach($quickReply['values'] as $key => $qr ) {
-				\Log::info($quickReply['values'][$key]);
 				$quickReply['values'][$key]['conversation'] = $conversation_id;
 			} 
-			\Log::info($quickReply);
-			
-
 			return $quickReply;
 		} catch (\Throwable $th) {
-			\Log::error($th->getMessage());
-			//return $th->getMessage();
+			\Log::error($th->getMessage() . $th->getTraceAsString());
 		}
 	}
 }

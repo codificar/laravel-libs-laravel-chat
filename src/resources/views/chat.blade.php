@@ -29,7 +29,6 @@
 			request-points = "{{ json_encode($requestPoints) }}"
 			user = "{{ json_encode($user) }}"
 			institution = "{{ json_encode($institution) }}"
-			maps-api-key="{{$maps_api_key}}"
 			admin="{{ isset($userAdmin) ? json_encode($userAdmin) : '' }}"
 			laravel_echo_port = "{{ env('LARAVEL_ECHO_PORT', 6001) }}"
 			currency-symbol=""

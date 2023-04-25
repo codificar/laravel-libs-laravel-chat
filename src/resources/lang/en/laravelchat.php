@@ -41,5 +41,11 @@ return [
     'canonical_messages' => 'Canonical messages',
     'message' => 'Message',
     'save' => 'Save',
-    'code' => 'Code'
+    'code' => 'Code',
+    "request_delivery_package" => "Hello provider, the customer :name has the delivery package nº :id available for you.",
+    "init_chat" => "Chat not yet started. Send a message to get started.",
+    "new_message" => "New Message",
+    "loading_chat" => "Loading chat...",
+    "name_not_found" => "Name not found",
+    "total" => "total"
 ];

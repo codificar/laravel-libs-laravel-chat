@@ -30,8 +30,7 @@ class MessageSeenFormRequest extends FormRequest
 	public function rules()
 	{
 		return [
-			'message_id' => 'required|integer',
-			'message' => 'required'
+			'message_id' => 'required|integer'
 		];
 	}
 
@@ -43,24 +42,28 @@ class MessageSeenFormRequest extends FormRequest
 	protected function prepareForValidation()
 	{
 		$message = Message::find($this->message_id);
-		$ledger = null;
+		$ledgerId = null;
+		$provider= null;
+		$user= null;
 
 		if(isset($this->provider)) {
 			$ledger = Ledger::where('provider_id', $this->provider->id)->first();
-			$id = $ledger->id;
-		} else if($this->user_id) {
-			$ledger = Ledger::where('user_id', $this->user_id)->first();
-			$id = $ledger->id;
+			$ledgerId = $ledger->id;
+			$provider = $ledger->provider;
 		} else {
-			$ledger = Ledger::where('user_id', $this->user->id)->first();
-			$id = $ledger->id;
+			$ledger = Ledger::where('user_id', $this->user_id)->first();
+			$ledgerId = $ledger->id;
+			$user = $ledger->user;
 		}
 
-		if($message and ($message->conversation->user_one == $id or $message->conversation->user_two == $id)) {
+		if($message and $ledgerId and ($message->conversation->user_one == $ledgerId or $message->conversation->user_two == $ledgerId)) {
 			$cRequest = ConversationRequest::getByConversationId($message->conversation_id);
 			$this->merge([
 				'message' => $message,
-				'u_id' => $id,
+				'ledger' => $ledger,
+				'provider' => $provider,
+				'user' => $user,
+				'user_id' => $ledgerId,
 				'request_id' => $cRequest->request_id
 			]);
 		}

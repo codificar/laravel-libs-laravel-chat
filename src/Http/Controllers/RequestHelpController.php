@@ -5,15 +5,17 @@ namespace Codificar\Chat\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Codificar\Chat\Events\EventConversation;
+use Codificar\Chat\Events\EventNewHelpMessageNotification;
+use Codificar\Chat\Events\EventReadMessage;
 use Codificar\Chat\Http\Requests\HelpChatMessageRequest;
 use Codificar\Chat\Http\Resources\RequestHelpListResource;
 use Codificar\Chat\Models\RequestHelp;
-use Ledger, Admin, Auth, Redirect, Settings, Requests;
-use App\Models\RequestPoint;
+use Ledger, Redirect, Settings, Requests;
 use Codificar\Chat\Http\Requests\GetHelpChatMessageRequest;
 use Codificar\Chat\Http\Resources\ChatMessagesResource;
 use Codificar\Chat\Http\Utils\Helper;
-use Nahid\Talk\Conversations\Conversation;
+use Codificar\Chat\Models\Conversations;
+use Codificar\Chat\Repositories\MessageRepository;
 
 class RequestHelpController extends Controller
 {
@@ -29,50 +31,54 @@ class RequestHelpController extends Controller
     /**
      * Render admin help chat blade
      */
-    public function adminHelpChat($help_id)
+    public function adminHelpChat(Request $request, $helpId, MessageRepository $messageRepository)
     {
-        $admin = Admin::find(Auth::guard('web')->user()->id);
-		if (!$admin) {
-			return Redirect::to("/admin/home");
-		}
-		if ($admin->profile_id == 6){
-			abort(404);
-        }
-        
-        $conversation = Conversation::whereHelpId($help_id)->first();
+        try {
+            $admin = $request->user;
+            $conversation = Conversations::whereHelpId($helpId)->first();
+    
+            if (!$conversation) {
+                return Redirect::to("/admin/report_help");
+            }
+            
+            $adminLedger = Helper::getLedger('admin', $admin->id);
+            $conversation->user_two = $adminLedger->id;
+            $conversation->save();
+            
+            $userHelped = Helper::getUserTypeInstance($conversation->user_one);
+            
+            if($conversation->lastMessageUnread) {
+                $conversationId = $conversation->id;
+                $messageId = $conversation->lastMessageUnread->id;
+                $messageRepository->setMessagesAsSeen($conversationId, $messageId);
+                event(new EventReadMessage($messageId));
+            }
 
-        if (!$conversation) {
-            return Redirect::to("/admin/report_help");
+            return view('chat::help_chat', [
+                "environment" => "admin",
+                'requestPoints' => [],
+                'user' => [
+                    'id' => $userHelped->ledger_id,
+                    'user_id' => $userHelped->id,
+                    'token' => $userHelped->token,
+                    'name' => $userHelped->full_name,
+                    'image' => $userHelped->picture
+                ],
+                'request' => Requests::find($conversation->request_id),
+                'messages' => $conversation->messages->toArray(),
+                'admin' => [
+                    'id' => $adminLedger->id,
+                    'user_id' => $admin->id,
+                    'token' => $admin->remember_token,
+                    'name' => $admin->profile->name,
+                    'image' => \Theme::getLogoUrl()
+                ],
+                'conversation_id' => $conversation->id
+            ]);
+        } catch (\Exception $e) {
+            \Log::info('RequestHelpController > adminHelpChat > error: ' . $e->getMessage() . $e->getTraceAsString() );
+            return new \Exception($e->getMessage());
         }
-        
-        $adminLedger = Helper::getLedger('admin', $admin->id);
-        $conversation->user_two = $adminLedger->id;
-        $conversation->save();
-
-        $userHelped = Helper::getUserTypeInstance($conversation->user_one);
-        
-        return view('chat::help_chat', [
-            "environment" => "admin",
-            'requestPoints' => [],
-            'user' => [
-                'id' => $userHelped->ledger_id,
-                'user_id' => $userHelped->id,
-                'token' => $userHelped->token,
-                'name' => $userHelped->full_name,
-                'image' => $userHelped->picture
-            ],
-            "maps_api_key" => Settings::getGoogleMapsApiKey(),
-            'request' => Requests::find($conversation->request_id),
-            'messages' => $conversation->messages->toArray(),
-            'admin' => [
-                'id' => $adminLedger->id,
-                'user_id' => $admin->id,
-                'token' => $admin->remember_token,
-                'name' => $admin->profile->name,
-                'image' => \Theme::getLogoUrl()
-            ],
-            'convId' => $conversation->id
-        ]);
     }
 
     /**
@@ -120,6 +126,9 @@ class RequestHelpController extends Controller
         $message = \Talk::sendMessage($conversation->id, $request->message);
 
         event(new EventConversation($message->id));
+        if($conversation->help_id) {
+            event(new EventNewHelpMessageNotification($conversation->help_id));
+        }
 
         $receiver = Ledger::find($conversation->user_one);
 

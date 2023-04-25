@@ -16,9 +16,15 @@ class Helper {
      */
     public static function getLedger($type, $id)
     {
-        if ($type == 'corp')
-            $type = 'user';
+        if(!isset($id)|| $id <= 0) {
+            \Log::error("CHAT getLedger > Invalid Ledger ID: " . $type . "_id: " . $id);
+            return new \Exception('Invalid  ' . $type . '_id: ', 400);
+        }
 
+        if ($type == 'corp') {
+            $type = 'user';
+        }
+        
         $type = $type . '_id';
         return self::getOrCreateLedger($type, $id);
     }
@@ -165,10 +171,17 @@ class Helper {
     public static function filterDirectFetch($request)
     {
         if ($request->sender_type == 'corp') {
-            $conversations = Conversation::where('user_one', $request->sender_id)
-                ->orWhere('user_two', $request->sender_id)
-                ->with(['messages'])
-                ->orderBy('updated_at', 'desc');
+            if($request->request_id) {
+                $conversations = Conversation::where('request_id', $request->request_id)
+                    ->with(['messages'])
+                    ->orderBy('updated_at', 'desc');
+            } else {
+                $conversations = Conversation::where('user_one', $request->sender_id)
+                    ->orWhere('user_two', $request->sender_id)
+                    ->with(['messages'])
+                    ->orderBy('updated_at', 'desc');
+
+            }
 
         } else {
             $conversations = Conversation::whereRaw("request_id = 0 and (user_one = $request->sender_id or user_two = $request->sender_id)")
@@ -206,7 +219,7 @@ class Helper {
                 $message->save(); 
 			}
         } catch (\Throwable $th) {
-            \Log::error($th->getMessage());
+            \Log::error($th->getMessage() . $th->getTraceAsString());
         }
     }
 
