@@ -22,6 +22,7 @@ use Admin, Auth;
 use Codificar\Chat\Http\Resources\FilterConversationsResource;
 use Codificar\Chat\Http\Resources\ListConversationsForPanelResource;
 use Codificar\Chat\Http\Utils\Helper;
+use \Illuminate\Http\Request;
 use Location;
 
 class DirectChatController extends Controller
@@ -30,31 +31,29 @@ class DirectChatController extends Controller
      * Render chat screen
      * @return view
      */
-    public function renderDirectChat($id = null)
+    public function renderDirectChat(Request $request, $id = null)
     {
-        $user = Auth::guard('web_corp')->user();
-        $ledger = null;
-
-        if (!$user || !$user->AdminInstitution) {
-            $user = Auth::guard('web_corp')->user();
-
-            if (!$user)
-                return \Redirect::to("/corp/login");
+        try {
+            $user = $request->user;
+            $adminInstitution = $request->adminInstitution;
+    
+            $ledger = Helper::getLedger(
+                'corp', 
+                $adminInstitution->Institution->default_user_id
+            );
+            
+            return view('chat::direct_chat', [
+                'environment' => 'corp',
+                'user' => $user,
+                'ledger_id' => $ledger ? $ledger->id : null,
+                'user_id' => $id,
+                'new_conversation' => null,
+                'conversation_id' => $id
+            ]);
+        } catch (\Exception $e) {
+            \Log::info('DirectChatController > renderDirectChat > error: ' . $e->getMessage() . $e->getTraceAsString());
+            return new \Exception($e->getMessage());
         }
-
-        $ledger = Helper::getLedger(
-            'corp', 
-            $user->AdminInstitution->Institution->default_user_id
-        );
-        
-        return view('chat::direct_chat', [
-            'environment' => 'corp',
-            'user' => $user,
-            'ledger_id' => $ledger ? $ledger->id : null,
-            'user_id' => $id,
-            'new_conversation' => null,
-            'conversation_id' => $id
-        ]);
     }
 
     /**

@@ -30,15 +30,19 @@ class GetHelpChatMessageRequest extends FormRequest
     }
 
     protected function prepareForValidation() {
-        $senderType = strtolower(
-            get_class($this->userSystem)
-        );
-
-        $senderLedger = Helper::getLedger($senderType, $this->userSystem->id);
-        
-		$this->merge([
-			"sender_type" => $senderType,
-			"sender_id" => $senderLedger ? $senderLedger->id : null
-		]);
+        try {
+            $senderType = strtolower(
+                get_class($this->userSystem)
+            );
+    
+            $senderLedger = Helper::getLedger($senderType, $this->userSystem->id);
+            
+            $this->merge([
+                "sender_type" => $senderType,
+                "sender_id" => $senderLedger ? $senderLedger->id : null
+            ]);
+        } catch (\Exception $e) {
+            \Log::info('GetHelpChatMessageRequest > prepareForValidation > error: ' . $e->getMessage() . $e->getTraceAsString());
+        }
 	}
 }

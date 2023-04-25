@@ -43,31 +43,36 @@ class SendDirectRequest extends FormRequest
      * @return void
      */
     protected function prepareForValidation() {
-        $senderType = $this->userType;
-
-        $senderLedger = Helper::getLedger($senderType, $this->userSystem->id);
-        $receiver = null;
-        $receiverLedger = null;
-        $receiverName = '';
-        $receiverPicture = '';
-
-        $receiverLedger = Ledger::find($this->receiver);
-        $receiver = $receiverLedger ? Helper::getUserTypeInstance($receiverLedger->id) : null;
-
-        if ($receiver) {
-            $receiverName = $receiver->first_name . ' ' . $receiver->last_name;
-            $receiverPicture = $receiver->picture;
+        try {
+            $senderType = $this->userType;
+    
+            $senderLedger = Helper::getLedger($senderType, $this->userSystem->id);
+            $receiver = null;
+            $receiverLedger = null;
+            $receiverName = '';
+            $receiverPicture = '';
+    
+            $receiverLedger = Ledger::find($this->receiver);
+            $receiver = $receiverLedger ? Helper::getUserTypeInstance($receiverLedger->id) : null;
+    
+            if ($receiver) {
+                $receiverName = $receiver->first_name . ' ' . $receiver->last_name;
+                $receiverPicture = $receiver->picture;
+            }
+    
+            
+            $this->merge([
+                "sender_type" => $senderType,
+                "sender_id" => $senderLedger ? $senderLedger->id : null,
+                "senderLedger" => $senderLedger,
+                "ledger_receiver" => $receiverLedger,
+                "receiver_id" => $receiverLedger ? $receiverLedger->id : null,
+                "receiver_name" => $receiverName,
+                "receiver_picture" => $receiverPicture
+            ]);
+        } catch (\Exception $e) {
+            \Log::info('SendDirectRequest > prepareForValidation > error: ' . $e->getMessage() . $e->getTraceAsString());
         }
-
-        
-		$this->merge([
-			"sender_type" => $senderType,
-            "sender_id" => $senderLedger ? $senderLedger->id : null,
-            "ledger_receiver" => $receiverLedger,
-            "receiver_id" => $receiverLedger ? $receiverLedger->id : null,
-            "receiver_name" => $receiverName,
-            "receiver_picture" => $receiverPicture
-		]);
     }
     
     /**

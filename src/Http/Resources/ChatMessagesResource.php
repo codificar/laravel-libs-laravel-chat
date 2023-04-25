@@ -20,7 +20,10 @@ class ChatMessagesResource extends JsonResource
 			'success' => true,
 			'messages' => $messages,
 			'request_id' => $this["request_id"],
-			'user_ledger_id' => $this["user_id"]
+			'user_ledger_id' => $this["user_id"],
+			'conversation_id' => isset($this["conversation_id"]) && !empty($this["conversation_id"]) 
+				? $this["conversation_id"] 
+				: 0
 		];
 	}
 }

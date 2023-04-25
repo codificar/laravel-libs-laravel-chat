@@ -2,6 +2,7 @@
 
 namespace Codificar\Chat\Models;
 
+use Nahid\Talk\Conversations\Conversation;
 use Requests;
 
 class ConversationRequest extends \Eloquent
@@ -29,8 +30,8 @@ class ConversationRequest extends \Eloquent
 	 * @param string $message
 	 * @return Message
 	 */
-    public function sendMessage($receiverId, $message) {
-		$message = \Talk::sendMessageByUserId($receiverId, $message, $this->request_id, $this->is_customer_chat);
+    public function sendMessage($receiverId, $message, $requestId = null) {
+		$message = \Talk::sendMessageByUserId($receiverId, $message, $requestId, $this->is_customer_chat);
 		if(!$this->conversation_id) {
 			$this->conversation_id = $message->conversation_id;
 			$this->save();
@@ -44,11 +45,15 @@ class ConversationRequest extends \Eloquent
 	 * @param int $userId
 	 * @return ConversationRequest
 	 */
-	public static function findConversation($requestId, $userId, $is_customer_chat = 0) {
+	public static function findConversation($requestId, $userId, $is_customer_chat = 0, $conversationId = null) {
 		
 		$query = self::getQueryUser($userId);
-		$query->where('conversation_request.request_id', $requestId);
-		$query->where('conversation_request.is_customer_chat', $is_customer_chat);
+		if(isset($conversationId) && !empty($conversationId)) {
+			$query->where('conversation_request.conversation_id', $conversationId);
+		} else {
+			$query->where('conversation_request.request_id', $requestId)
+				->where('conversation_request.is_customer_chat', $is_customer_chat);
+		}
 
 		$convRequest = $query->first();
 		
@@ -67,14 +72,14 @@ class ConversationRequest extends \Eloquent
 	private static function getQueryUser($user_id) {
 		return self::select('conversation_request.*')
 				  ->where(function ($q) use ($user_id) {
-				$q->where('c.user_two', $user_id)
-				  ->orWhere('c.user_one', $user_id);
+						$q->where('c.user_two', $user_id)
+				  		->orWhere('c.user_one', $user_id);
 			})
 			->join('conversations as c', 'c.id', 'conversation_request.conversation_id');
 	}
 
     /**
-	 * Find or create a conversation request
+	 * Find a conversation request
 	 * @param int $request_id
 	 * @param int $sender
 	 * @return array 

@@ -1,3 +1,4 @@
 {
-    "/public/js/chat.vue.js": "/public/js/chat.vue.js"
+    "/public/js/chat.vue.js": "/public/js/chat.vue.js",
+    "/public/js/notificationChat.vue.js": "/public/js/notificationChat.vue.js"
 }

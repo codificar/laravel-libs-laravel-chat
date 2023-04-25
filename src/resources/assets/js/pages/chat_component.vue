@@ -8,23 +8,30 @@ import axios from 'axios';
 
 export default {
 	props: [
-		"User",
-		"laravel_echo_port",
-		"environment",
-		"channel",
-		"logo",
-		"admin"
+        'User',
+        'laravel_echo_port',
+        'request',
+        'environment',
+        'channel',
+        'logo',
+        'admin',
+        'conversationId'
 	],
 	data() {
 		return {
 			conversation_active: {
-				id: 0,
+				id: this.conversationId || 0,
 				request: {}
 			},
 			search_contact: "",
 			conversationArray: [],
 			messages: [],
-			adminUser: {}
+			adminUser: {},
+			isConnectedChat: true,
+			isConversation: true,
+			isLoadingChat: true,
+			scrollToMessage: false,
+			intervalConversation: null,
 		};
 	},
 	components: {
@@ -34,12 +41,26 @@ export default {
 		UserInput
 	},
 	methods: {
-		userSelected(conversation){
+		async userSelected(conversation){
 			this.conversation_active = conversation;
-			this.getMessages(conversation.id);
+			if(conversation && conversation.id != 0) {
+				await this.getMessages(conversation.id);
+			}
+			this.scrollToMessage = true;
 		},
-		sendMessage(data){
+		hideAlertNewMessage() {
+			this.scrollToMessage = false;
+			this.isNewMessage = false;
+		},
+		sendMessage(data) {
 			var vm = this, type = data.input_type == 'number'?'bid':'text';
+			vm.scrollToMessage = true;
+			vm.isConversation = true;
+
+			let conversationId = 0;
+			if(vm.conversation_active.id != 0) {
+			 	conversationId = vm.conversation_active.id;
+			}
 
 			axios.post(`/api/libs/${vm.environment}/chat/send`, {
 				token: vm.User.token,
@@ -48,32 +69,70 @@ export default {
 				request_id: vm.channel,
 				receiver_id: vm.conversation_active.user.id,
 				type: type,
+				conversation_id: conversationId,
 				message: type == 'text'?data.input_value:'',
 				bid: type == 'text'?'':data.input_value
-			})
-		},
-		subscribeToChannel(conversationId) {
-			if(conversationId == 0) return;
-			var vm = this;
-			window.Echo.channel('conversation.' + conversationId )
-			.listen('.readMessage', e => {
-				if(e.message.conversation_id == vm.conversation_active.id) {
-					vm.getMessages(e.message.conversation_id);
-				}
-			})
-			.listen('.newMessage', e => {
-				vm.getConversations();
-				if(e.message.conversation_id == vm.conversation_active.id) {
-					if(vm.messages.every(message => message.id != e.message.id))
-						vm.messages.push(e.message);
+			}).then(async response => {
+				if(response.data.success && response.data.conversation_id) {
+					vm.subscribeToChannel(response.data.conversation_id);
 				}
 			});
+		},
+		async subscribeToChannel(conversationId) {
+			var vm = this;
+
+			if(conversationId == 0) return;
+
+			await window.Echo.leave('conversation.' + conversationId );
+			await window.Echo.channel('conversation.' + conversationId )
+				.listen('.readMessage', e => {
+					vm.isConnectedChat = true;
+					const isActiveConversation = e.message.conversation_id == vm.conversation_active.id
+					if(isActiveConversation) {
+						vm.getMessages(e.message.conversation_id);
+					}
+				})
+				.listen('.newMessage', e => {
+					vm.isConnectedChat = true;
+					vm.isLoadingChat = false;
+                    vm.isNewMessage = false;
+                    vm.getConversations();
+					
+					const isActiveConversation = e.message.conversation_id == vm.conversation_active.id
+					if(isActiveConversation) {
+                        const existMessage = vm.messages.some(m => m.id == e.message.id);
+						if(!existMessage) {
+							vm.messages.push(e.message);
+                            const isAdmin = e.message.admin_id;
+                            const isUser = !isAdmin && !e.message.is_provider == 1;
+                            const isProvider = !isUser && e.message.is_provider == 1;
+                            
+							if(e.message.is_seen == 0 && (isProvider || isUser) ) {
+                                //Alert new message
+                                vm.isNewMessage = true;
+                            }
+
+							if(isAdmin) {
+								vm.scrollToMessage = true;
+							}
+						}
+					}
+				}).error((error) =>{
+					console.error('Error Tryng connect/listen socket:', error);
+				});
 		},
 		subscribeToChannelRequest(requestId) {
 			var vm = this;
-			window.Echo.channel('request.' + requestId).listen('.newConversation', e => {
-				vm.getConversations();
-			});
+
+            if (requestId == 0) return;
+
+			window.Echo.leave('request.' + requestId);
+			window.Echo.channel('request.' + requestId)
+				.listen('.newConversation', e => {
+					vm.getConversations();
+				}).error((error) =>{
+                console.error('Error Tryng connect/listen socket:', error);
+            });
 		},
 		getConversations() {
 			var vm = this;
@@ -89,27 +148,69 @@ export default {
 				vm.conversationArray.forEach(e => {
 					vm.subscribeToChannel(e.id);
 				});
-				if(vm.conversation_active.id == 0 && vm.conversationArray.length > 0) {
-					if(vm.conversationArray[0].id == 0) {
-						vm.subscribeToChannelRequest(vm.channel);
+
+				if(vm.conversation_active.id == 0) {
+					if(vm.conversationArray.length > 0) {
+						vm.isConversation = true;
+						vm.isLoadingChat = false;
+						vm.conversation_active = vm.conversationArray[0];
+						if(vm.conversation_active.id == 0) {
+							vm.subscribeToChannelRequest(vm.channel);
+						}
+						vm.userSelected(vm.conversationArray[0]);
 					}
-					vm.userSelected(vm.conversationArray[0]);
+				}
+
+			});
+		},
+		async getMessages(conversationId) {
+			var vm = this;
+            let token = vm.User.token;
+            let userId = null;
+            let providerId = null;
+            
+            if(vm.request.user_id) {
+                userId = vm.request.user_id;
+            } else if(vm.User.user_id) {
+                userId = vm.User.user_id;
+            } else if(vm.User.id) {
+                userId = vm.User.id;
+            }
+
+            if(vm.request.confirmed_provider) {
+                providerId = vm.request.confirmed_provider.id;
+            } else if(vm.User.provider_id) {
+                providerId = vm.User.provider_id;
+            }
+
+			await axios.get(`/api/libs/${vm.environment}/chat/messages`, {
+				params: {
+					token: token,
+					user_id: userId,
+					provider_id: providerId,
+					conversation_id: conversationId,
+					request_id: vm.channel,
+					limit: 10,
+				}
+			}).then(response => {
+				if(response.data.messages && response.data.messages.length > 0) {
+					vm.isConversation = true;
+					vm.isLoadingChat = false;
+					vm.messages = response.data.messages;
+				}
+				if(response.data.conversation_id) {
+					vm.subscribeToChannel(response.data.conversation_id);
 				}
 			});
 		},
-		getMessages(conversationId) {
+		readMessages() {
 			var vm = this;
-			axios.get(`/api/libs/${vm.environment}/chat/messages`, {
-				params: {
-					token: vm.User.token,
-					user_id: vm.User.user_id,
-					provider_id: vm.User.provider_id,
-					conversation_id: conversationId,
-					limit: 10
+			vm.isNewMessage = false;
+			vm.messages.forEach(async (message, key) =>{
+				if(message.is_seen == 0 && message.is_provider == 1) {
+					vm.messages[key].is_seen = 1;
+					await vm.setAsSeen(message.id);
 				}
-			}).then(response => {
-				if(response.data.messages)
-					vm.messages = response.data.messages;
 			});
 		},
 		setAsSeen(messageId) {
@@ -122,7 +223,7 @@ export default {
 			});
 		},
 		hasUnseen(){
-			return this.messages.some(e => { return !e.is_seen && e.user_id != this.User.id });
+			return this.messages.some(e => { return !e.is_seen && e.is_provider });
 		},
 		errorImage(obj) {
 			obj.src = this.logo;
@@ -132,24 +233,58 @@ export default {
 		messages: function () {
 			if(this.hasUnseen()){
 				var lastMessage = this.messages[this.messages.length-1];
-				this.setAsSeen(lastMessage.id);
+				//this.setAsSeen(lastMessage.id);
+			}
+		},
+		conversation_active: function() {
+			const vm = this;
+			const isConversationId = vm.conversation_active 
+				&& parseInt(vm.conversation_active.id) !== 0;
+
+			if(isConversationId) {
+				vm.isConversation = true;
+				vm.isLoadingChat = false;
+				clearInterval(vm.intervalConversation);
+			} else {
+				vm.isConversation = false;
 			}
 		}
 	},
 	mounted() {
-		window.Echo = new Echo({
-			broadcaster: 'socket.io',
-			client: require('socket.io-client'),
-			host: window.location.hostname + ":" + this.laravel_echo_port
-		});
+		const vm = this;
+		// Define o client e broadcaster
+		const client = require('socket.io-client');
+		const broadcaster = 'socket.io';
 
-		window.io = require('socket.io-client');
+		const host = this.echoHost || window.location.hostname;
+		const port = this.laravel_echo_port || 6001
+		// Abre a conexão
+		if(!window.Echo) {
+			window.Echo = new Echo({
+				broadcaster: broadcaster,
+				client: client,
+				host: `${host}:${port}`
+			});
+		}
+
+		if(window.io) {
+			window.io = client;
+		}
 		
 		if(this.environment != 'provider') {
 			this.subscribeToChannelRequest(this.channel);
 		}
 		//Obtém as conversas
 		this.getConversations();
+
+		// inicia o interval para pegar o conversation id
+		vm.intervalConversation = setInterval(() => {
+			const isConversationId = vm.conversation_active 
+				&& parseInt(vm.conversation_active.id) !== 0;
+			if(!isConversationId) {
+				this.getConversations();
+			}
+		}, 5000);
 	},
 	created() {
 		if (this.admin) {
@@ -165,6 +300,7 @@ export default {
 				@errorImage="errorImage" 
 				:user="conversation_active.user" 
 				:info="conversation_active.request.product"
+				:isConnectedChat="isConnectedChat"
 			/>
 			<MessageList
 				@errorImage="errorImage"
@@ -172,8 +308,14 @@ export default {
 				:user-one="User"
 				:user-two="conversation_active.user"
 				:admin="adminUser"
+				:read-messages="readMessages"
 				ref="messageList"
 				:logo="logo"
+				:is-new-message="isNewMessage"
+				:is-conversation="isConversation"
+				:is-loading-chat="isLoadingChat"
+				:scroll-to-message="scrollToMessage"
+				:hide-alert-new-message="hideAlertNewMessage"
 			/>
 			<UserInput 
 				@userInputMessage="sendMessage" 
@@ -207,9 +349,6 @@ export default {
 .chat-img-title{
 	display: inline-block;
 	width: 65px;
-	img {
-		width: 60px;
-	}
 }
 .box-title{
 	display: inline-block;

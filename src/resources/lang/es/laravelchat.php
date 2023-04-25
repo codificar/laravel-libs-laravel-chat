@@ -41,5 +41,11 @@ return [
     'canonical_messages' => 'Mensagens canonicas',
     'message' => 'Mensagem',
     'save' => 'Salvar',
-    'code' => 'Código'
+    'code' => 'Código',
+    "request_delivery_package" => "Hola proveedor, el cliente :nombre tiene a su disposición el paquete de entrega nº :id.",
+    "init_chat" => "El chat aún no se ha iniciado. Envía un mensaje para comenzar.",
+    "new_message" => "Nuevo mensaje",
+    "loading_chat" => "Cargando charla...",
+    "name_not_found" => "nombre no encontrado",
+    "total" => "total"
 ];
