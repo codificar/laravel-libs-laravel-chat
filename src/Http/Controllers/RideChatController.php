@@ -236,6 +236,14 @@ class RideChatController extends Controller
 
 			$message = $convRequest->sendMessage($request->receiver_id, $request->message, $request->request_id);
 			
+			if(!$message) {
+				return response()->json([
+					"success" => false, 
+					"conversation_id" => null,
+					"message" => null
+				]);
+			}
+			
 			if ($isNewConversation) {
 				event(new EventNewConversation($ride->id, $message->conversation_id, $request->receiver_id));
 			}

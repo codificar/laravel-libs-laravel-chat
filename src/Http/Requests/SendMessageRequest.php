@@ -78,7 +78,7 @@ class SendMessageRequest extends FormRequest
 					$provider = $ledgerReceiver->id;
 				}
 
-				\Talk::setAuthUserId($sender_id);
+				\Nahid\Talk\Talk::setAuthUserId($sender_id);
 
 				$this->merge([
 					"ride" => $ride,
