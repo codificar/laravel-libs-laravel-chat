@@ -30,13 +30,23 @@ class ConversationRequest extends \Eloquent
 	 * @param string $message
 	 * @return Message
 	 */
-    public function sendMessage($receiverId, $message, $requestId = null) {
-		$message = \Talk::sendMessageByUserId($receiverId, $message, $requestId, $this->is_customer_chat);
-		if($message && !$this->conversation_id) {
-			$this->conversation_id = $message->conversation_id;
-			$this->save();
+    public function sendMessage($receiverId, $message, $requestId = null, $senderId = null) {
+
+		try {
+			if($senderId) {
+				\Talk::setAuthUserId($senderId);
+			}
+
+			$message = \Talk::sendMessageByUserId($receiverId, $message, $requestId, $this->is_customer_chat);
+			if($message && !$this->conversation_id) {
+				$this->conversation_id = $message->conversation_id;
+				$this->save();
+			}
+			return $message;
+		} catch(\Exception $e) {
+			\Log::error($e->getMessage() . $e->getTraceAsString());
+			return null;
 		}
-		return $message;
 	}
     
     /**

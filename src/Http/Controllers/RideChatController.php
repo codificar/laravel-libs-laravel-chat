@@ -234,7 +234,7 @@ class RideChatController extends Controller
 			$ride = Requests::find($request->request_id);
 			$isNewConversation = $convRequest->conversation_id == 0;
 
-			$message = $convRequest->sendMessage($request->receiver_id, $request->message, $request->request_id);
+			$message = $convRequest->sendMessage($request->receiver_id, $request->message, $request->request_id, $request->sender_id);
 			
 			if(!$message) {
 				return response()->json([
