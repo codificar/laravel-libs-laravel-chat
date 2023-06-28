@@ -29,6 +29,8 @@ class MessageRepository
             ->leftJoin('provider as p', 'p.id', '=', 'request_help.provider_id')
             ->leftJoin('user as u', 'u.id', '=', 'request_help.user_id')
             ->where(['m.is_seen' => 0])
+            ->whereNull('u.deleted_at')
+            ->whereNull('p.deleted_at')
             ->orderBy('request_help.id', 'desc');
 
         return array(
@@ -61,6 +63,8 @@ class MessageRepository
             ->leftJoin('user as u', 'u.id', '=', 'request_help.user_id')
             ->where(['request_help.id' => $requestHelpId])
             ->where(['m.is_seen' => 0])
+            ->whereNull('u.deleted_at')
+            ->whereNull('p.deleted_at')
             ->orderBy('request_help.id', 'desc');
 
         return array(

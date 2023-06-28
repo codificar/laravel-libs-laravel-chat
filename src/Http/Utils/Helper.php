@@ -62,25 +62,22 @@ class Helper {
     {
         $ledger = Ledger::find($id);
 
-        if ($ledger && $ledger->user_id) {
-            $data = User::find($ledger->user_id);
-            $data->ledger_id = $id;
-            $data->full_name = $data->first_name . ' ' . $data->last_name;
-            $data->user_type = 'user';
+        if ($ledger && $ledger->user_id && ($user = User::find($ledger->user_id))) {
+            $user->ledger_id = $id;
+            $user->full_name = $user->first_name . ' ' . $user->last_name;
+            $user->user_type = 'user';
             
-            return $data;
+            return $user;
         } else if ($ledger && $ledger->provider_id && ($provider = Provider::find($ledger->provider_id))) {
-            $data = $provider;
-            $data->full_name = $data->first_name . ' ' . $data->last_name;
-            $data->ledger_id = $id;
-            $data->user_type = 'provider';
-            return $data;
-        } else if ($ledger && $ledger->admin_id) {
-            $data = Admin::find($ledger->admin_id);
-            $data->full_name = $data->name;
-            $data->ledger_id = $id;
-            $data->user_type = 'admin';
-            return $data;
+            $provider->full_name = $provider->first_name . ' ' . $provider->last_name;
+            $provider->ledger_id = $id;
+            $provider->user_type = 'provider';
+            return $provider;
+        } else if ($ledger && $ledger->admin_id && ($admin = Admin::find($ledger->admin_id))) {
+            $admin->full_name = $admin->name;
+            $admin->ledger_id = $id;
+            $admin->user_type = 'admin';
+            return $admin;
         }
 
         return null;

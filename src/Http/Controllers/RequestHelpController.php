@@ -46,6 +46,10 @@ class RequestHelpController extends Controller
             $conversation->save();
             
             $userHelped = Helper::getUserTypeInstance($conversation->user_one);
+
+            if (!$userHelped) {
+                return Redirect::back();
+            }
             
             if($conversation->lastMessageUnread) {
                 $conversationId = $conversation->id;
