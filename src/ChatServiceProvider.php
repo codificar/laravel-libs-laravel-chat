@@ -40,6 +40,11 @@ class ChatServiceProvider extends ServiceProvider
         $router->aliasMiddleware('chat.auth.corp', CheckCorpLogged::class);
         $router->aliasMiddleware('chat.auth.admin', CheckAdminLogged::class);
         $router->aliasMiddleware('talk',  \Nahid\Talk\Middleware\TalkMiddleware::class);
+
+        // Publish the tests files 
+        $this->publishes([
+            __DIR__ . '/../tests/' => base_path('tests/Unit/libs/chat'),
+        ], 'publishes_tests');
     }
 
     public function register()
