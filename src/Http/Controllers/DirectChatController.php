@@ -77,12 +77,6 @@ class DirectChatController extends Controller
 
         event(new EventConversation($message->id));
 
-        $payload = [
-            'request_id' => $conversation->request_id,
-            'is_direct_message' => true,
-            'receiver' => $request->receiver_id,
-            "ledger_id" => $request->sender_id,
-        ];
 
         if ($request->ledger_receiver->admin_id)
             event(new EventNotifyPanel($request->receiver_id));
@@ -96,7 +90,6 @@ class DirectChatController extends Controller
                 $message->message, 
                 $request->ledger_receiver->user_id, 
                 'user',
-                $payload
             );
         } else if ($request->ledger_receiver->provider_id) {
             // notifica provider
@@ -125,18 +118,17 @@ class DirectChatController extends Controller
 	 * 
 	 * @return
 	 */
-	public function sendNotificationMessageReceived($title, $conversation_id, $contents, $model_id, $type, $payload = null) {
+	public function sendNotificationMessageReceived($title, $conversation_id, $contents, $model_id, $type) {
 		try {
 			// Send Notification
 			$message = array(
 				'success' => true,
 				'conversation_id' => $conversation_id,
 				'message' => $contents,
-                'payload' => $payload,
 			);
 			//envia notificação push
-			send_notifications($model_id, $type, $title, $message,null,$payload);
-		} catch (\Exception $ex) { 
+			send_notifications($model_id, $type, $title, $message);
+		} catch (\Exception $ex) {
 			return $ex->getMessage().$ex->getTraceAsString();
 		}
 	}
