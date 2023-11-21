@@ -113,13 +113,24 @@ export default {
         }
     },
     mounted() {
-        window.Echo = new Echo({
-			broadcaster: 'socket.io',
-			client: require('socket.io-client'),
-			host: `${window.location.hostname}:${this.echoport}`
-		});
+        // Define o client e broadcaster
+		const client = require('socket.io-client');
+		const broadcaster = 'socket.io';
 
-        window.io = require('socket.io-client');
+		const host = this.echoHost || window.location.hostname;
+		const port = this.echoPort || 6001
+		// Abre a conexão
+		if(!window.Echo) {
+			window.Echo = new Echo({
+				broadcaster: broadcaster,
+				client: client,
+				host: `${host}:${port}`
+			});
+		}
+
+		if(window.io) {
+			window.io = client;
+		}
         
         this.getConversations();
         this.subscribeToChannel(this.institution.default_user_id);

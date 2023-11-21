@@ -4,12 +4,16 @@ namespace Codificar\Chat\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Nahid\Talk\Conversations\Conversation;
-use Provider, User, Ledger;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
-class MessageListFormRequest extends FormRequest {
-	
+class MessageListFormRequest extends FormRequest 
+{	
+	private const SEGMENT_API 			= 1;
+	private const SEGMENT_LIBS 			= 2;
+	private const SEGMENT_ADMIN 		= 3;
+	private const SEGMENT_CHAT 			= 4;
+	private const SEGMENT_CONVERSATION 	= 5;
 	/**
      * Determine if the user is authorized to make this request.
      *
@@ -45,34 +49,21 @@ class MessageListFormRequest extends FormRequest {
      * @return void
      */
 	protected function prepareForValidation() {
-		$sender_type = request()->segments()[2];
-
+		$senderType = request()->segment(self::SEGMENT_ADMIN);
 		if($this->userType) {
-			$sender_type = $this->userType;
+			$senderType = $this->userType;
 		}
 
-		if($sender_type == "provider") {
-			$provider = $this->provider ? 
-				$this->provider :
-				Provider::find($this->provider_id);
-			$ledger = Ledger::where('provider_id', $provider->id)->first();
-		} else {
-			$user = $this->user ? 
-				$this->user : 
-				User::find($this->user_id);
-
-			$ledger = Ledger::where('user_id', $user->id)->first();
-        }
-        
+		$ledger = $this->getLedger($senderType);
 		$conversation = Conversation::find($this->conversation_id);
-        
+
 		if($ledger and $conversation and ($conversation->user_one == $ledger->id or $conversation->user_two == $ledger->id)) {
 			$this->merge([ "conversation" => $conversation ]);
         }
         
 		$this->merge(
             [ 
-                "sender_type" => $sender_type,
+                "sender_type" => $senderType,
                 "ledger" => $ledger
             ]
         );
@@ -96,4 +87,35 @@ class MessageListFormRequest extends FormRequest {
             ])
         );
     }
+
+
+	private function getLedger($senderType)
+	{
+		$ledger = null;
+		
+		switch ($senderType) {
+			case 'provider':
+				$provider = $this->provider ? 
+					$this->provider :
+					\Provider::find($this->provider_id);
+				$ledger = $provider->ledger;
+				break;
+			case 'corp':
+				$ride = \Requests::find($this->request_id);			
+				if($ride) {
+					$this->user = $ride->institution;
+					$ledger = $ride->confirmedProvider->ledger;
+				}
+				break;
+			default:
+				$user = $this->user ? 
+					$this->user : 
+					\User::find($this->user_id);
+				if($user){
+					$ledger = $user->ledger;
+				}
+				break;
+		}
+		return $ledger;
+	}
 }

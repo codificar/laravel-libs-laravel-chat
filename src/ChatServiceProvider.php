@@ -2,6 +2,8 @@
 
 namespace Codificar\Chat;
 
+use Codificar\Chat\Middleware\CheckAdminLogged;
+use Codificar\Chat\Middleware\CheckCorpLogged;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Routing\Router;
 use Codificar\Chat\Middleware\CheckUserSystem;
@@ -35,11 +37,22 @@ class ChatServiceProvider extends ServiceProvider
 
         $router = $this->app->make(Router::class);
         $router->aliasMiddleware('chatapp', CheckUserSystem::class);
+        $router->aliasMiddleware('chat.auth.corp', CheckCorpLogged::class);
+        $router->aliasMiddleware('chat.auth.admin', CheckAdminLogged::class);
         $router->aliasMiddleware('talk',  \Nahid\Talk\Middleware\TalkMiddleware::class);
+
+        // Publish the tests files 
+        $this->publishes([
+            __DIR__ . '/../tests/' => base_path('tests/Unit/libs/chat'),
+        ], 'publishes_tests');
     }
 
     public function register()
     {
+        $this->app->bind(
+            public_path('vendor/codificar/chat/src/Interfaces/MessageRepositoryInterface'),
+            public_path('vendor/codificar/chat/src/Repositories/MessageRepository')
+        );
 
     }
 }

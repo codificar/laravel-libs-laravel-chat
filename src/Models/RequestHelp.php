@@ -5,7 +5,6 @@ namespace Codificar\Chat\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\DB;
-use Log;
 use Nahid\Talk\Conversations\Conversation;
 
 class RequestHelp extends Model
@@ -16,6 +15,16 @@ class RequestHelp extends Model
      * @var string
      */
     protected $table = 'request_help';
+
+    /**
+	 * Finds one row in the Messages table associated with 'help_id'
+	 *
+	 * @return Messages object
+	 */
+	public function conversations()
+	{
+		return $this->hasOne(Conversations::class, 'help_id', 'id');
+	}
 
     /**
      * Save a new request note help
@@ -33,7 +42,7 @@ class RequestHelp extends Model
             $note->save();
             return true;
         } catch (\Throwable $th) {
-            Log::error($th->getMessage());
+            \Log::error($th->getMessage() . $th->getTraceAsString());
             return false;
         }
         
