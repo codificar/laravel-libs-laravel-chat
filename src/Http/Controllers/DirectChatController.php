@@ -99,7 +99,6 @@ class DirectChatController extends Controller
                 $message->message, 
                 $request->ledger_receiver->provider_id, 
                 'provider',
-                $payload
             );
         }
 
