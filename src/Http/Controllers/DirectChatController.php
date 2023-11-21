@@ -149,7 +149,6 @@ class DirectChatController extends Controller
      */
     public function getDirectMessages(GetDirectRequest $request)
     {
-        // dd($request->all());
         $conversation = $this->getConversationBySender($request);
         return new ChatMessagesResource([
 			"messages" => $conversation ? $conversation->messages : [],
@@ -168,7 +167,6 @@ class DirectChatController extends Controller
     {
         $conversations = null;
         $locations = Location::select('id', 'name')->get();
-
         if ($request->sender_type == 'user' || $request->sender_type == 'provider') {
 
             $conversations = Conversation::whereRaw("request_id = 0 and (user_one = $request->sender_id or user_two = $request->sender_id)")
@@ -178,6 +176,8 @@ class DirectChatController extends Controller
 
                 if (Settings::hideChatAfterRequest()) {
                     $shouldHideChat = self::shouldHidechat($conversations);
+                    if ($shouldHideChat)
+                        $conversations = [];
                 }
                 
             return new ListConversationsForPanelResource([
@@ -233,8 +233,8 @@ class DirectChatController extends Controller
                         $timeAfterRequestToHideChat = (int) Settings::timeAfterRequestToHideChat();
                         $requestFinishTime = Carbon::parse($lastRequestByProviderAndUserLedgerId->request_finish_time);
                         $timeToHideChat = $requestFinishTime->addMinutes($timeAfterRequestToHideChat);
-                    
-                        if ($timeToHideChat->greaterThan($currentServerTime)) {
+
+                        if ($currentServerTime->greaterThan($timeToHideChat)) {
                             $shouldHideChat = true;
                         }
                     }
