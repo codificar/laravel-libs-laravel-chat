@@ -209,7 +209,12 @@ class DirectChatController extends Controller
         ]);
     }
 
-
+    /**
+     * Defines how long after the end of the service, the chat will be hidden
+     * 
+     * @param Array $conversations
+     * @return Boolean $shouldHideChat
+     */
     public static function shouldHideChat($conversations) {
         $currentServerTime = now(); 
         $shouldHideChat = false;
