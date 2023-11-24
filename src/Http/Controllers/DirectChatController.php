@@ -25,6 +25,7 @@ use Codificar\Chat\Http\Resources\ListConversationsForPanelResource;
 use Codificar\Chat\Http\Utils\Helper;
 use Location;
 use Requests;
+use ScheduledRequests;
 use User;
 
 class DirectChatController extends Controller
@@ -217,23 +218,27 @@ class DirectChatController extends Controller
             if ($providerledger && $userLedger) {
                 $provider = Provider::find($providerledger->provider_id);
                 $user = User::find($userLedger->user_id);
-    
-                if ($provider && $user) {
-                    $lastRequestByProviderAndUserLedgerId = Requests::where('user_id', $user->id)
-                        ->where('confirmed_provider', $provider->id)
-                        ->orderBy('request_finish_time', 'desc')
-                        ->latest()
-                        ->first();
-    
-                    if ($lastRequestByProviderAndUserLedgerId) {
-                        $timeAfterRequestToHideChat = (int) Settings::timeAfterRequestToHideChat();
-                        $requestFinishTime = Carbon::parse($lastRequestByProviderAndUserLedgerId->request_finish_time);
-                        $timeToHideChat = $requestFinishTime->addMinutes($timeAfterRequestToHideChat);
+            }
+        }
+        if ($provider && $user) {
+            $lastRequestByProviderAndUserLedgerId = Requests::where('user_id', $user->id)
+                ->where('confirmed_provider', $provider->id)
+                ->orderBy('request_finish_time', 'desc')
+                ->latest()
+                ->first();
+            $lastScheduleByProviderAndUserLedgerId = ScheduledRequests::where('user_id', $user->id)
+                ->where('provider_id', $provider->id)
+                ->orderBy('id', 'desc')
+                ->latest()
+                ->first();
 
-                        if ($currentServerTime->greaterThan($timeToHideChat)) {
-                            $shouldHideChat = true;
-                        }
-                    }
+            if ($lastRequestByProviderAndUserLedgerId) {
+                $timeAfterRequestToHideChat = (int) Settings::timeAfterRequestToHideChat();
+                $requestFinishTime = Carbon::parse($lastRequestByProviderAndUserLedgerId->request_finish_time);
+                $timeToHideChat = $requestFinishTime->addMinutes($timeAfterRequestToHideChat);
+
+                if ($currentServerTime->greaterThan($timeToHideChat) && $lastScheduleByProviderAndUserLedgerId->is_started) {
+                    $shouldHideChat = true;
                 }
             }
         }
