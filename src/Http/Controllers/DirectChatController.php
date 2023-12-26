@@ -19,10 +19,14 @@ use Nahid\Talk\Conversations\Conversation;
 use Provider;
 use Settings;
 use Admin, Auth;
+use Carbon\Carbon;
 use Codificar\Chat\Http\Resources\FilterConversationsResource;
 use Codificar\Chat\Http\Resources\ListConversationsForPanelResource;
 use Codificar\Chat\Http\Utils\Helper;
 use Location;
+use Requests;
+use ScheduledRequests;
+use User;
 
 class DirectChatController extends Controller
 {
@@ -74,6 +78,7 @@ class DirectChatController extends Controller
 
         event(new EventConversation($message->id));
 
+
         if ($request->ledger_receiver->admin_id)
             event(new EventNotifyPanel($request->receiver_id));
 
@@ -85,7 +90,7 @@ class DirectChatController extends Controller
                 $message->conversation_id, 
                 $message->message, 
                 $request->ledger_receiver->user_id, 
-                'user'
+                'user',
             );
         } else if ($request->ledger_receiver->provider_id) {
             // notifica provider
@@ -94,7 +99,7 @@ class DirectChatController extends Controller
                 $message->conversation_id, 
                 $message->message, 
                 $request->ledger_receiver->provider_id, 
-                'provider'
+                'provider',
             );
         }
 
@@ -119,7 +124,7 @@ class DirectChatController extends Controller
 			$message = array(
 				'success' => true,
 				'conversation_id' => $conversation_id,
-				'message' => $contents
+				'message' => $contents,
 			);
 			//envia notificação push
 			send_notifications($model_id, $type, $title, $message);
@@ -137,7 +142,6 @@ class DirectChatController extends Controller
     public function getDirectMessages(GetDirectRequest $request)
     {
         $conversation = $this->getConversationBySender($request);
-
         return new ChatMessagesResource([
 			"messages" => $conversation ? $conversation->messages : [],
 			"request_id" => 0,
@@ -155,14 +159,19 @@ class DirectChatController extends Controller
     {
         $conversations = null;
         $locations = Location::select('id', 'name')->get();
-
         if ($request->sender_type == 'user' || $request->sender_type == 'provider') {
 
             $conversations = Conversation::whereRaw("request_id = 0 and (user_one = $request->sender_id or user_two = $request->sender_id)")
                 ->with(['messages'])
                 ->orderBy('updated_at', 'desc')
                 ->get();
-            
+
+                if (Settings::hideChatAfterRequest()) {
+                    $shouldHideChat = self::shouldHidechat($conversations);
+                    if ($shouldHideChat)
+                        $conversations = [];
+                }
+                
             return new ListConversationsForPanelResource([
                 'sender_id' => $request->sender_id,
                 'sender_type' => $request->sender_type,
@@ -190,6 +199,51 @@ class DirectChatController extends Controller
             'conversations' => $conversations,
             'locations' => $locations
         ]);
+    }
+
+    /**
+     * Defines how long after the end of the service, the chat will be hidden
+     * 
+     * @param Array $conversations
+     * @return Boolean $shouldHideChat
+     */
+    public static function shouldHideChat($conversations) {
+        $currentServerTime = now(); 
+        $shouldHideChat = false;
+    
+        foreach ($conversations as $conversation) {
+            $providerledger = Ledger::find($conversation->user_one);
+            $userLedger = Ledger::find($conversation->user_two);
+    
+            if ($providerledger && $userLedger) {
+                $provider = Provider::find($providerledger->provider_id);
+                $user = User::find($userLedger->user_id);
+            }
+        }
+        if ($provider && $user) {
+            $lastRequestByProviderAndUserLedgerId = Requests::where('user_id', $user->id)
+                ->where('confirmed_provider', $provider->id)
+                ->orderBy('request_finish_time', 'desc')
+                ->latest()
+                ->first();
+            $lastScheduleByProviderAndUserLedgerId = ScheduledRequests::where('user_id', $user->id)
+                ->where('provider_id', $provider->id)
+                ->orderBy('id', 'desc')
+                ->latest()
+                ->first();
+
+            if ($lastRequestByProviderAndUserLedgerId) {
+                $timeAfterRequestToHideChat = (int) Settings::timeAfterRequestToHideChat();
+                $requestFinishTime = Carbon::parse($lastRequestByProviderAndUserLedgerId->request_finish_time);
+                $timeToHideChat = $requestFinishTime->addMinutes($timeAfterRequestToHideChat);
+
+                if ($currentServerTime->greaterThan($timeToHideChat) && $lastScheduleByProviderAndUserLedgerId->is_started) {
+                    $shouldHideChat = true;
+                }
+            }
+        }
+    
+        return $shouldHideChat;
     }
 
     /**
