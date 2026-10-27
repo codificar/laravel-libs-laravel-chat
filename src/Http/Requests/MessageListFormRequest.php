@@ -7,6 +7,7 @@ use Nahid\Talk\Conversations\Conversation;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
+#[\AllowDynamicProperties]
 class MessageListFormRequest extends FormRequest 
 {	
 	private const SEGMENT_API 			= 1;

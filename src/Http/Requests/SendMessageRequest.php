@@ -7,6 +7,7 @@ use Codificar\Chat\Models\ConversationRequest;
 use Illuminate\Foundation\Http\FormRequest;
 use Requests;
 
+#[\AllowDynamicProperties]
 class SendMessageRequest extends FormRequest
 {
 	

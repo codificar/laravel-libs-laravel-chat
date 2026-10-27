@@ -4,6 +4,7 @@ namespace Codificar\Chat\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
+#[\AllowDynamicProperties]
 class ConversationFormRequest extends FormRequest
 {
 	private const SEGMENT_API 			= 1;
