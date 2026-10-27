@@ -96,7 +96,7 @@ class RequestHelpController extends Controller
         return new RequestHelpListResource([
             'request_help' => RequestHelp::fetch(
                 $request->page,
-                json_decode($request->filter)
+                json_decode($request->filter ?? '')
             )
         ]);
     }
